@@ -24,6 +24,9 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings> {
     public String userName = DEFAULT_VALUE;
     public String url = DEFAULT_VALUE;
 
+
+
+
     public static WTMSettings getInstance(Project project) {
         return ServiceManager.getService(project, WTMSettings.class);
     }
