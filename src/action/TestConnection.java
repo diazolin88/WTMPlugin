@@ -11,6 +11,6 @@ public class TestConnection extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        e.getProject();
+
     }
 }

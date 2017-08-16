@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.List;
 import java.util.Arrays;
 
 public class DemoPanel extends SimpleToolWindowPanel implements Configurable{
@@ -21,8 +20,8 @@ public class DemoPanel extends SimpleToolWindowPanel implements Configurable{
         setContent(panel1);
     }
 
-    public void setText(List<String> text) {
-        text.forEach(s -> builder.append(s).append("\n"));
+    public void setText(String... text) {
+        Arrays.stream(text).forEach(s -> builder.append(s).append("\n"));
         textArea.setText(builder.toString());
     }
 

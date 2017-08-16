@@ -2,17 +2,10 @@ package view;
 
 import action.TestConnection;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.JBColor;
-import exceptions.AuthorizationException;
+import model.TMConnectable;
 import model.testrail.RailConnection;
 
 import javax.swing.*;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
-import java.awt.*;
-
-import static java.awt.Font.ITALIC;
 
 public class WTMSettingsWindow extends WindowPanelAbstract {
     private JPanel mainPanel;
@@ -26,13 +19,9 @@ public class WTMSettingsWindow extends WindowPanelAbstract {
         super(project);
         setContent(mainPanel);
         testConnectionButton.addActionListener(e -> {
-            RailConnection conn = new RailConnection();
-            try {
-                conn.login(settings.getUrl(), settings.getUserName(), settings.getPassword());
-                debugTextPane.setText("Connected!");
-            }catch (AuthorizationException exception){
-                debugTextPane.setText(exception.getMessage());
-            }
+           // RailConnection connectable = RailConnection.getInstance(project);
+            //connectable.login(settings.getUserName(),settings.getPassword(),settings.getUrl());
+
         });
     }
 
@@ -43,9 +32,10 @@ public class WTMSettingsWindow extends WindowPanelAbstract {
     }
 
     public boolean isModified(){
-        return !userNameTextField.getText().equals(settings.getUserName())
-        || passwordField.getPassword() != settings.getPassword().toCharArray()
-        || !urlTextField.getText().equals(settings.getUrl());
+        boolean modified = !userNameTextField.getText().equals(settings.getUserName());
+        modified |= passwordField.getPassword() != settings.getPassword().toCharArray();
+        modified |= !urlTextField.getText().equals(settings.getUrl());
+        return modified;
     }
 
     public void reset() {
