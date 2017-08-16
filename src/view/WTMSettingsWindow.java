@@ -19,8 +19,8 @@ public class WTMSettingsWindow extends WindowPanelAbstract {
         super(project);
         setContent(mainPanel);
         testConnectionButton.addActionListener(e -> {
-           // RailConnection connectable = RailConnection.getInstance(project);
-            //connectable.login(settings.getUserName(),settings.getPassword(),settings.getUrl());
+
+           debugTextPane.setText("TEXT");
 
         });
     }

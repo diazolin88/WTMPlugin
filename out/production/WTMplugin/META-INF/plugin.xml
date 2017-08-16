@@ -27,7 +27,7 @@
     <!--to see settings window on Settings > Tools window-->
     <projectConfigurable groupId="tools" displayName="WTM plugin" id="preferences.SingleFileExecutionConfigurable" instance="settings.WTMSettingsWindowRenderer"/>
     <projectService serviceInterface="settings.WTMSettings" serviceImplementation="settings.WTMSettings"/>
-    
+
     <toolWindow id="WTMPlugin" icon="/files/icons/Untitled.png" anchor="left" factoryClass="myPackage.MyToolWindowFactory"/>
 
    <!-- Add your extensions here -->

@@ -13,7 +13,17 @@ import org.jetbrains.annotations.Nullable;
 
 import com.intellij.openapi.diagnostic.Logger;
 import sun.rmi.runtime.Log;
-
+/**
+ * Class needs for save user settings in file WTMSettings.xml such as:
+ * @username
+ * @url
+ * @password
+ *
+ * All settings saved under project, so for new project need setup
+ * plugin again
+ *
+ * All fields that should be saved should be public
+ * */
 @State(
         name = "WTM.Settings",
         storages = {
@@ -24,13 +34,7 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings> {
     public static final String DEFAULT_VALUE = "";
     public String userName = DEFAULT_VALUE;
     public String url = DEFAULT_VALUE;
-    public String password;
-    private static final Logger LOG = Logger.getInstance(WTMSettings.class);
     private static final String PASSWORD_KEY = "wtm.settings.password.key";
-
-    WTMSettings() {
-
-    }
 
     public static WTMSettings getInstance(Project project) {
         return ServiceManager.getService(project, WTMSettings.class);

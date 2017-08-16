@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.Arrays;
 
-public class DemoPanel extends SimpleToolWindowPanel implements Configurable{
+public class DemoPanel extends SimpleToolWindowPanel{
     private JPanel panel1;
     private JTextArea textArea;
     private StringBuilder builder = new StringBuilder();
@@ -29,25 +29,4 @@ public class DemoPanel extends SimpleToolWindowPanel implements Configurable{
         return this.textArea;
     }
 
-    @Nls
-    @Override
-    public String getDisplayName() {
-        return "Test";
     }
-
-    @Nullable
-    @Override
-    public JComponent createComponent() {
-        return this;
-    }
-
-    @Override
-    public boolean isModified() {
-        return false;
-    }
-
-    @Override
-    public void apply() throws ConfigurationException {
-
-    }
-}

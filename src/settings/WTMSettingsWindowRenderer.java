@@ -22,7 +22,7 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable {
 
     private WTMSettingsWindow settingsComponent;
     @SuppressWarnings("FieldCanBeLocal")
-    private final WTMSettings wtmSettings;
+    public final WTMSettings wtmSettings;
     private Project project;
 
     public WTMSettingsWindowRenderer(@NotNull Project project){
