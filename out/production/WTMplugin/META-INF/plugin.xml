@@ -1,0 +1,47 @@
+<idea-plugin>
+  <id>com.your.company.unique.plugin.id</id>
+  <name>Plugin display name here</name>
+  <version>1.0</version>
+  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+
+  <description><![CDATA[
+      Enter short description for your plugin here.<br>
+      <em>most HTML tags may be used</em>
+    ]]></description>
+
+  <change-notes><![CDATA[
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="145.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!--to see settings window on Settings > Tools window-->
+    <projectConfigurable groupId="tools" displayName="WTM plugin" id="preferences.SingleFileExecutionConfigurable" instance="settings.WTMSettingsWindowRenderer"/>
+    <projectService serviceInterface="settings.WTMSettings" serviceImplementation="settings.WTMSettings"/>
+
+    <applicationService serviceInterface="model.testrail.RailSettings" serviceImplementation="model.testrail.RailSettings"/>
+    <toolWindow id="WTMPlugin" icon="/files/icons/Untitled.png" anchor="left" factoryClass="myPackage.MyToolWindowFactory"/>
+
+   <!-- Add your extensions here -->
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+    <action id="ShowSetting1" class="action.ShowSetting1" text="settings_window" description="settings window">
+      <add-to-group group-id="ToolsBasicGroup" anchor="first"/>
+    </action>
+  </actions>
+
+  <application-components>
+
+  </application-components>
+</idea-plugin>
