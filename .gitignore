@@ -1,6 +1,7 @@
 *.sw?
 *.iml
 *.jar
+.out/
 .idea/
 .classpath
 .project
