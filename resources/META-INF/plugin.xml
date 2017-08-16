@@ -28,7 +28,6 @@
     <projectConfigurable groupId="tools" displayName="WTM plugin" id="preferences.SingleFileExecutionConfigurable" instance="settings.WTMSettingsWindowRenderer"/>
     <projectService serviceInterface="settings.WTMSettings" serviceImplementation="settings.WTMSettings"/>
 
-    <applicationService serviceInterface="model.testrail.RailSettings" serviceImplementation="model.testrail.RailSettings"/>
     <toolWindow id="WTMPlugin" icon="/files/icons/Untitled.png" anchor="left" factoryClass="myPackage.MyToolWindowFactory"/>
 
    <!-- Add your extensions here -->
@@ -45,8 +44,6 @@
 
   </application-components>
   <project-components>
-    <component>
-      <implementation-class>TestConnection</implementation-class>
-    </component>
+
   </project-components>
 </idea-plugin>

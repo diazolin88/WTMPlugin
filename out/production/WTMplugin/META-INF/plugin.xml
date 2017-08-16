@@ -28,7 +28,7 @@
     <projectConfigurable groupId="tools" displayName="WTM plugin" id="preferences.SingleFileExecutionConfigurable" instance="settings.WTMSettingsWindowRenderer"/>
     <projectService serviceInterface="settings.WTMSettings" serviceImplementation="settings.WTMSettings"/>
 
-    <applicationService serviceInterface="model.testrail.RailSettings" serviceImplementation="model.testrail.RailSettings"/>
+    <!--<applicationService serviceInterface="model.testrail.RailSettings" serviceImplementation="model.testrail.RailSettings"/>-->
     <toolWindow id="WTMPlugin" icon="/files/icons/Untitled.png" anchor="left" factoryClass="myPackage.MyToolWindowFactory"/>
 
    <!-- Add your extensions here -->
@@ -36,7 +36,7 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="ShowSetting1" class="action.ShowSetting1" text="settings_window" description="settings window">
+    <action id="ShowSetting1" class="action.TestConnection" text="settings_window" description="settings window">
       <add-to-group group-id="ToolsBasicGroup" anchor="first"/>
     </action>
   </actions>
@@ -44,4 +44,7 @@
   <application-components>
 
   </application-components>
+  <project-components>
+
+  </project-components>
 </idea-plugin>
