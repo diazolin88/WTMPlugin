@@ -7,7 +7,4 @@ public class RTest {
         new RailProject().getProjectById(4);
     }
 
-
-
-
 }
