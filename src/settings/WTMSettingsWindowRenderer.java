@@ -25,7 +25,7 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable {
     public final WTMSettings wtmSettings;
     private Project project;
 
-    public WTMSettingsWindowRenderer(@NotNull Project project){
+    public WTMSettingsWindowRenderer(@NotNull Project project) {
         this.project = project;
         this.wtmSettings = WTMSettings.getInstance(project);
 

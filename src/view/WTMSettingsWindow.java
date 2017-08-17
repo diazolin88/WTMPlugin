@@ -1,9 +1,6 @@
 package view;
 
-import action.TestConnection;
 import com.intellij.openapi.project.Project;
-import model.TMConnectable;
-import model.testrail.RailConnection;
 
 import javax.swing.*;
 
@@ -19,19 +16,17 @@ public class WTMSettingsWindow extends WindowPanelAbstract {
         super(project);
         setContent(mainPanel);
         testConnectionButton.addActionListener(e -> {
-
-           debugTextPane.setText("TEXT");
-
+            debugTextPane.setText("TEXT");
         });
     }
 
-    public void setSettings(){
+    public void setSettings() {
         settings.setPassword(passwordField.getPassword());
         settings.setUserName(userNameTextField.getText());
         settings.setUrl(urlTextField.getText());
     }
 
-    public boolean isModified(){
+    public boolean isModified() {
         boolean modified = !userNameTextField.getText().equals(settings.getUserName());
         modified |= passwordField.getPassword() != settings.getPassword().toCharArray();
         modified |= !urlTextField.getText().equals(settings.getUrl());

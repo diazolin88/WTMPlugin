@@ -3,27 +3,22 @@ package settings;
 import com.intellij.credentialStore.CredentialAttributes;
 import com.intellij.credentialStore.Credentials;
 import com.intellij.ide.passwordSafe.PasswordSafe;
-import com.intellij.ide.passwordSafe.PasswordSafeException;
-import com.intellij.ide.passwordSafe.impl.PasswordSafeImpl;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import com.intellij.openapi.diagnostic.Logger;
-import sun.rmi.runtime.Log;
+
 /**
  * Class needs for save user settings in file WTMSettings.xml such as:
+ *
  * @username
  * @url
- * @password
- *
- * All settings saved under project, so for new project need setup
+ * @password All settings saved under project, so for new project need setup
  * plugin again
- *
+ * <p>
  * All fields that should be saved should be public
- * */
+ */
 @State(
         name = "WTM.Settings",
         storages = {
@@ -31,10 +26,11 @@ import sun.rmi.runtime.Log;
         }
 )
 public class WTMSettings implements PersistentStateComponent<WTMSettings> {
-    public static final String DEFAULT_VALUE = "";
-    public String userName = DEFAULT_VALUE;
-    public String url = DEFAULT_VALUE;
+    private static final String DEFAULT_VALUE = "";
     private static final String PASSWORD_KEY = "wtm.settings.password.key";
+
+    private String userName = DEFAULT_VALUE;
+    private String url = DEFAULT_VALUE;
 
     public static WTMSettings getInstance(Project project) {
         return ServiceManager.getService(project, WTMSettings.class);
@@ -68,16 +64,14 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings> {
     }
 
     public void setPassword(char[] password) {
-            CredentialAttributes attributes = new CredentialAttributes(PASSWORD_KEY, this.userName, this.getClass(), false);
-            Credentials saveCredentials = new Credentials(attributes.getUserName(), password);
-            PasswordSafe.getInstance().set(attributes, saveCredentials);
+        CredentialAttributes attributes = new CredentialAttributes(PASSWORD_KEY, this.userName, this.getClass(), false);
+        Credentials saveCredentials = new Credentials(attributes.getUserName(), password);
+        PasswordSafe.getInstance().set(attributes, saveCredentials);
     }
 
     public String getPassword() {
         CredentialAttributes attributes = new CredentialAttributes(PASSWORD_KEY, this.userName, this.getClass(), false);
         String password = PasswordSafe.getInstance().getPassword(attributes);
-        return  null == password ? "" : password;
+        return null == password ? "" : password;
     }
-
-
 }

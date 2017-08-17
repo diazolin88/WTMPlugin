@@ -1,15 +1,11 @@
 package view;
 
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Arrays;
 
-public class DemoPanel extends SimpleToolWindowPanel{
+public class DemoPanel extends SimpleToolWindowPanel {
     private JPanel panel1;
     private JTextArea textArea;
     private StringBuilder builder = new StringBuilder();
@@ -29,4 +25,4 @@ public class DemoPanel extends SimpleToolWindowPanel{
         return this.textArea;
     }
 
-    }
+}
