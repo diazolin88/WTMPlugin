@@ -27,10 +27,9 @@ public class WTMSettingsWindow extends WindowPanelAbstract {
     }
 
     public boolean isModified() {
-        boolean modified = !userNameTextField.getText().equals(settings.getUserName());
-        modified |= passwordField.getPassword() != settings.getPassword().toCharArray();
-        modified |= !urlTextField.getText().equals(settings.getUrl());
-        return modified;
+        return  !userNameTextField.getText().equals(settings.getUserName())
+        || passwordField.getPassword() != settings.getPassword().toCharArray()
+        || !urlTextField.getText().equals(settings.getUrl());
     }
 
     public void reset() {
