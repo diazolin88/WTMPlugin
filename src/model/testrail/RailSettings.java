@@ -2,8 +2,6 @@ package model.testrail;
 
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
-import com.intellij.util.xmlb.XmlSerializerUtil;
-import model.TMSettings;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,8 +22,8 @@ import org.jetbrains.annotations.Nullable;
 public class RailSettings implements PersistentStateComponent<RailSettings.State> {
     private String companyUrl = "https://company.testrail.net/";
 
-    private State state = new State();
 
+    private State state = new State();
 
     public static RailSettings getSafeInstance(Project project) {
         RailSettings settings = ServiceManager.getService(project, RailSettings.class);

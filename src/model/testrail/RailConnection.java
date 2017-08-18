@@ -1,10 +1,8 @@
 package model.testrail;
 
 import com.codepine.api.testrail.TestRail;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import model.TMConnectable;
-import org.jetbrains.annotations.NotNull;
 
 
 public class RailConnection implements TMConnectable<TestRail>{
@@ -15,6 +13,7 @@ public class RailConnection implements TMConnectable<TestRail>{
 
     @Override
     public TestRail login(String user, String password, String url) {
+        RailSettings settings = RailSettings.getSafeInstance(ProjectManager.getInstance().getOpenProjects()[0]);
         return TestRail.builder(url,user,password).build();
     }
 }
