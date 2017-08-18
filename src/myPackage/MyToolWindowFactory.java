@@ -13,8 +13,7 @@ import view.DemoPanel;
 
 public class MyToolWindowFactory implements ToolWindowFactory {
 
-
-    WTMSettings settings;
+    private WTMSettings settings;
     private String[] text = {"line1", "line2"};
     private DemoPanel panel = new DemoPanel();
 
@@ -23,7 +22,6 @@ public class MyToolWindowFactory implements ToolWindowFactory {
         Content content = factory.createContent(panel, "", true);
         toolWindow.getContentManager().addContent(content);
         settings = ServiceManager.getService(project, WTMSettings.class);
-
 
     }
 

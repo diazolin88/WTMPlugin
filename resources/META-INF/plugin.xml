@@ -35,7 +35,7 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="ShowSetting1" class="action.TestConnection" text="settings_window" description="settings window">
+    <action id="ShowSetting1" class="action.RailProjects" text="settings_window" description="settings window">
       <add-to-group group-id="ToolsBasicGroup" anchor="first"/>
     </action>
   </actions>

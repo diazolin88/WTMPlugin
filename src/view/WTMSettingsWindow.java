@@ -1,24 +1,27 @@
 package view;
 
-import action.TestConnection;
 import com.intellij.openapi.project.Project;
-import model.TMConnectable;
-import model.testrail.RailConnection;
 
 import javax.swing.*;
 
 public class WTMSettingsWindow extends WindowPanelAbstract {
     private JPanel mainPanel;
-    private JTextField userNameTextField;
+    private JTabbedPane tabbedPane1;
     private JTextField urlTextField;
     private JPasswordField passwordField;
-    private JButton testConnectionButton;
+    private JTextField userNameTextField;
+    private JButton railTestConnectionButton;
     private JTextPane debugTextPane;
+    //Jira  tab fields
+    private JTextField jiraUrlTextField;
+    private JTextField jiraUserNameTextField;
+    private JPasswordField jiraPasswordField;
+    private JButton jiraTestConnectionButton;
 
     public WTMSettingsWindow(Project project) {
         super(project);
         setContent(mainPanel);
-        testConnectionButton.addActionListener(e -> {
+        railTestConnectionButton.addActionListener(e -> {
 
            debugTextPane.setText("TEXT");
 
@@ -26,6 +29,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract {
     }
 
     public void setSettings(){
+        mainPanel.getComponents();
         settings.setPassword(passwordField.getPassword());
         settings.setUserName(userNameTextField.getText());
         settings.setUrl(urlTextField.getText());
