@@ -8,16 +8,17 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import settings.WTMSettings;
-import view.DemoPanel;
+import view.WTMSettingsWindow;
 
 
 public class MyToolWindowFactory implements ToolWindowFactory {
 
     private WTMSettings settings;
     private String[] text = {"line1", "line2"};
-    private DemoPanel panel = new DemoPanel();
+    private WTMSettingsWindow panel;
 
     public void createToolWindowContent(Project project, ToolWindow toolWindow) {
+        panel = new WTMSettingsWindow(project);
         ContentFactory factory = ContentFactory.SERVICE.getInstance();
         Content content = factory.createContent(panel, "", true);
         toolWindow.getContentManager().addContent(content);
@@ -27,8 +28,8 @@ public class MyToolWindowFactory implements ToolWindowFactory {
 
     public void init(ToolWindow window) {
         settings = WTMSettings.getInstance(ProjectManager.getInstance().getOpenProjects()[0]);
-        text[1] = settings.getUrl();
-        panel.setText(text);
+        text[1] = settings.getRailUrl();
+        //panel.setSettings();
 
     }
 }

@@ -21,7 +21,6 @@ import javax.swing.*;
 public class WTMSettingsWindowRenderer implements SearchableConfigurable {
 
     private WTMSettingsWindow settingsComponent;
-    @SuppressWarnings("FieldCanBeLocal")
     public final WTMSettings wtmSettings;
     private Project project;
 

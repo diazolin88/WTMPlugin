@@ -33,7 +33,7 @@
                   <text value="URL"/>
                 </properties>
               </component>
-              <component id="890cf" class="javax.swing.JTextField" binding="urlTextField">
+              <component id="890cf" class="javax.swing.JTextField" binding="railUrlTextField">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="2" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
                     <preferred-size width="400" height="-1"/>
@@ -64,7 +64,7 @@
                   <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
-              <component id="5c2c3" class="javax.swing.JPasswordField" binding="passwordField">
+              <component id="5c2c3" class="javax.swing.JPasswordField" binding="railPasswordField">
                 <constraints>
                   <grid row="2" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
                     <preferred-size width="200" height="-1"/>
@@ -72,7 +72,7 @@
                 </constraints>
                 <properties/>
               </component>
-              <component id="322c4" class="javax.swing.JTextField" binding="userNameTextField">
+              <component id="322c4" class="javax.swing.JTextField" binding="railUserNameTextField">
                 <constraints>
                   <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
                     <preferred-size width="200" height="-1"/>
@@ -90,7 +90,7 @@
                   <verticalTextPosition value="0"/>
                 </properties>
               </component>
-              <component id="796af" class="javax.swing.JTextPane" binding="debugTextPane" default-binding="true">
+              <component id="796af" class="javax.swing.JTextPane" binding="railDebugTextPane" default-binding="true">
                 <constraints>
                   <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="9" fill="0" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
@@ -178,7 +178,7 @@
                   <verticalTextPosition value="0"/>
                 </properties>
               </component>
-              <component id="e5da2" class="javax.swing.JTextPane" default-binding="true">
+              <component id="e5da2" class="javax.swing.JTextPane" binding="jiraDebugTextPane">
                 <constraints>
                   <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="9" fill="0" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>

@@ -1,5 +1,10 @@
 package model;
 
+import exceptions.AuthorizationException;
+import settings.WTMSettings;
+
+import javax.swing.*;
+
 /**
  * TM is Test Management.
  *
@@ -7,5 +12,5 @@ package model;
  */
 @FunctionalInterface
 public interface TMConnectable<T> {
-    T login(String user, String password, String url);
+    T login(WTMSettings state, JComponent component) throws AuthorizationException;
 }

@@ -1,19 +1,20 @@
 package model.testrail;
 
 import com.codepine.api.testrail.TestRail;
-import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
 import model.TMConnectable;
+import settings.WTMSettings;
 
 
 public class RailConnection implements TMConnectable<TestRail>{
 
-//    public static RailConnection getInstance(Project project) {
-//        return ServiceManager.getService(project, RailConnection.class);
-//    }
+    public static RailConnection getInstance(Project project) {
+        return ServiceManager.getService(project, RailConnection.class);
+    }
 
     @Override
-    public TestRail login(String user, String password, String url) {
-        RailSettings settings = RailSettings.getSafeInstance(ProjectManager.getInstance().getOpenProjects()[0]);
-        return TestRail.builder(url,user,password).build();
+    public TestRail login(WTMSettings state) {
+        return TestRail.builder(state.getRailUrl(),state.getRailUserName(), state.getRailPassword()).build();
     }
 }
