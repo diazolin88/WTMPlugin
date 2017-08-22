@@ -3,18 +3,36 @@ package model.testrail;
 import com.codepine.api.testrail.TestRail;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import model.TMConnectable;
+import exceptions.AuthorizationException;
 import settings.WTMSettings;
+import view.WTMSettingsWindow;
 
 
-public class RailConnection implements TMConnectable<TestRail>{
+public final class RailConnection {
+
+    private RailConnection(){}
 
     public static RailConnection getInstance(Project project) {
         return ServiceManager.getService(project, RailConnection.class);
     }
 
-    @Override
-    public TestRail login(WTMSettings state) {
-        return TestRail.builder(state.getRailUrl(),state.getRailUserName(), state.getRailPassword()).build();
+    public TestRail login(WTMSettings state) throws AuthorizationException {
+        try {
+            TestRail testRail = TestRail.builder(state.getRailUrl(), state.getRailUserName(), state.getRailPassword()).build();
+            testRail.projects();
+            return testRail;
+        } catch (Exception e) {
+            throw new AuthorizationException("Unable to login due to invalid login data or url");
+        }
+    }
+
+    public TestRail login(WTMSettingsWindow window) throws AuthorizationException {
+        try {
+            TestRail testRail = TestRail.builder(window.getRailUrlTextField().getText(), window.getRailUserNameTextField().getText(), window.getRailPasswordField().getPassword().toString()).build();
+            testRail.projects().list().execute();
+            return testRail;
+        } catch (Exception e) {
+            throw new AuthorizationException("Unable to login due to invalid login data or url");
+        }
     }
 }

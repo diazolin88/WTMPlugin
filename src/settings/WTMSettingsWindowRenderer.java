@@ -20,8 +20,8 @@ import javax.swing.*;
  */
 public class WTMSettingsWindowRenderer implements SearchableConfigurable {
 
-    private WTMSettingsWindow settingsComponent;
     public final WTMSettings wtmSettings;
+    private WTMSettingsWindow settingsComponent;
     private Project project;
 
     public WTMSettingsWindowRenderer(@NotNull Project project) {
@@ -46,6 +46,8 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable {
     @Override
     public JComponent createComponent() {
         settingsComponent = new WTMSettingsWindow(project);
+        settingsComponent.railTestConnectionButtonClickedAction(project, settingsComponent);
+        settingsComponent.reset();
         return settingsComponent;
     }
 
@@ -70,5 +72,10 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable {
     @Override
     public void reset() {
         settingsComponent.reset();
+    }
+
+    @Override
+    public void disposeUIResources() {
+        WTMSettingsWindow.getInstance(project).dispose();
     }
 }

@@ -1,15 +1,18 @@
 package view;
 
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindowManager;
 import exceptions.AuthorizationException;
 import model.CredentialsData;
-import model.jira.JiraConnection;
 import model.testrail.RailConnection;
+import settings.WTMSettings;
 
 import javax.swing.*;
 import java.util.NoSuchElementException;
 
-public class WTMSettingsWindow extends WindowPanelAbstract implements CredentialsData {
+public class WTMSettingsWindow extends WindowPanelAbstract implements CredentialsData,Disposable {
     private JPanel mainPanel;
     private JTabbedPane tabbedPane1;
     private JTextField railUrlTextField;
@@ -17,18 +20,61 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Credential
     private JTextField railUserNameTextField;
     private JButton railTestConnectionButton;
     private JTextPane railDebugTextPane;
-    //Jira  tab fields
+
+    //TODO add new settings window for Jira tab fields
     private JTextField jiraUrlTextField;
     private JTextField jiraUserNameTextField;
     private JPasswordField jiraPasswordField;
     private JButton jiraTestConnectionButton;
     private JTextPane jiraDebugTextPane;
 
+    private Project project;
+
     public WTMSettingsWindow(Project project) {
         super(project);
+        this.project = project;
         setContent(mainPanel);
-        railTestConnectionButtonClickedAction(project);
-        jiraTestconnectionButtonClickedActuion(project);
+    }
+
+    public JTextField getRailUrlTextField() {
+
+        return railUrlTextField;
+    }
+
+    public JPasswordField getRailPasswordField() {
+        return railPasswordField;
+    }
+
+    public JTextField getRailUserNameTextField() {
+        return railUserNameTextField;
+    }
+
+    public JButton getRailTestConnectionButton() {
+        return railTestConnectionButton;
+    }
+
+    public JTextPane getRailDebugTextPane() {
+        return railDebugTextPane;
+    }
+
+    public JTextField getJiraUrlTextField() {
+        return jiraUrlTextField;
+    }
+
+    public JTextField getJiraUserNameTextField() {
+        return jiraUserNameTextField;
+    }
+
+    public JPasswordField getJiraPasswordField() {
+        return jiraPasswordField;
+    }
+
+    public JButton getJiraTestConnectionButton() {
+        return jiraTestConnectionButton;
+    }
+
+    public JTextPane getJiraDebugTextPane() {
+        return jiraDebugTextPane;
     }
 
     public void setSettings() {
@@ -41,14 +87,19 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Credential
         settings.setJiraUrl(jiraUrlTextField.getText());
     }
 
+    public static WTMSettingsWindow getInstance(Project project) {
+        return ServiceManager.getService(project, WTMSettingsWindow.class);
+    }
+
+    @Override
+    public void dispose() {
+        ToolWindowManager.getInstance(project).unregisterToolWindow(this.getName());
+    }
+
     public boolean isModified() {
         return !railUserNameTextField.getText().equals(settings.getRailUserName())
                 || railPasswordField.getPassword() != settings.getRailPassword().toCharArray()
-                || !railUrlTextField.getText().equals(settings.getRailUrl())
-
-                || !jiraUrlTextField.getText().equals(settings.getJiraUrl())
-                || jiraPasswordField.getPassword() != settings.getJiraPassword().toCharArray()
-                || !jiraUserNameTextField.getText().equals(settings.getJiraUserName());
+                || !railUrlTextField.getText().equals(settings.getRailUrl());
     }
 
     public void reset() {
@@ -61,22 +112,29 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Credential
         jiraUserNameTextField.setText(settings.getJiraUserName());
     }
 
-    private void railTestConnectionButtonClickedAction(Project project) {
-        railTestConnectionButton.addActionListener(listener ->
-                {
-                    RailConnection.getInstance(project).login(settings).projects();
+    public void railTestConnectionButtonClickedAction(Project project, WTMSettingsWindow component) {
+        if (isModified()) {
+            railTestConnectionButton.addActionListener(listener ->
+            {
+                try {
+                    RailConnection.getInstance(project).login(component);
+                } catch (AuthorizationException e) {
+                    railDebugTextPane.setText(e.getMessage());
                 }
-        );
+            });
+        } else {
+            railTestConnectionButton.addActionListener(listener -> {
+                try {
+                    RailConnection.getInstance(project).login(settings);
+                } catch (AuthorizationException e) {
+                    railDebugTextPane.setText(e.getMessage());
+                }
+            });
+        }
     }
 
-    private void jiraTestconnectionButtonClickedActuion(Project project) {
-        jiraTestConnectionButton.addActionListener(listener -> {
-            try {
-                JiraConnection.getInstance(project).login(settings, this);
-            } catch (AuthorizationException e) {
-                jiraDebugTextPane.setText(e.getMessage());
-            }
-        });
+    public void jiraTestConnectionButtonClickedAction(Project project) {
+        return;
     }
 
     @Override

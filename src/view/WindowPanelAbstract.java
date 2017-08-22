@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import settings.WTMSettings;
 
-abstract class WindowPanelAbstract extends SimpleToolWindowPanel {
+public abstract class WindowPanelAbstract extends SimpleToolWindowPanel {
     settings.WTMSettings settings;
 
     WindowPanelAbstract(Project project) {

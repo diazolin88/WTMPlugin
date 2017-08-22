@@ -1,7 +1,9 @@
 package model;
 
+import com.intellij.openapi.components.PersistentStateComponent;
 import exceptions.AuthorizationException;
 import settings.WTMSettings;
+import view.WindowPanelAbstract;
 
 import javax.swing.*;
 
@@ -10,7 +12,7 @@ import javax.swing.*;
  *
  * @param <T> Type of something.
  */
-@FunctionalInterface
-public interface TMConnectable<T> {
-    T login(WTMSettings state, JComponent component) throws AuthorizationException;
+public abstract class TMConnectable<T> {
+    public abstract T login(PersistentStateComponent state) throws AuthorizationException;
+    public abstract T login(WindowPanelAbstract component) throws AuthorizationException;
 }
