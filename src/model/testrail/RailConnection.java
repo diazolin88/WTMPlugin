@@ -28,7 +28,7 @@ public final class RailConnection {
 
     public TestRail login(WTMSettingsWindow window) throws AuthorizationException {
         try {
-            TestRail testRail = TestRail.builder(window.getRailUrlTextField().getText(), window.getRailUserNameTextField().getText(), window.getRailPasswordField().getPassword().toString()).build();
+            TestRail testRail = TestRail.builder(window.getRailUrlTextField().getText(), window.getRailUserNameTextField().getText(), String.valueOf(window.getRailPasswordField().getPassword())).build();
             testRail.projects().list().execute();
             return testRail;
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package settings;
 
+import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
@@ -18,7 +19,7 @@ import javax.swing.*;
  * Following line should be added to plugin.xml
  * <applicationConfigurable groupId="tools" displayName="Single File Execution Plugin" id="preferences.SingleFileExecutionConfigurable" instance="settings.WTMSettings" />
  */
-public class WTMSettingsWindowRenderer implements SearchableConfigurable {
+public class WTMSettingsWindowRenderer implements SearchableConfigurable,ProjectComponent {
 
     public final WTMSettings wtmSettings;
     private WTMSettingsWindow settingsComponent;
@@ -31,7 +32,6 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable {
     }
 
     @NotNull
-    @Override
     public String getId() {
         return settingsComponent.getUIClassID();
     }
@@ -45,9 +45,10 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        settingsComponent = new WTMSettingsWindow(project);
-        settingsComponent.railTestConnectionButtonClickedAction(project, settingsComponent);
-        settingsComponent.reset();
+        if (settingsComponent == null) {
+            settingsComponent = new WTMSettingsWindow(project);
+            settingsComponent.railTestConnectionButtonClickedAction(project, settingsComponent);
+        }
         return settingsComponent;
     }
 
