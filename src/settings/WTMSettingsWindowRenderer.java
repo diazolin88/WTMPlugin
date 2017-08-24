@@ -47,7 +47,7 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable,Project
     public JComponent createComponent() {
         if (settingsComponent == null) {
             settingsComponent = new WTMSettingsWindow(project);
-            settingsComponent.railTestConnectionButtonClickedAction(project, settingsComponent);
+            settingsComponent.railTestConnectionButtonClickedAction(project);
         }
         return settingsComponent;
     }

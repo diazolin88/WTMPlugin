@@ -35,4 +35,13 @@ public final class RailConnection {
             throw new AuthorizationException("Unable to login due to invalid login data or url");
         }
     }
+
+    public boolean isLoggedIn(WTMSettings settings){
+        try {
+            login(settings);
+            return true;
+        } catch (AuthorizationException e) {
+            return false;
+        }
+    }
 }

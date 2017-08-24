@@ -71,9 +71,8 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
     }
 
     public boolean isModified() {
-        return mainPanel.isDisplayable() &&
-                !railUserNameTextField.getText().equals(settings.getRailUserName())
-                || String.valueOf(railPasswordField.getPassword()).equals(settings.getRailPassword())
+                return !railUserNameTextField.getText().equals(settings.getRailUserName())
+                || !String.valueOf(railPasswordField.getPassword()).equals(settings.getRailPassword())
                 || !railUrlTextField.getText().equals(settings.getRailUrl());
     }
 
@@ -83,19 +82,18 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         railUrlTextField.setText(settings.getRailUrl());
     }
 
-    public void railTestConnectionButtonClickedAction(Project project, WTMSettingsWindow component) {
-         if (isModified()) {
+    public void railTestConnectionButtonClickedAction(Project project) {
             railTestConnectionButton.addActionListener(listener ->
             {
                 try {
-                    RailConnection.getInstance(project).login(component);
+                    RailConnection.getInstance(project).login(this);
+                    railDebugTextPane.setForeground(JBColor.GREEN);
                     railDebugTextPane.setText("Connected!");
                 } catch (AuthorizationException e) {
                     railDebugTextPane.setForeground(JBColor.RED);
                     railDebugTextPane.setText(e.getMessage());
                 }
             });
-        }
     }
 
 
