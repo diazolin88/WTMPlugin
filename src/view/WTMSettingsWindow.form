@@ -99,7 +99,6 @@
                 <properties>
                   <editable value="false"/>
                   <font name="Courier New" style="0"/>
-                  <foreground color="-16728272"/>
                   <text value=""/>
                 </properties>
               </component>

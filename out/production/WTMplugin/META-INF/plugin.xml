@@ -29,15 +29,21 @@
     <projectService serviceInterface="settings.WTMSettings" serviceImplementation="settings.WTMSettings"/>
     <projectService serviceInterface="model.testrail.RailConnection" serviceImplementation="model.testrail.RailConnection"/>
     <projectService serviceInterface="view.WTMSettingsWindow" serviceImplementation="view.WTMSettingsWindow"/>
+    <projectService serviceInterface="view.TestRailWindow" serviceImplementation="view.TestRailWindow"/>
+    <projectService serviceInterface="plugincomponents.WTMPluginComponent" serviceImplementation="plugincomponents.WTMPluginComponent"/>
 
-    <toolWindow id="WTMPlugin" icon="/files/icons/Untitled.png" anchor="left" factoryClass="myPackage.MyToolWindowFactory"/>
-    <!--<toolWindow id="Failed test case" icon="/files/icons/Untitled.png" anchor="right" factoryClass="myPackage.TestRunnerToolWindowFactory"/>-->
+    <toolWindow id="WTMPlugin" icon="/files/icons/house.ico" anchor="left" factoryClass="toolwindow.MyToolWindowFactory"/>
+    <!--<toolWindow id="Failed test case" icon="/files/icons/Untitled.png" anchor="right" factoryClass="toolwindow.TestRunnerToolWindowFactory"/>-->
 
    <!-- Add your extensions here -->
   </extensions>
 
   <actions>
     <!-- Add your actions here -->
+    <group id="WTMplugin_group" text="name" description="name"/>
+    <action id="actions.OpenRailSettingsWindowAction" class="actions.OpenRailSettingsWindowAction" text="name" description="name" icon="/files/icons/house.ico">
+      <add-to-group group-id="WTMplugin_group"/>
+    </action>
 
   </actions>
 
@@ -46,5 +52,8 @@
   </application-components>
   <project-components>
 
+    <component>
+      <implementation-class>plugincomponents.WTMPluginComponent</implementation-class>
+    </component>
   </project-components>
 </idea-plugin>

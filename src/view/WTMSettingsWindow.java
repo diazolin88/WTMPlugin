@@ -31,7 +31,9 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
     public WTMSettingsWindow(Project project) {
         super(project);
         this.project = project;
+        railTestConnectionButtonClickedAction(project);
         setContent(mainPanel);
+
     }
 
     public JTextField getRailUrlTextField() {
@@ -46,11 +48,14 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
     public JTextField getRailUserNameTextField() {
         return railUserNameTextField;
     }
-
+    //Mb need to remove
+    @Deprecated
     public JButton getRailTestConnectionButton() {
         return railTestConnectionButton;
     }
 
+    //Mb need to remove
+    @Deprecated
     public JTextPane getRailDebugTextPane() {
         return railDebugTextPane;
     }
@@ -82,7 +87,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         railUrlTextField.setText(settings.getRailUrl());
     }
 
-    public void railTestConnectionButtonClickedAction(Project project) {
+    private void railTestConnectionButtonClickedAction(Project project) {
             railTestConnectionButton.addActionListener(listener ->
             {
                 try {
