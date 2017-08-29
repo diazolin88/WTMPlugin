@@ -33,4 +33,8 @@ public final class RailClient {
         List<CaseField> caseFieldList = this.client.caseFields().list().execute();
         return this.client.cases().list(projectId, suiteId, caseFieldList).execute();
     }
+
+    public List<Section> getSections(int projectID, int suiteID){
+        return this.client.sections().list(projectID,suiteID).execute();
+    }
 }

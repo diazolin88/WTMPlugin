@@ -45,7 +45,7 @@ public class GuiUtil {
 
     public static void runInSwingThread(Runnable runnable) {
         Application application = ApplicationManager.getApplication();
-        if (!application.isDispatchThread()) {
+        if (application.isDispatchThread()) {
             runnable.run();
         } else {
             application.executeOnPooledThread(runnable);

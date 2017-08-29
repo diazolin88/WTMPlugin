@@ -11,6 +11,9 @@ import model.testrail.RailConnection;
 import settings.WTMSettings;
 import view.TestRailWindow;
 
+import static utils.ComponentUtil.disableComponent;
+import static utils.ComponentUtil.makeInvisible;
+
 
 public class MyToolWindowFactory implements ToolWindowFactory {
     private TestRailWindow testRailWindow;
@@ -29,19 +32,10 @@ public class MyToolWindowFactory implements ToolWindowFactory {
         toolWindow.getContentManager().addContent(content);
 
         //Render default items
-        client.getProjectList()
-                .forEach(var -> testRailWindow.getProjectCB().addItem(var.getName()));
-
-        client.getSuitesList((String) testRailWindow.getProjectCB().getSelectedItem())
-                .forEach(var1 -> testRailWindow.getSuitesCB().addItem(var1.getName()));
-
-        //Add listeners
-        testRailWindow.setProjectSelectedItemAction(client);
-        //TODO
-        testRailWindow.setSuiteSelectedItemAction(client);
+        testRailWindow.getProjectCB().addItem("Select project...");
+        client.getProjectList().forEach(var -> testRailWindow.getProjectCB().addItem(var.getName()));
+        disableComponent(testRailWindow.getSuitesCB());
     }
-
-
 
 
     public void init(ToolWindow window) {
