@@ -2,13 +2,20 @@ package model.testrail;
 
 import com.codepine.api.testrail.TestRail;
 import com.codepine.api.testrail.model.*;
+import utils.ToolWindowData;
 
 import java.util.List;
 
 public final class RailClient {
    private TestRail client;
+   private ToolWindowData data;
 
     public RailClient(TestRail client){
+        this.client = client;
+    }
+
+    public RailClient(TestRail client, ToolWindowData data){
+        this.data = data;
         this.client = client;
     }
 

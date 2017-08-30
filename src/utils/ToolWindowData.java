@@ -1,0 +1,46 @@
+package utils;
+
+import com.codepine.api.testrail.model.Suite;
+import model.testrail.RailClient;
+import model.testrail.RailConnection;
+
+/**
+ * This class should present current selected values in window
+ *
+ * */
+public class ToolWindowData {
+    private String suiteName;
+    private String projectName;
+    private RailClient client;
+
+    public ToolWindowData(String suiteName, String projectName, RailClient client) {
+        this.suiteName = suiteName;
+        this.projectName = projectName;
+        this.client = client;
+    }
+
+    public String getSuiteName() {
+        return suiteName;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public Integer getProjectId() {
+        return client.getProjectList().stream()
+                .filter(project1 -> project1.getName().equals(projectName))
+                .map(com.codepine.api.testrail.model.Project::getId)
+                .findFirst().orElse(null);
+
+    }
+
+    public Integer getSuiteId() {
+        return client.getSuitesList(projectName)
+                .stream()
+                .filter(suite -> suite.getName().equals(suiteName))
+                .map(Suite::getId)
+                .findFirst().orElse(null);
+    }
+
+}

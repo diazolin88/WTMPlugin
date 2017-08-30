@@ -15,7 +15,7 @@ import static utils.ComponentUtil.disableComponent;
 import static utils.ComponentUtil.makeInvisible;
 
 
-public class MyToolWindowFactory implements ToolWindowFactory {
+public class WTMToolWindowFactory implements ToolWindowFactory {
     private TestRailWindow testRailWindow;
     private RailConnection railConnection;
     private WTMSettings settings;

@@ -8,9 +8,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import exceptions.AuthorizationException;
-import model.testrail.RailClient;
 import model.testrail.RailConnection;
 import org.jetbrains.annotations.NotNull;
 import settings.WTMSettings;
@@ -20,6 +18,7 @@ public class WTMPluginComponent implements ProjectComponent {
     private static final NotificationGroup GROUP_DISPLAY_ID_INFO = new NotificationGroup("WTMplugin_group", NotificationDisplayType.STICKY_BALLOON, true);
     private RailConnection conn;
     private WTMSettings settings;
+    private Project project;
 
     public WTMPluginComponent(Project project) {
         conn = RailConnection.getInstance(project);
@@ -35,6 +34,10 @@ public class WTMPluginComponent implements ProjectComponent {
         }
     }
 
+    public void projectClosed(){
+        //TODO add logic when project get closed.
+    }
+
     private void showMyMessage() {
         ApplicationManager.getApplication().invokeLater(() -> {
             com.intellij.notification.Notification notification = GROUP_DISPLAY_ID_INFO
@@ -44,12 +47,11 @@ public class WTMPluginComponent implements ProjectComponent {
                         @Override
                         public void actionPerformed(@NotNull AnActionEvent anActionEvent, @NotNull Notification notification) {
                             DataContext dataContext = anActionEvent.getDataContext();
-                            Project project = PlatformDataKeys.PROJECT.getData(dataContext);
+                            project = PlatformDataKeys.PROJECT.getData(dataContext);
                             ShowSettingsUtil.getInstance().showSettingsDialog(project, WTMSettingsWindowRenderer.class);
                         }
                     });
-            Project[] projects = ProjectManager.getInstance().getOpenProjects();
-            Notifications.Bus.notify(notification, projects[0]);
+            Notifications.Bus.notify(notification, project);
         });
     }
 }

@@ -32,7 +32,7 @@
     <projectService serviceInterface="view.TestRailWindow" serviceImplementation="view.TestRailWindow"/>
     <projectService serviceInterface="plugincomponents.WTMPluginComponent" serviceImplementation="plugincomponents.WTMPluginComponent"/>
 
-    <toolWindow id="WTMPlugin" icon="/files/icons/house.ico" anchor="left" factoryClass="toolwindow.MyToolWindowFactory"/>
+    <toolWindow id="WTMPlugin" icon="/files/icons/Untitled.png" anchor="left" factoryClass="toolwindow.WTMToolWindowFactory"/>
     <!--<toolWindow id="Failed test case" icon="/files/icons/Untitled.png" anchor="right" factoryClass="toolwindow.TestRunnerToolWindowFactory"/>-->
 
    <!-- Add your extensions here -->
@@ -40,11 +40,6 @@
 
   <actions>
     <!-- Add your actions here -->
-    <group id="WTMplugin_group" text="name" description="name"/>
-    <action id="actions.OpenRailSettingsWindowAction" class="actions.OpenRailSettingsWindowAction" text="name" description="name" icon="/files/icons/house.ico">
-      <add-to-group group-id="WTMplugin_group"/>
-    </action>
-
   </actions>
 
   <application-components>

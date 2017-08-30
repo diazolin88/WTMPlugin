@@ -29,7 +29,7 @@ import java.net.URL;
 
 public class GuiUtil {
 
-    private static final String ICON_FOLDER = "files/icons/";
+    private static final String ICON_FOLDER = "/files/icons/";
 
     private GuiUtil() {
     }

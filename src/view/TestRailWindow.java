@@ -6,17 +6,25 @@ import com.codepine.api.testrail.model.Suite;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.TreeSpeedSearch;
+import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.containers.Convertor;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
-import treerenderer.TreeCustom;
+import model.treerenderer.PackageCustom;
+import model.treerenderer.RootCustom;
+import model.treerenderer.TreeRenderer;
 import utils.GuiUtil;
+import utils.ToolWindowData;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.event.ItemEvent;
-import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
@@ -31,15 +39,17 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JScrollPane scroll;
     private JPanel treePanel;
     private RailClient client;
-    DefaultMutableTreeNode parent;
+    private ToolWindowData data;
+
     public TestRailWindow(Project project) {
         super(project);
         this.project = project;
         client = new RailClient(RailConnection.getInstance(project).getClient());
         setContent(panel1);
+        sectionsTree.setCellRenderer(new TreeRenderer());
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
-    }
+     }
 
     public static TestRailWindow getInstance(Project project) {
         return ServiceManager.getService(project, TestRailWindow.class);
@@ -92,104 +102,61 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     String selectedProject = (String) projectCB.getSelectedItem();
                     if (!selectedProject.equals("Select project...")) {
                         getSuitesCB().removeAllItems();
+                        getSuitesCB().addItem("Select your suite...");
                         client.getSuitesList(selectedProject)
                                 .forEach(suite -> getSuitesCB().addItem(suite.getName()));
                         enableComponent(this.suitesCB);
+                    } else {
+                        getSuitesCB().removeAllItems();
                     }
                 });
             }
         });
     }
 
-    public void setSuiteSelectedItemAction() {
-
-        suitesCB.addActionListener(e -> {
-            GuiUtil.runInSeparateThread(() -> {
-                makeInvisible(this.sectionsTree);
-                disableComponent(this.suitesCB);
-                TreeCustom tree = buildTree();
-
-                DefaultMutableTreeNode root = new DefaultMutableTreeNode(this.suitesCB.getSelectedItem());
-                DefaultTreeModel model = new DefaultTreeModel(root);
-
-                for (TreeCustom section : tree.getChildren()) {
-                    if (section.getParent() == null) {
-                        parent = new DefaultMutableTreeNode(section.getName());
-                    }
-                    DefaultMutableTreeNode finalSection = parent;
-                    section.getCases()
-                            .stream()
-                            .filter(aCase -> aCase.getSectionId() == section.getId())
-                            .forEach(aCase -> finalSection.add(new DefaultMutableTreeNode(aCase.getTitle())));
-                    root.add(parent);
-                }
-                this.sectionsTree.setModel(model);
-                scroll.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
-
-                enableComponent(suitesCB);
-                makeVisible(this.sectionsTree);
-            });
+    public void setSectionsTreeAction(){
+        sectionsTree.addTreeSelectionListener(e -> {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionsTree.getLastSelectedPathComponent();
+            node.getUserObject();
         });
-
     }
 
-    private Integer getProjectId(String projectName) {
-        try {
-            return client.getProjectList().stream()
-                    .filter(project1 -> project1.getName().equals(projectName))
-                    .map(com.codepine.api.testrail.model.Project::getId)
-                    .findFirst().get();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
-    }
+    public void setSuiteSelectedItemAction() {
+        suitesCB.addActionListener(e -> {
+            //Set data to use in every other cases
+            data = new ToolWindowData((String) suitesCB.getSelectedItem(), (String) projectCB.getSelectedItem(), client);
+            String selectedSuite = (String) suitesCB.getSelectedItem();
+            if (selectedSuite != null && !selectedSuite.equals("Select your suite...")) {
 
-    private Integer getSuiteId(String projectName, String suiteName) {
-        try {
-            return client.getSuitesList(projectName)
-                    .stream()
-                    .filter(suite -> suite.getName().equals(suiteName))
-                    .map(Suite::getId)
-                    .findFirst().get();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
+                GuiUtil.runInSeparateThread(() -> {
+                    disableComponent(this.suitesCB);
+                    disableComponent(this.projectCB);
+                    //TODO start here
+                    DefaultMutableTreeNode root = new DefaultMutableTreeNode(new RootCustom((String)suitesCB.getSelectedItem()));
+
+                    for(Section section : client.getSections(data.getProjectId(),data.getSuiteId())){
+                        if(null == section.getParentId()) {
+                            DefaultMutableTreeNode rootChild = new DefaultMutableTreeNode(new PackageCustom(section));
+                            root.add(rootChild);
+                        }
+                    }
+                    sectionsTree.setModel(new DefaultTreeModel(root));
+                    //TODO end here
+
+                    enableComponent(projectCB);
+                    enableComponent(suitesCB);
+                    makeVisible(this.sectionsTree);
+                });
+            } else {
+                makeInvisible(this.sectionsTree);
+            }
+        });
     }
 
     private Integer getParentSection(int sectionID, int projectID, int suiteId) {
-        try {
-            return client.getSections(projectID, suiteId).stream()
-                    .map(Section::getParentId)
-                    .findFirst().get();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
+        return client.getSections(projectID, suiteId).stream()
+                .map(Section::getParentId)
+                .findFirst().orElse(null);
     }
 
-    private TreeCustom buildTree() {
-        int projectID = getProjectId((String) projectCB.getSelectedItem());
-        int suiteID = getSuiteId((String) projectCB.getSelectedItem(),(String) suitesCB.getSelectedItem());
-
-        java.util.List<Section> sections = client.getSections(projectID, suiteID);
-        TreeCustom root = new TreeCustom(null);
-        java.util.List<Case> cases = client.getCases(projectID, suiteID);
-        for (Section section : sections) {
-            if (null == section.getParentId()) {
-                TreeCustom parent = new TreeCustom(root);
-                parent.setCases(cases.stream().filter(aCase -> aCase.getSectionId() == section.getId()).collect(Collectors.toList()));
-                parent.setName(section.getName());
-                parent.setId(section.getId());
-                root.addChildren(parent);
-            }
-            if(null != section.getParentId()){
-                TreeCustom parentOfChild = root.getChildrenById(section.getParentId());
-                TreeCustom child = new TreeCustom(parentOfChild);
-                child.setCases(cases.stream().filter(aCase -> aCase.getSectionId() == section.getId()).collect(Collectors.toList()));
-                child.setName(section.getName());
-                child.setId(section.getId());
-                parentOfChild.addChildren(child);
-            }
-        }
-        return root;
-    }
 }
