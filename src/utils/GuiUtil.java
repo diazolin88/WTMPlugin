@@ -27,7 +27,7 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.*;
 import java.net.URL;
 
-public class GuiUtil {
+public final class GuiUtil {
 
     private static final String ICON_FOLDER = "/files/icons/";
 

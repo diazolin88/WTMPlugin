@@ -2,7 +2,7 @@ package utils;
 
 import javax.swing.*;
 
-public class ComponentUtil {
+public final class ComponentUtil {
     private ComponentUtil(){}
 
     public static void disableComponent(JComponent component){
