@@ -10,6 +10,7 @@ import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.containers.Convertor;
+import model.OurSection;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
 import model.treerenderer.PackageCustom;
@@ -35,9 +36,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JPanel panel1;
     private JComboBox projectCB;
     private JComboBox suitesCB;
-    private Tree sectionsTree;
+    private Tree sectionTree;
     private JScrollPane scroll;
-    private JTabbedPane tabbedPane1;
     private JPanel treePanel;
     private RailClient client;
     private ToolWindowData data;
@@ -47,10 +47,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         this.project = project;
         client = new RailClient(RailConnection.getInstance(project).getClient());
         setContent(panel1);
-        sectionsTree.setCellRenderer(new TreeRenderer());
+        sectionTree.setCellRenderer(new TreeRenderer());
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
-        setContent(panel1);
     }
 
     public static TestRailWindow getInstance(Project project) {
@@ -100,7 +99,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 disableComponent(this.suitesCB);
                 GuiUtil.runInSeparateThread(() -> {
-                    makeInvisible(sectionsTree);
+                    makeInvisible(sectionTree);
                     String selectedProject = (String) projectCB.getSelectedItem();
                     if (!selectedProject.equals("Select project...")) {
                         getSuitesCB().removeAllItems();
@@ -117,8 +116,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     public void setSectionsTreeAction() {
-        sectionsTree.addTreeSelectionListener(e -> {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionsTree.getLastSelectedPathComponent();
+        sectionTree.addTreeSelectionListener(e -> {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
             node.getUserObject();
         });
     }
@@ -131,13 +130,14 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             if (selectedSuite != null && !selectedSuite.equals("Select your suite...")) {
 
                 GuiUtil.runInSeparateThread(() -> {
+                    // TODO: view layer.
                     disableComponent(this.suitesCB);
                     disableComponent(this.projectCB);
+
                     //TODO start here
                     OurSection rootSection = new OurSection();
                     rootSection.setId(null);
                     rootSection.setName((String) suitesCB.getSelectedItem()); // TODO: bad code -> need refactor
-                    DefaultMutableTreeNode root = new DefaultMutableTreeNode(new RootCustom((String) suitesCB.getSelectedItem()));
 
                     List<Section> sectionList = client.getSections(data.getProjectId(), data.getSuiteId());
                     inflateOurSection(sectionList, null, rootSection);
@@ -156,13 +156,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 //                    }
 //
 
-                    sectionsTree.setModel(new DefaultTreeModel(root));
-                    for (Section section : client.getSections(data.getProjectId(), data.getSuiteId())) {
-                        if (null == section.getParentId()) {
-                            DefaultMutableTreeNode rootChild = new DefaultMutableTreeNode(new PackageCustom(section));
-                            root.add(rootChild);
-                        }
-                    }
                     sectionTree.setModel(new DefaultTreeModel(root));
                     //TODO end here
 
@@ -188,12 +181,31 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         }
     }
 
-    private List<Section> getChildren(Section parent) {
-        return client.getSections(data.getProjectId(), data.getSuiteId())
-                .stream()
-                .filter(section -> null != section.getParentId())
-                .filter(section1 -> parent.getId() == section1.getParentId())
-                .collect(Collectors.toList());
-    }
+    private void inflateOurSection(List<Section> sectionList, Integer parentId, OurSection rootSection) {
+        for (Section section : sectionList) {
 
+            if (parentId == null) {
+                if (section.getParentId() == parentId) {
+                    OurSection ourSection = new OurSection();
+                    ourSection.setId(section.getId());
+                    ourSection.setName(section.getName());
+
+                    rootSection.addSubSection(ourSection);
+                    inflateOurSection(sectionList, ourSection.getId(), ourSection);
+                }
+            }
+            if (parentId != null) {
+                if (section.getParentId() != null) {
+                    if (section.getParentId().equals(parentId)) {
+                        OurSection ourSection = new OurSection();
+                        ourSection.setId(section.getId());
+                        ourSection.setName(section.getName());
+
+                        rootSection.addSubSection(ourSection);
+                        inflateOurSection(sectionList, ourSection.getId(), ourSection);
+                    }
+                }
+            }
+        }
+    }
 }
