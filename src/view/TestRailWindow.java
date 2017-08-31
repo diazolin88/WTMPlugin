@@ -1,19 +1,14 @@
 package view;
 
-import com.codepine.api.testrail.model.Case;
 import com.codepine.api.testrail.model.Section;
-import com.codepine.api.testrail.model.Suite;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.TreeSpeedSearch;
-import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.ui.treeStructure.Tree;
-import com.intellij.util.containers.Convertor;
-import model.OurSection;
+import model.OurSectionInflator;
+import model.treerenderer.OurSection;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
-import model.treerenderer.PackageCustom;
 import model.treerenderer.RootCustom;
 import model.treerenderer.TreeRenderer;
 import utils.GuiUtil;
@@ -22,13 +17,9 @@ import utils.ToolWindowData;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 import java.awt.event.ItemEvent;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static utils.ComponentUtil.*;
 
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
@@ -46,8 +37,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         super(project);
         this.project = project;
         client = new RailClient(RailConnection.getInstance(project).getClient());
+
         setContent(panel1);
         sectionTree.setCellRenderer(new TreeRenderer());
+
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
     }
@@ -56,41 +49,16 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return ServiceManager.getService(project, TestRailWindow.class);
     }
 
-    public JPanel getTreePanel() {
-        return treePanel;
-    }
-
-    public void setTreePanel(JPanel treePanel) {
-        this.treePanel = treePanel;
-    }
-
-    public JPanel getPanel1() {
-        return panel1;
-    }
-
-    public void setPanel1(JPanel panel1) {
-        this.panel1 = panel1;
-    }
-
     public JComboBox getProjectCB() {
         return projectCB;
-    }
-
-    public void setProjectCB(JComboBox projectCB) {
-        this.projectCB = projectCB;
     }
 
     public JComboBox getSuitesCB() {
         return suitesCB;
     }
 
-    public void setSuitesCB(JComboBox suitesCB) {
-        this.suitesCB = suitesCB;
-    }
-
     @Override
     public void dispose() {
-
     }
 
     @SuppressWarnings("unchecked")
@@ -115,12 +83,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    public void setSectionsTreeAction() {
-        sectionTree.addTreeSelectionListener(e -> {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
-            node.getUserObject();
-        });
-    }
+//    public void setSectionsTreeAction() {
+//        sectionTree.addTreeSelectionListener(e -> {
+//            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
+//            node.getUserObject();
+//        });
+//    }
 
     public void setSuiteSelectedItemAction() {
         suitesCB.addActionListener(e -> {
@@ -134,20 +102,21 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     disableComponent(this.suitesCB);
                     disableComponent(this.projectCB);
 
-                    //TODO start here
+                    // Create root node.
                     OurSection rootSection = new OurSection();
                     rootSection.setId(null);
                     rootSection.setName((String) suitesCB.getSelectedItem()); // TODO: bad code -> need refactor
 
+                    // Inflates root section.
                     List<Section> sectionList = client.getSections(data.getProjectId(), data.getSuiteId());
-                    inflateOurSection(sectionList, null, rootSection);
+                    OurSectionInflator.inflateOurSection(sectionList, null, rootSection);
 
-
+                    // Draw one node.
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode(new RootCustom(rootSection.getName()));
+                    // Draw tree.
                     showTree(rootSection, root);
 
                     sectionTree.setModel(new DefaultTreeModel(root));
-                    //TODO end here
 
                     enableComponent(projectCB);
                     enableComponent(suitesCB);
@@ -168,35 +137,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             root.add(subSection);
 
             showTree(ourSection, subSection);
-        }
-    }
-
-    private void inflateOurSection(List<Section> sectionList, Integer parentId, OurSection rootSection) {
-        for (Section section : sectionList) {
-
-            if (parentId == null) {
-                if (section.getParentId() == parentId) {
-                    OurSection ourSection = new OurSection();
-                    ourSection.setId(section.getId());
-                    ourSection.setName(section.getName());
-                    //TODO ourSection.addCases(client.getCasesById())
-
-                    rootSection.addSubSection(ourSection);
-                    inflateOurSection(sectionList, ourSection.getId(), ourSection);
-                }
-            }
-            if (parentId != null) {
-                if (section.getParentId() != null) {
-                    if (section.getParentId().equals(parentId)) {
-                        OurSection ourSection = new OurSection();
-                        ourSection.setId(section.getId());
-                        ourSection.setName(section.getName());
-
-                        rootSection.addSubSection(ourSection);
-                        inflateOurSection(sectionList, ourSection.getId(), ourSection);
-                    }
-                }
-            }
         }
     }
 }
