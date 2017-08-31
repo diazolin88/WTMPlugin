@@ -1,4 +1,4 @@
-package model;
+package model.treerenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,5 +38,10 @@ public class OurSection {
 
     public void addSubSection(OurSection section) {
         sectionList.add(section);
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

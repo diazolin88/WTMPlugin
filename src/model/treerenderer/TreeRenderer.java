@@ -18,17 +18,14 @@ public class TreeRenderer extends ColoredTreeCellRenderer {
 
         Object userObject = node.getUserObject();
 
-        if (userObject instanceof PackageCustom) {
-            PackageCustom pack = (PackageCustom) userObject;
+        if (userObject instanceof OurSection) {
+            OurSection pack = (OurSection) userObject;
             append(pack.getName());
             setIcon(PACKAGE_ICON);
         }else if( userObject instanceof CaseCustom){
             CaseCustom pack = (CaseCustom) userObject;
             append(pack.getName());
             setIcon(PACKAGE_ICON);
-        } else if (userObject instanceof RootCustom){
-            RootCustom pack = (RootCustom) userObject;
-            append(pack.getName());
             setIcon(GuiUtil.loadIcon("icon_TC.png"));
         }
     }
