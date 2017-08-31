@@ -29,7 +29,7 @@ public class TreeRenderer extends ColoredTreeCellRenderer {
         } else if (userObject instanceof RootCustom){
             RootCustom pack = (RootCustom) userObject;
             append(pack.getName());
-            setIcon(PACKAGE_ICON);
+            setIcon(GuiUtil.loadIcon("icon_TC.png"));
         }
     }
 }
