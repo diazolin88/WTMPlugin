@@ -17,7 +17,9 @@ import utils.ToolWindowData;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.net.URL;
 
 import static utils.ComponentUtil.*;
 
@@ -28,7 +30,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JComboBox suitesCB;
     private Tree sectionTree;
     private JScrollPane scroll;
-    private JPanel treePanel;
+    private JLabel loadingLabel;
     private RailClient client;
     private ToolWindowData data;
 
@@ -36,13 +38,13 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         super(project);
         this.project = project;
         client = new RailClient(RailConnection.getInstance(project).getClient());
-
+        makeInvisible(loadingLabel);
         setContent(panel1);
         sectionTree.setCellRenderer(new TreeRenderer());
 
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
-        setSectionsTreeAction();
+        //setSectionsTreeAction();
     }
 
     public static TestRailWindow getInstance(Project project) {
@@ -83,12 +85,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    private void setSectionsTreeAction() {
-        sectionTree.addTreeSelectionListener(e -> {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
-            node.getUserObject();
-        });
-    }
+//    private void setSectionsTreeAction() {
+//        sectionTree.addTreeSelectionListener(e -> {
+//            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
+//            node.getUserObject();
+//        });
+//    }
 
     private void setSuiteSelectedItemAction() {
         suitesCB.addActionListener(e -> {
@@ -101,7 +103,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     // TODO: view layer.
                     disableComponent(this.suitesCB);
                     disableComponent(this.projectCB);
-
+                    makeVisible(this.loadingLabel);
+                    makeInvisible(this.sectionTree);
                     // Create root node.
                     OurSection rootSection = new OurSection();
                     rootSection.setId(null);
@@ -122,6 +125,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                     enableComponent(this.projectCB);
                     enableComponent(this.suitesCB);
+                    makeVisible(this.sectionTree);
+                    makeInvisible(this.loadingLabel);
                     makeVisible(this.sectionTree);
                 });
             } else {
