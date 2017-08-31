@@ -146,16 +146,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode(new RootCustom(rootSection.getName()));
                     showTree(rootSection, root);
 
-//
-//
-//                    for(Section section :sectionList){
-//                        if(null == section.getParentId()) {
-//                            DefaultMutableTreeNode rootChild = new DefaultMutableTreeNode(new PackageCustom(section));
-//                            root.add(rootChild);
-//                        }
-//                    }
-//
-
                     sectionTree.setModel(new DefaultTreeModel(root));
                     //TODO end here
 
@@ -189,6 +179,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     OurSection ourSection = new OurSection();
                     ourSection.setId(section.getId());
                     ourSection.setName(section.getName());
+                    //TODO ourSection.addCases(client.getCasesById())
 
                     rootSection.addSubSection(ourSection);
                     inflateOurSection(sectionList, ourSection.getId(), ourSection);
