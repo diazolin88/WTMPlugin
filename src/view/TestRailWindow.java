@@ -1,6 +1,5 @@
 package view;
 
-import com.codepine.api.testrail.model.Section;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
@@ -9,15 +8,16 @@ import model.OurSectionInflator;
 import model.section.OurSection;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
+import model.treerenderer.CaseCustom;
 import model.treerenderer.TreeRenderer;
 import utils.GuiUtil;
+import utils.RailDataStorage;
 import utils.ToolWindowData;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.event.ItemEvent;
-import java.util.List;
 
 import static utils.ComponentUtil.*;
 
@@ -42,6 +42,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
+        setSectionsTreeAction();
     }
 
     public static TestRailWindow getInstance(Project project) {
@@ -61,7 +62,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     @SuppressWarnings("unchecked")
-    public void setProjectSelectedItemAction() {
+    private void setProjectSelectedItemAction() {
         projectCB.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 disableComponent(this.suitesCB);
@@ -82,18 +83,18 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-//    public void setSectionsTreeAction() {
-//        sectionTree.addTreeSelectionListener(e -> {
-//            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
-//            node.getUserObject();
-//        });
-//    }
+    private void setSectionsTreeAction() {
+        sectionTree.addTreeSelectionListener(e -> {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
+            node.getUserObject();
+        });
+    }
 
-    public void setSuiteSelectedItemAction() {
+    private void setSuiteSelectedItemAction() {
         suitesCB.addActionListener(e -> {
             //Set data to use in every other cases
-            data = new ToolWindowData((String) suitesCB.getSelectedItem(), (String) projectCB.getSelectedItem(), client);
-            String selectedSuite = (String) suitesCB.getSelectedItem();
+            data = new ToolWindowData((String) this.suitesCB.getSelectedItem(), (String) projectCB.getSelectedItem(), client);
+            String selectedSuite = (String) this.suitesCB.getSelectedItem();
             if (selectedSuite != null && !selectedSuite.equals("Select your suite...")) {
 
                 GuiUtil.runInSeparateThread(() -> {
@@ -104,11 +105,13 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     // Create root node.
                     OurSection rootSection = new OurSection();
                     rootSection.setId(null);
-                    rootSection.setName((String) suitesCB.getSelectedItem()); // TODO: bad code -> need refactor
+                    rootSection.setName(selectedSuite);
 
                     // Inflates root section.
-                    List<Section> sectionList = client.getSections(data.getProjectId(), data.getSuiteId());
-                    OurSectionInflator.inflateOurSection(sectionList, null, rootSection);
+                    RailDataStorage railData = new RailDataStorage()
+                            .setCases(client.getCases(data.getProjectId(), data.getSuiteId()))
+                            .setSections(client.getSections(data.getProjectId(), data.getSuiteId()));
+                    OurSectionInflator.inflateOurSection(railData, null, rootSection);
 
                     // Draw one node.
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootSection);
@@ -117,8 +120,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                     sectionTree.setModel(new DefaultTreeModel(root));
 
-                    enableComponent(projectCB);
-                    enableComponent(suitesCB);
+                    enableComponent(this.projectCB);
+                    enableComponent(this.suitesCB);
                     makeVisible(this.sectionTree);
                 });
             } else {
@@ -134,7 +137,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         for (OurSection ourSection : rootSection.getSectionList()) {
             DefaultMutableTreeNode subSection = new DefaultMutableTreeNode(ourSection);
             root.add(subSection);
-
+            ourSection.getCases()
+                    .forEach(testCase ->  {
+                        CaseCustom testCaseCustom = new CaseCustom(testCase.getTitle());
+                        testCaseCustom.setId(testCase.getId());
+                                subSection.add(new DefaultMutableTreeNode(testCaseCustom));
+                    });
             showTree(ourSection, subSection);
         }
     }
