@@ -1,7 +1,6 @@
-package model;
+package model.section;
 
 import com.codepine.api.testrail.model.Section;
-import model.treerenderer.OurSection;
 
 public class OurSectionAdapter {
 

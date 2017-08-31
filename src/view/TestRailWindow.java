@@ -6,7 +6,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
 import model.OurSectionInflator;
-import model.treerenderer.OurSection;
+import model.section.OurSection;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
 import model.treerenderer.TreeRenderer;

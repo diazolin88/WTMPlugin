@@ -1,7 +1,8 @@
 package model;
 
 import com.codepine.api.testrail.model.Section;
-import model.treerenderer.OurSection;
+import model.section.OurSection;
+import model.section.OurSectionAdapter;
 
 import java.util.List;
 

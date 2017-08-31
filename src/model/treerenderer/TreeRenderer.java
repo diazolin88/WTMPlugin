@@ -1,7 +1,7 @@
 package model.treerenderer;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
-import com.intellij.ui.SimpleTextAttributes;
+import model.section.OurSection;
 import utils.GuiUtil;
 
 import javax.swing.*;
@@ -9,6 +9,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import static com.intellij.util.PlatformIcons.PACKAGE_ICON;
 
+// TODO: not a model.
 public class TreeRenderer extends ColoredTreeCellRenderer {
 
     @Override
