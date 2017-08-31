@@ -39,4 +39,9 @@ public class OurSection {
     public void addSubSection(OurSection section) {
         sectionList.add(section);
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

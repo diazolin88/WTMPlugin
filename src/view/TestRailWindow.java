@@ -9,7 +9,6 @@ import model.OurSectionInflator;
 import model.treerenderer.OurSection;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
-import model.treerenderer.RootCustom;
 import model.treerenderer.TreeRenderer;
 import utils.GuiUtil;
 import utils.ToolWindowData;
@@ -112,7 +111,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     OurSectionInflator.inflateOurSection(sectionList, null, rootSection);
 
                     // Draw one node.
-                    DefaultMutableTreeNode root = new DefaultMutableTreeNode(new RootCustom(rootSection.getName()));
+                    DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootSection);
                     // Draw tree.
                     showTree(rootSection, root);
 
@@ -133,7 +132,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             return;
 
         for (OurSection ourSection : rootSection.getSectionList()) {
-            DefaultMutableTreeNode subSection = new DefaultMutableTreeNode(new RootCustom(ourSection.getName()));
+            DefaultMutableTreeNode subSection = new DefaultMutableTreeNode(ourSection);
             root.add(subSection);
 
             showTree(ourSection, subSection);
