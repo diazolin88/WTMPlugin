@@ -10,6 +10,7 @@ import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.containers.Convertor;
+import model.OurSection;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
 import model.treerenderer.PackageCustom;
@@ -49,7 +50,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         sectionsTree.setCellRenderer(new TreeRenderer());
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
-     }
+    }
 
     public static TestRailWindow getInstance(Project project) {
         return ServiceManager.getService(project, TestRailWindow.class);
@@ -114,7 +115,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    public void setSectionsTreeAction(){
+    public void setSectionsTreeAction() {
         sectionsTree.addTreeSelectionListener(e -> {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionsTree.getLastSelectedPathComponent();
             node.getUserObject();
@@ -129,17 +130,32 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             if (selectedSuite != null && !selectedSuite.equals("Select your suite...")) {
 
                 GuiUtil.runInSeparateThread(() -> {
+                    // TODO: view layer.
                     disableComponent(this.suitesCB);
                     disableComponent(this.projectCB);
-                    //TODO start here
-                    DefaultMutableTreeNode root = new DefaultMutableTreeNode(new RootCustom((String)suitesCB.getSelectedItem()));
 
-                    for(Section section : client.getSections(data.getProjectId(),data.getSuiteId())){
-                        if(null == section.getParentId()) {
-                            DefaultMutableTreeNode rootChild = new DefaultMutableTreeNode(new PackageCustom(section));
-                            root.add(rootChild);
-                        }
-                    }
+                    //TODO start here
+                    OurSection rootSection = new OurSection();
+                    rootSection.setId(null);
+                    rootSection.setName((String) suitesCB.getSelectedItem()); // TODO: bad code -> need refactor
+
+                    List<Section> sectionList = client.getSections(data.getProjectId(), data.getSuiteId());
+                    inflateOurSection(sectionList, null, rootSection);
+
+
+                    DefaultMutableTreeNode root = new DefaultMutableTreeNode(new RootCustom(rootSection.getName()));
+                    showTree(rootSection, root);
+
+//
+//
+//                    for(Section section :sectionList){
+//                        if(null == section.getParentId()) {
+//                            DefaultMutableTreeNode rootChild = new DefaultMutableTreeNode(new PackageCustom(section));
+//                            root.add(rootChild);
+//                        }
+//                    }
+//
+
                     sectionsTree.setModel(new DefaultTreeModel(root));
                     //TODO end here
 
@@ -153,10 +169,43 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    private Integer getParentSection(int sectionID, int projectID, int suiteId) {
-        return client.getSections(projectID, suiteId).stream()
-                .map(Section::getParentId)
-                .findFirst().orElse(null);
+    private void showTree(OurSection rootSection, DefaultMutableTreeNode root) {
+        if (rootSection.getSectionList().isEmpty())
+            return;
+
+        for (OurSection ourSection : rootSection.getSectionList()) {
+            DefaultMutableTreeNode subSection = new DefaultMutableTreeNode(new RootCustom(ourSection.getName()));
+            root.add(subSection);
+
+            showTree(ourSection, subSection);
+        }
     }
 
+    private void inflateOurSection(List<Section> sectionList, Integer parentId, OurSection rootSection) {
+        for (Section section : sectionList) {
+
+            if (parentId == null) {
+                if (section.getParentId() == parentId) {
+                    OurSection ourSection = new OurSection();
+                    ourSection.setId(section.getId());
+                    ourSection.setName(section.getName());
+
+                    rootSection.addSubSection(ourSection);
+                    inflateOurSection(sectionList, ourSection.getId(), ourSection);
+                }
+            }
+            if (parentId != null) {
+                if (section.getParentId() != null) {
+                    if (section.getParentId().equals(parentId)) {
+                        OurSection ourSection = new OurSection();
+                        ourSection.setId(section.getId());
+                        ourSection.setName(section.getName());
+
+                        rootSection.addSubSection(ourSection);
+                        inflateOurSection(sectionList, ourSection.getId(), ourSection);
+                    }
+                }
+            }
+        }
+    }
 }
