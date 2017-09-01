@@ -31,9 +31,9 @@ public class WTMToolWindowFactory implements ToolWindowFactory {
         toolWindow.getContentManager().addContent(content);
 
         //Render default items
-        testRailWindow.getProjectCB().addItem("Select project...");
-        client.getProjectList().forEach(var -> testRailWindow.getProjectCB().addItem(var.getName()));
-        disableComponent(testRailWindow.getSuitesCB());
+        testRailWindow.getProjectComboBox().addItem("Select project...");
+        client.getProjectList().forEach(var -> testRailWindow.getProjectComboBox().addItem(var.getName()));
+        disableComponent(testRailWindow.getSuitesComboBox());
     }
 
 

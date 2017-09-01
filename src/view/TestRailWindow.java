@@ -34,8 +34,8 @@ import static utils.ComponentUtil.*;
 
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JPanel mainPanel;
-    private JComboBox projectCB;
-    private JComboBox suitesCB;
+    private JComboBox projectComboBox;
+    private JComboBox suitesComboBox;
     private Tree sectionTree;
     private JLabel loadingLabel;
     private JPanel detailsPanel;
@@ -59,12 +59,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return ServiceManager.getService(project, TestRailWindow.class);
     }
 
-    public JComboBox getProjectCB() {
-        return projectCB;
+    public JComboBox getProjectComboBox() {
+        return projectComboBox;
     }
 
-    public JComboBox getSuitesCB() {
-        return suitesCB;
+    public JComboBox getSuitesComboBox() {
+        return suitesComboBox;
     }
 
     @Override
@@ -79,20 +79,20 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     @SuppressWarnings("unchecked")
     private void setProjectSelectedItemAction() {
-        projectCB.addItemListener(e -> {
+        projectComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                disableComponent(this.suitesCB);
+                disableComponent(this.suitesComboBox);
                 GuiUtil.runInSeparateThread(() -> {
                     makeInvisible(sectionTree);
-                    String selectedProject = (String) projectCB.getSelectedItem();
+                    String selectedProject = (String) projectComboBox.getSelectedItem();
                     if (!selectedProject.equals("Select project...")) {
-                        getSuitesCB().removeAllItems();
-                        getSuitesCB().addItem("Select your suite...");
+                        getSuitesComboBox().removeAllItems();
+                        getSuitesComboBox().addItem("Select your suite...");
                         client.getSuitesList(selectedProject)
-                                .forEach(suite -> getSuitesCB().addItem(suite.getName()));
-                        enableComponent(this.suitesCB);
+                                .forEach(suite -> getSuitesComboBox().addItem(suite.getName()));
+                        enableComponent(this.suitesComboBox);
                     } else {
-                        getSuitesCB().removeAllItems();
+                        getSuitesComboBox().removeAllItems();
                     }
                 });
             }
@@ -144,16 +144,16 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
 
     private void setSuiteSelectedItemAction() {
-        suitesCB.addActionListener(e -> {
+        suitesComboBox.addActionListener(e -> {
             //Set data to use in every other cases
-            data = new ToolWindowData((String) this.suitesCB.getSelectedItem(), (String) projectCB.getSelectedItem(), client);
-            String selectedSuite = (String) this.suitesCB.getSelectedItem();
+            data = new ToolWindowData((String) this.suitesComboBox.getSelectedItem(), (String) projectComboBox.getSelectedItem(), client);
+            String selectedSuite = (String) this.suitesComboBox.getSelectedItem();
             if (selectedSuite != null && !selectedSuite.equals("Select your suite...")) {
 
                 GuiUtil.runInSeparateThread(() -> {
                     // TODO: view layer.
-                    disableComponent(this.suitesCB);
-                    disableComponent(this.projectCB);
+                    disableComponent(this.suitesComboBox);
+                    disableComponent(this.projectComboBox);
                     makeVisible(this.loadingLabel);
                     makeInvisible(this.sectionTree);
                     // Create root node.
@@ -175,8 +175,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                     sectionTree.setModel(new DefaultTreeModel(root));
 
-                    enableComponent(this.projectCB);
-                    enableComponent(this.suitesCB);
+                    enableComponent(this.projectComboBox);
+                    enableComponent(this.suitesComboBox);
                     makeVisible(this.sectionTree);
                     makeInvisible(this.loadingLabel);
                     makeVisible(this.sectionTree);
