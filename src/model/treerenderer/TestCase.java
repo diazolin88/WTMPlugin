@@ -1,10 +1,10 @@
 package model.treerenderer;
 
-public class CaseCustom {
+public class TestCase {
     private int id;
     private String name;
 
-    public CaseCustom(String name) {
+    public TestCase(String name) {
         this.name = name;
     }
 

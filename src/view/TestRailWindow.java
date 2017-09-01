@@ -4,14 +4,14 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
-import model.OurSectionInflator;
+import model.section.OurSectionInflator;
 import model.section.OurSection;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
-import model.treerenderer.CaseCustom;
+import model.treerenderer.TestCase;
 import model.treerenderer.TreeRenderer;
 import utils.GuiUtil;
-import utils.RailDataStorage;
+import model.testrail.RailDataStorage;
 import utils.ToolWindowData;
 
 import javax.swing.*;
@@ -113,6 +113,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     rootSection.setName(selectedSuite);
 
                     // Inflates root section.
+                    // TODO: i don't understand what is the line doing
                     RailDataStorage railData = new RailDataStorage()
                             .setCases(client.getCases(data.getProjectId(), data.getSuiteId()))
                             .setSections(client.getSections(data.getProjectId(), data.getSuiteId()));
@@ -146,9 +147,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             root.add(subSection);
             ourSection.getCases()
                     .forEach(testCase ->  {
-                        CaseCustom testCaseCustom = new CaseCustom(testCase.getTitle());
-                        testCaseCustom.setId(testCase.getId());
-                                subSection.add(new DefaultMutableTreeNode(testCaseCustom));
+                        TestCase testCaseData = new TestCase(testCase.getTitle());
+                        testCaseData.setId(testCase.getId());
+                                subSection.add(new DefaultMutableTreeNode(testCaseData));
                     });
             showTree(ourSection, subSection);
         }
