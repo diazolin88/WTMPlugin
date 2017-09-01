@@ -12,7 +12,6 @@ import settings.WTMSettings;
 import view.TestRailWindow;
 
 import static utils.ComponentUtil.disableComponent;
-import static utils.ComponentUtil.makeInvisible;
 
 
 public class WTMToolWindowFactory implements ToolWindowFactory {

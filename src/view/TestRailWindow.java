@@ -4,20 +4,24 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
-import model.section.OurSectionInflator;
 import model.section.OurSection;
+import model.section.OurSectionInflator;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
+import model.testrail.RailDataStorage;
 import model.treerenderer.TestCase;
 import model.treerenderer.TreeRenderer;
 import utils.GuiUtil;
-import model.testrail.RailDataStorage;
 import utils.ToolWindowData;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import static utils.ComponentUtil.*;
 
@@ -26,7 +30,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JComboBox projectCB;
     private JComboBox suitesCB;
     private Tree sectionTree;
-    private JScrollPane scroll;
     private JLabel loadingLabel;
     private JPanel detailsPanel;
     private RailClient client;
@@ -37,6 +40,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         client = new RailClient(RailConnection.getInstance(project).getClient());
         makeInvisible(loadingLabel);
         setContent(mainPanel);
+
         sectionTree.setCellRenderer(new TreeRenderer());
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
@@ -83,16 +87,31 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     private void setSectionsTreeAction() {
         sectionTree.addTreeSelectionListener(e -> {
-            GuiUtil.runInSeparateThread(() -> {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
-                Object selectedRow = node.getUserObject();
-                if(selectedRow instanceof OurSection){
-                    getMainPanel().add(new JLabel("STRING"));
-                }
-            });
 
+            GuiUtil.runInSeparateThread(() -> {
+                clearAndRepaint(detailsPanel);
+                detailsPanel.setLayout(new GridLayout());
+                TreePath[] paths;
+                List<OurSection> ourSections = new ArrayList<>();
+                if (null != (paths = sectionTree.getSelectionPaths())) {
+                    for (TreePath path : paths) {
+                        Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+                        if (userObject instanceof OurSection) {
+                            ourSections.add((OurSection) userObject);
+                        }
+                    }
+                }
+
+                ourSections.forEach(ourSection -> {
+                    JLabel label = new JLabel(ourSection.getName());
+                    label.setBorder(BorderFactory.createLineBorder(Color.black));
+                    repaintComponent(detailsPanel);
+                    detailsPanel.add(label);
+                });
+            });
         });
     }
+
 
     private void setSuiteSelectedItemAction() {
         suitesCB.addActionListener(e -> {
@@ -146,16 +165,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             DefaultMutableTreeNode subSection = new DefaultMutableTreeNode(ourSection);
             root.add(subSection);
             ourSection.getCases()
-                    .forEach(testCase ->  {
+                    .forEach(testCase -> {
                         TestCase testCaseData = new TestCase(testCase.getTitle());
                         testCaseData.setId(testCase.getId());
-                                subSection.add(new DefaultMutableTreeNode(testCaseData));
+                        subSection.add(new DefaultMutableTreeNode(testCaseData));
                     });
             showTree(ourSection, subSection);
         }
-    }
-
-    private JPanel getMainPanel(){
-        return this.mainPanel;
     }
 }

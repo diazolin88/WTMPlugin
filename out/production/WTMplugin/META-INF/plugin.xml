@@ -40,6 +40,8 @@
 
   <actions>
     <!-- Add your actions here -->
+    <action id="CreateDraftClass" class="actions.CreateDraftClass" text="CreateDraftClass"
+            description="create draft classes"/>
   </actions>
 
   <application-components>

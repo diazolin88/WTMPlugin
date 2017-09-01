@@ -20,4 +20,15 @@ public final class ComponentUtil {
     public static void makeInvisible(JComponent component){
         component.setVisible(false);
     }
+
+    public static void clearAndRepaint(JComponent component){
+        component.removeAll();
+        component.revalidate();
+        component.repaint();
+    }
+
+    public static void repaintComponent(JComponent component){
+        component.revalidate();
+        component.repaint();
+    }
 }

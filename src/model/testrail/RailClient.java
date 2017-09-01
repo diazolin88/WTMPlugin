@@ -23,6 +23,7 @@ public final class RailClient {
         return this.client.projects().list().execute();
     }
 
+    @SuppressWarnings("ConstantConditions")
     public List<Suite> getSuitesList(String projectName) {
         int projectId = client.projects().list().execute().stream()
                 .filter(project1 -> project1.getName().equals(projectName))

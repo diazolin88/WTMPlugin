@@ -85,4 +85,16 @@ public final class GuiUtil {
             task.queue();
         }
     }
+
+    public static void installActionGroupInToolBar(ActionGroup actionGroup,
+                                                   SimpleToolWindowPanel toolWindowPanel,
+                                                   ActionManager actionManager, String toolBarName) {
+        if (actionManager == null) {
+            return;
+        }
+
+        JComponent actionToolbar = ActionManager.getInstance()
+                .createActionToolbar(toolBarName, actionGroup, true).getComponent();
+        toolWindowPanel.setToolbar(actionToolbar);
+    }
 }
