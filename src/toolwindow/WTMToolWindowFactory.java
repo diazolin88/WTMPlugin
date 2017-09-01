@@ -26,7 +26,6 @@ public class WTMToolWindowFactory implements ToolWindowFactory {
 
     @SuppressWarnings("unchecked")
     public void createToolWindowContent(Project project, ToolWindow toolWindow) {
-        toolWindow.getComponent().setPreferredSize(new Dimension(1000,-1));
         initDesiredFields(project);
         setClient();
 
@@ -35,10 +34,10 @@ public class WTMToolWindowFactory implements ToolWindowFactory {
         toolWindow.getContentManager().addContent(content);
 
         //Render default items
-        testRailWindow.getProjectCB().addItem("Select project...");
-        client.getProjectList().forEach(var -> testRailWindow.getProjectCB().addItem(var.getName()));
-        disableComponent(testRailWindow.getSuitesCB());
         makeInvisible(testRailWindow.getDetailsLabel());
+        testRailWindow.getProjectComboBox().addItem("Select project...");
+        client.getProjectList().forEach(var -> testRailWindow.getProjectComboBox().addItem(var.getName()));
+        disableComponent(testRailWindow.getSuitesComboBox());
     }
 
 
