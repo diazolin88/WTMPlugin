@@ -55,8 +55,13 @@ public class OurSection {
         sectionList.add(section);
     }
 
+    public boolean hasChildren(){
+        return sectionList.isEmpty();
+    }
+
     @Override
     public String toString() {
         return name;
     }
+
 }

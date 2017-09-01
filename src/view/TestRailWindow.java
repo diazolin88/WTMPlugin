@@ -1,8 +1,14 @@
 package view;
 
+import actions.CreateDraftClassAction;
+import com.codepine.api.testrail.model.Case;
+import com.codepine.api.testrail.model.CaseType;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.treeStructure.Tree;
 import model.section.OurSection;
 import model.section.OurSectionInflator;
@@ -22,6 +28,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static utils.ComponentUtil.*;
 
@@ -45,6 +52,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
         setSectionsTreeAction();
+        addToolBar();
     }
 
     public static TestRailWindow getInstance(Project project) {
@@ -61,6 +69,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     @Override
     public void dispose() {
+    }
+
+    private void addToolBar(){
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.addAction(new CreateDraftClassAction());
+        GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
     }
 
     @SuppressWarnings("unchecked")
@@ -85,29 +99,45 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
+    public void print(){
+        System.out.print("test");
+    }
+
     private void setSectionsTreeAction() {
         sectionTree.addTreeSelectionListener(e -> {
 
             GuiUtil.runInSeparateThread(() -> {
                 clearAndRepaint(detailsPanel);
+                //draw stats
                 detailsPanel.setLayout(new GridLayout());
                 TreePath[] paths;
-                List<OurSection> ourSections = new ArrayList<>();
+                List<Case> casesFromSelectedPacks = new ArrayList<>();
+
                 if (null != (paths = sectionTree.getSelectionPaths())) {
+
                     for (TreePath path : paths) {
                         Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+
                         if (userObject instanceof OurSection) {
-                            ourSections.add((OurSection) userObject);
+                            OurSection section = (OurSection) userObject;
+                            //TODO here need to add all cases from current folder or(and) children folders
+                            casesFromSelectedPacks.addAll(section.getCases());
                         }
                     }
                 }
+                List<CaseType> caseTypes = client.getCaseTypes();
+                StringBuilder builder = new StringBuilder();
+                for (CaseType type : caseTypes) {
+                    List<Case> casesWithOneType = casesFromSelectedPacks.stream()
+                            .filter(aCase -> aCase.getTypeId() == type.getId())
+                            .collect(Collectors.toList());
+                    builder.append(type.getName()).append(" : ").append(casesWithOneType.size()).append("<br>");
+                    //TODO here need to create JLabel with details {TypeName and casesWithOneType.size()}
 
-                ourSections.forEach(ourSection -> {
-                    JLabel label = new JLabel(ourSection.getName());
-                    label.setBorder(BorderFactory.createLineBorder(Color.black));
-                    repaintComponent(detailsPanel);
-                    detailsPanel.add(label);
-                });
+                }
+                JLabel label = new JBLabel("<html>" + builder.toString() + "</html>");
+                detailsPanel.add(label);
+                repaintComponent(detailsPanel);
             });
         });
     }

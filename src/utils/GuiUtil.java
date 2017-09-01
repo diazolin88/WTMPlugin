@@ -86,6 +86,9 @@ public final class GuiUtil {
         }
     }
 
+    /**
+     * Method used to create action toolbar
+     * */
     public static void installActionGroupInToolBar(ActionGroup actionGroup,
                                                    SimpleToolWindowPanel toolWindowPanel,
                                                    ActionManager actionManager, String toolBarName) {

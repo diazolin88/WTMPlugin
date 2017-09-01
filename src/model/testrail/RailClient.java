@@ -52,6 +52,10 @@ public final class RailClient {
         }
     }
 
+    public List<CaseType> getCaseTypes(){
+        return client.caseTypes().list().execute();
+    }
+
     public List<Case> getCases(int projectId, int suiteId) {
         List<CaseField> caseFieldList = this.client.caseFields().list().execute();
         return this.client.cases().list(projectId, suiteId, caseFieldList).execute();

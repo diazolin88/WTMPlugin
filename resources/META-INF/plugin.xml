@@ -40,7 +40,7 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="CreateDraftClass" class="actions.CreateDraftClass" text="CreateDraftClass"
+    <action id="CreateDraftClass" class="actions.CreateDraftClassAction" text="CreateDraftClass"
             description="create draft classes"/>
   </actions>
 
