@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.treeStructure.Tree;
 import model.section.OurSection;
 import model.section.OurSectionInflator;
@@ -17,6 +16,7 @@ import model.testrail.RailConnection;
 import model.testrail.RailDataStorage;
 import model.treerenderer.TestCase;
 import model.treerenderer.TreeRenderer;
+import org.jetbrains.annotations.NotNull;
 import utils.GuiUtil;
 import utils.ToolWindowData;
 
@@ -38,7 +38,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JComboBox suitesCB;
     private Tree sectionTree;
     private JLabel loadingLabel;
-    private JPanel detailsPanel;
+    private JLabel detailsLabel;
     private RailClient client;
     private ToolWindowData data;
 
@@ -63,6 +63,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return projectCB;
     }
 
+    public JLabel getDetailsLabel() {
+        return detailsLabel;
+    }
+
     public JComboBox getSuitesCB() {
         return suitesCB;
     }
@@ -71,7 +75,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     public void dispose() {
     }
 
-    private void addToolBar(){
+    private void addToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();
         group.addAction(new CreateDraftClassAction());
         GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
@@ -99,7 +103,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    public void print(){
+    public void print() {
         System.out.print("test");
     }
 
@@ -107,41 +111,27 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         sectionTree.addTreeSelectionListener(e -> {
 
             GuiUtil.runInSeparateThread(() -> {
-                clearAndRepaint(detailsPanel);
                 //draw stats
-                detailsPanel.setLayout(new GridLayout());
-                TreePath[] paths;
-                List<Case> casesFromSelectedPacks = new ArrayList<>();
 
-                if (null != (paths = sectionTree.getSelectionPaths())) {
-
-                    for (TreePath path : paths) {
-                        Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
-
-                        if (userObject instanceof OurSection) {
-                            OurSection section = (OurSection) userObject;
-                            //TODO here need to add all cases from current folder or(and) children folders
-                            casesFromSelectedPacks.addAll(section.getCases());
-                        }
-                    }
-                }
+                List<Case> casesFromSelectedPacks = getCasesForSelectedTreeRows();
                 List<CaseType> caseTypes = client.getCaseTypes();
-                StringBuilder builder = new StringBuilder();
+                         StringBuilder builder = new StringBuilder();
+
                 for (CaseType type : caseTypes) {
                     List<Case> casesWithOneType = casesFromSelectedPacks.stream()
                             .filter(aCase -> aCase.getTypeId() == type.getId())
                             .collect(Collectors.toList());
                     builder.append(type.getName()).append(" : ").append(casesWithOneType.size()).append("<br>");
-                    //TODO here need to create JLabel with details {TypeName and casesWithOneType.size()}
 
                 }
-                JLabel label = new JBLabel("<html>" + builder.toString() + "</html>");
-                detailsPanel.add(label);
-                repaintComponent(detailsPanel);
+
+                makeVisible(this.detailsLabel);
+                detailsLabel.setText("<html>" + builder.toString() + "</html>");
+                repaintComponent(detailsLabel);
+                //detailsPanel.add(detailsLabel);
             });
         });
     }
-
 
     private void setSuiteSelectedItemAction() {
         suitesCB.addActionListener(e -> {
@@ -160,6 +150,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     OurSection rootSection = new OurSection();
                     rootSection.setId(null);
                     rootSection.setName(selectedSuite);
+                    //TODO add children to rootsection!!!
 
                     // Inflates root section.
                     // TODO: i don't understand what is the line doing
@@ -169,6 +160,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     OurSectionInflator.inflateOurSection(railData, null, rootSection);
 
                     // Draw one node.
+
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootSection);
                     // Draw tree.
                     showTree(rootSection, root);
@@ -202,5 +194,34 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     });
             showTree(ourSection, subSection);
         }
+    }
+
+    @NotNull
+    private List<Case> getCasesForSelectedTreeRows() {
+        TreePath[] paths;
+        List<Case> casesFromSelectedPacks = new ArrayList<>();
+
+        if (null != (paths = sectionTree.getSelectionPaths())) {
+
+            for (TreePath path : paths) {
+                Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+
+                if (userObject instanceof OurSection) {
+                    OurSection section = (OurSection) userObject;
+                    //TODO here need to add all cases from current folder or(and) children folders
+                    casesFromSelectedPacks.addAll(getCases(section));
+                }
+            }
+        }
+        return casesFromSelectedPacks;
+    }
+
+    private List<Case> getCases(OurSection section) {
+        List<Case> cases = new ArrayList<>();
+        for (OurSection section1 : section.getSectionList()) {
+            cases.addAll(getCases(section1));
+        }
+        cases.addAll(section.getCases());
+        return cases;
     }
 }

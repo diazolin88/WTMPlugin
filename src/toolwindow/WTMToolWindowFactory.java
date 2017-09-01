@@ -11,7 +11,10 @@ import model.testrail.RailConnection;
 import settings.WTMSettings;
 import view.TestRailWindow;
 
+import java.awt.*;
+
 import static utils.ComponentUtil.disableComponent;
+import static utils.ComponentUtil.makeInvisible;
 
 
 public class WTMToolWindowFactory implements ToolWindowFactory {
@@ -23,6 +26,7 @@ public class WTMToolWindowFactory implements ToolWindowFactory {
 
     @SuppressWarnings("unchecked")
     public void createToolWindowContent(Project project, ToolWindow toolWindow) {
+        toolWindow.getComponent().setPreferredSize(new Dimension(1000,-1));
         initDesiredFields(project);
         setClient();
 
@@ -34,6 +38,7 @@ public class WTMToolWindowFactory implements ToolWindowFactory {
         testRailWindow.getProjectCB().addItem("Select project...");
         client.getProjectList().forEach(var -> testRailWindow.getProjectCB().addItem(var.getName()));
         disableComponent(testRailWindow.getSuitesCB());
+        makeInvisible(testRailWindow.getDetailsLabel());
     }
 
 
