@@ -1,4 +1,4 @@
-package utils;
+package model.testrail;
 
 import com.codepine.api.testrail.model.Field;
 

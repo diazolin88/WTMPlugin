@@ -1,4 +1,4 @@
-package utils;
+package model.testrail;
 
 /**
  * Created by dnizkopoklonniy on 01.09.2017.

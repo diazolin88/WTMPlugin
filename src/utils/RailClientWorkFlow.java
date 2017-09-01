@@ -5,12 +5,13 @@ import com.codepine.api.testrail.model.Case;
 import com.codepine.api.testrail.model.CaseField;
 import com.codepine.api.testrail.model.Section;
 import com.codepine.api.testrail.model.User;
+import model.testrail.RailTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static utils.RailConstants.*;
+import static model.testrail.RailConstants.*;
 
 /**
  * Created by dnizkopoklonniy on 01.09.2017.

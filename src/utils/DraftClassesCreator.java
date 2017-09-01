@@ -1,6 +1,7 @@
 package utils;
 
 import com.codepine.api.testrail.model.Field;
+import model.testrail.RailTestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
