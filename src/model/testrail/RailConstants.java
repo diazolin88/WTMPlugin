@@ -6,9 +6,6 @@ package model.testrail;
 public class RailConstants {
     private RailConstants(){}
 
-    public static final String END_POINT = "https://wiley.testrail.net/";
-    public static final String RAIL_LOGIN = "alukashevi@wiley.com";
-    public static final String RAIL_PASSWORD = "7378615QWas";
     public static final int RAIL_PROJECT_ID = 3;
     public static final int SUITE_ID = 30;
     //Fields
