@@ -4,11 +4,11 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
-import model.OurSectionInflator;
+import model.section.OurSectionInflator;
 import model.section.OurSection;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
-import model.treerenderer.CaseCustom;
+import model.treerenderer.TestCase;
 import model.treerenderer.TreeRenderer;
 import utils.GuiUtil;
 import utils.RailDataStorage;
@@ -17,9 +17,7 @@ import utils.ToolWindowData;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.net.URL;
 
 import static utils.ComponentUtil.*;
 
@@ -144,9 +142,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             root.add(subSection);
             ourSection.getCases()
                     .forEach(testCase ->  {
-                        CaseCustom testCaseCustom = new CaseCustom(testCase.getTitle());
-                        testCaseCustom.setId(testCase.getId());
-                                subSection.add(new DefaultMutableTreeNode(testCaseCustom));
+                        TestCase testCaseData = new TestCase(testCase.getTitle());
+                        testCaseData.setId(testCase.getId());
+                                subSection.add(new DefaultMutableTreeNode(testCaseData));
                     });
             showTree(ourSection, subSection);
         }
