@@ -2,9 +2,7 @@ package model.section;
 
 import com.codepine.api.testrail.model.Case;
 import com.codepine.api.testrail.model.Section;
-import model.section.OurSection;
-import model.section.OurSectionAdapter;
-import utils.RailDataStorage;
+import model.testrail.RailDataStorage;
 
 import java.util.List;
 import java.util.stream.Collectors;
