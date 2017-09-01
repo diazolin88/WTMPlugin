@@ -17,34 +17,30 @@ import utils.ToolWindowData;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.net.URL;
 
 import static utils.ComponentUtil.*;
 
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
-    private Project project;
-    private JPanel panel1;
+    private JPanel mainPanel;
     private JComboBox projectCB;
     private JComboBox suitesCB;
     private Tree sectionTree;
     private JScrollPane scroll;
     private JLabel loadingLabel;
+    private JPanel detailsPanel;
     private RailClient client;
     private ToolWindowData data;
 
     public TestRailWindow(Project project) {
         super(project);
-        this.project = project;
         client = new RailClient(RailConnection.getInstance(project).getClient());
         makeInvisible(loadingLabel);
-        setContent(panel1);
+        setContent(mainPanel);
         sectionTree.setCellRenderer(new TreeRenderer());
-
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
-        //setSectionsTreeAction();
+        setSectionsTreeAction();
     }
 
     public static TestRailWindow getInstance(Project project) {
@@ -85,12 +81,18 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-//    private void setSectionsTreeAction() {
-//        sectionTree.addTreeSelectionListener(e -> {
-//            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
-//            node.getUserObject();
-//        });
-//    }
+    private void setSectionsTreeAction() {
+        sectionTree.addTreeSelectionListener(e -> {
+            GuiUtil.runInSeparateThread(() -> {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
+                Object selectedRow = node.getUserObject();
+                if(selectedRow instanceof OurSection){
+                    getMainPanel().add(new JLabel("STRING"));
+                }
+            });
+
+        });
+    }
 
     private void setSuiteSelectedItemAction() {
         suitesCB.addActionListener(e -> {
@@ -150,5 +152,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     });
             showTree(ourSection, subSection);
         }
+    }
+
+    private JPanel getMainPanel(){
+        return this.mainPanel;
     }
 }
