@@ -36,6 +36,7 @@ import static model.testrail.RailConstants.STEPS_SEPARATED_FIELD;
 import static utils.ComponentUtil.*;
 
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
+    private Project project;
     private JPanel mainPanel;
     private JComboBox projectComboBox;
     private JComboBox suitesComboBox;
@@ -51,6 +52,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     public TestRailWindow(Project project) {
         super(project);
+        this.project = project;
         client = new RailClient(RailConnection.getInstance(project).getClient());
         makeInvisible(loadingLabel);
         setContent(mainPanel);
@@ -169,7 +171,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 .collect(Collectors.toList());
 
         railTestCases.forEach(railTestCase -> {
-            DraftClassesCreator.getInstance().create(railTestCase, settings.getTemplate());
+            DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
         });
     }
 

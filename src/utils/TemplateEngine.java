@@ -1,5 +1,6 @@
 package utils;
 
+import com.intellij.openapi.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  * 2. Add to draft hash map key (he is equals with marker name in *tpl without '{' and '}' ).
  */
 public class TemplateEngine {
-
+    private Project project;
     private static final Logger LOGGER = LoggerFactory.getLogger(TemplateEngine.class);
 
     public static final String USER_NAME_KEY = "USER_NAME";
@@ -29,19 +30,12 @@ public class TemplateEngine {
     public static final String PRECONDITIONS_KEY = "PRECONDITIONS";
     public static final String SUMMARY_KEY = "SUMMARY";
 
-    private static final String DRAFT_DIRECTORY_PATH = "D://drafts";
+    private String draftDirectoryPath = "";
     private static final String KEY_WORD_TEMPLATE = "\\{\\{%s\\}\\}";
 
-    private static TemplateEngine instance = null;
-
-    private TemplateEngine() {
-    }
-
-    public static TemplateEngine getInstance() {
-        if (instance == null) {
-            instance = new TemplateEngine();
-        }
-        return instance;
+    public TemplateEngine(Project project) {
+        this.project = project;
+        draftDirectoryPath = project.getBasePath() +"/drafts";
     }
 
     /**
@@ -53,7 +47,7 @@ public class TemplateEngine {
         List<String> rowList = new ArrayList<>(Arrays.asList(template.split("\n")));
 
         // Creates directory if directory doesn't exist.
-        File draftDirectory = new File(DRAFT_DIRECTORY_PATH);
+        File draftDirectory = new File(draftDirectoryPath);
         if (!draftDirectory.exists()) {
             LOGGER.info("Created draft directory");
             draftDirectory.mkdir();
@@ -74,7 +68,7 @@ public class TemplateEngine {
         LOGGER.info("Ending of replacement of markers");
 
         LOGGER.info(String.format("Creating %s class", draftDataMap.get(CLASS_NAME_KEY)));
-        writeRowListToFile(rowList, DRAFT_DIRECTORY_PATH + "/" + draftDataMap.get(CLASS_NAME_KEY) + ".java");
+        writeRowListToFile(rowList, draftDirectoryPath + "/" + draftDataMap.get(CLASS_NAME_KEY) + ".java");
     }
 
     /**
