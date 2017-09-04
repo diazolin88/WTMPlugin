@@ -43,6 +43,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JLabel loadingLabel;
     private JLabel detailsLabel;
     private JPanel detailsPanel;
+    private JComboBox customFieldsComboBox;
+    private JLabel loadingCustom;
     private RailClient client;
     private ToolWindowData data;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
@@ -76,9 +78,15 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return detailsPanel;
     }
 
+    public JLabel getLoadingCustom() {
+        return loadingCustom;
+    }
+
     @Override
     public void dispose() {
     }
+
+    //region Listeners
 
     @SuppressWarnings("unchecked")
     private void setProjectSelectedItemAction() {
@@ -110,6 +118,16 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 casesFromSelectedPacks = getCasesForSelectedTreeRows();
 
                 displayCaseTypesInfo();
+
+                //TODO stats by selected custom field
+                GuiUtil.runInSeparateThread(() -> {
+                    disableComponent(customFieldsComboBox);
+                    makeVisible(loadingCustom);
+                    client.getCustomFields(data.getProjectId(),data.getSuiteId()).forEach(s -> customFieldsComboBox.addItem(s));
+                    enableComponent(customFieldsComboBox);
+                    makeInvisible(loadingCustom);
+                });
+
             });
         });
     }
@@ -154,7 +172,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             DraftClassesCreator.getInstance().create(railTestCase);
         });
     }
-
 
     private void addToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();

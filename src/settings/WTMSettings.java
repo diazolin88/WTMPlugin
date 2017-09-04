@@ -32,6 +32,35 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings> {
     public static final String DEFAULT_VALUE = "";
     public String railUserName = DEFAULT_VALUE;
     public String railUrl = DEFAULT_VALUE;
+    public String template = "package com.wiley.project.tests.drafts;\n" +
+            "\n" +
+            "import org.testng.annotations.Test;\n" +
+            "import ru.yandex.qatools.allure.annotations.Title;\n" +
+            "\n" +
+            "import static com.wiley.wat.Group.toAutomate;\n" +
+            "\n" +
+            "/**\n" +
+            " * User: {{USER_NAME}}\n" +
+            " * Date: {{TEST_DATE}}\n" +
+            " * <p>\n" +
+            " * Summary:\n" +
+            " * {{SUMMARY}}\n" +
+            " * <p>\n" +
+            " * Preconditions:\n" +
+            " * {{PRECONDITIONS}}\n" +
+            " * <p>\n" +
+            " * Description:\n" +
+            " * {{TEST_DESCRIPTION}}\n" +
+            " * <p>\n" +
+            " */\n" +
+            "public class {{CLASS_NAME}} {\n" +
+            "\n" +
+            "    @Title(\"{{TEST_RAIL_TITLE}}\")\n" +
+            "    @Test(groups = {toAutomate})\n" +
+            "    public void test_{{PROJECT_PREFIX}}_{{TEST_RAIL_ID}}_{{CLASS_NAME}}() {\n" +
+            "        // specially do nothing\n" +
+            "    }\n" +
+            "}";
 
     private static final String RAIL_P_KEY = "wtm.settings.rail.password.key";
 
@@ -48,6 +77,14 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings> {
     @Override
     public void loadState(WTMSettings state) {
         XmlSerializerUtil.copyBean(state, this);
+    }
+
+    public String getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
     }
 
     public String getRailUserName() {

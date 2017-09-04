@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="1" left="10" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="661" height="350"/>
+      <xy x="20" y="20" width="661" height="546"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -102,6 +102,36 @@
                   <text value=""/>
                 </properties>
               </component>
+            </children>
+          </grid>
+          <grid id="6d47a" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <tabbedpane title="Template"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="1ae39" class="javax.swing.JTextArea" binding="temlateTextArea" default-binding="true">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="1" use-parent-layout="false">
+                    <preferred-size width="150" height="50"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <text value="package com.wiley.project.tests.drafts;&#10;&#10;import org.testng.annotations.Test;&#10;import ru.yandex.qatools.allure.annotations.Title;&#10;&#10;import static com.wiley.wat.Group.toAutomate;&#10;&#10;/**&#10; * User: {{USER_NAME}}&#10; * Date: {{TEST_DATE}}&#10; * &lt;p&gt;&#10; * Summary:&#10; * {{SUMMARY}}&#10; * &lt;p&gt;&#10; * Preconditions:&#10; * {{PRECONDITIONS}}&#10; * &lt;p&gt;&#10; * Description:&#10; * {{TEST_DESCRIPTION}}&#10; * &lt;p&gt;&#10; */&#10;public class {{CLASS_NAME}} {&#10;&#10;    @Title(&quot;{{TEST_RAIL_TITLE}}&quot;)&#10;    @Test(groups = {toAutomate})&#10;    public void test_{{PROJECT_PREFIX}}_{{TEST_RAIL_ID}}_{{CLASS_NAME}}() {&#10;        // specially do nothing&#10;    }&#10;}"/>
+                </properties>
+              </component>
+              <hspacer id="bad2b">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </hspacer>
+              <vspacer id="af073">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
             </children>
           </grid>
         </children>

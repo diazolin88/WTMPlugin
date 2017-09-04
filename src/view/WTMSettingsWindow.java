@@ -6,16 +6,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.JBColor;
 import exceptions.AuthorizationException;
-import model.CredentialsData;
 import model.testrail.RailConnection;
-import settings.WTMSettings;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.NoSuchElementException;
 
 public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable {
     private JPanel mainPanel;
@@ -25,6 +18,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
     private JTextField railUserNameTextField;
     private JButton railTestConnectionButton;
     private JTextPane railDebugTextPane;
+    private JTextArea temlateTextArea;
 
     private Project project;
 
@@ -64,6 +58,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         settings.setRailPassword(railPasswordField.getPassword());
         settings.setRailUserName(railUserNameTextField.getText());
         settings.setRailUrl(railUrlTextField.getText());
+        settings.setTemplate(temlateTextArea.getText());
     }
 
     public static WTMSettingsWindow getInstance(Project project) {
@@ -78,13 +73,15 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
     public boolean isModified() {
                 return !railUserNameTextField.getText().equals(settings.getRailUserName())
                 || !String.valueOf(railPasswordField.getPassword()).equals(settings.getRailPassword())
-                || !railUrlTextField.getText().equals(settings.getRailUrl());
+                || !railUrlTextField.getText().equals(settings.getRailUrl())
+                ||!temlateTextArea.getText().equals(settings.getTemplate());
     }
 
     public void reset() {
         railPasswordField.setText(settings.getRailPassword());
         railUserNameTextField.setText(settings.getRailUserName());
         railUrlTextField.setText(settings.getRailUrl());
+        temlateTextArea.setText(settings.getTemplate());
     }
 
     private void railTestConnectionButtonClickedAction(Project project) {
