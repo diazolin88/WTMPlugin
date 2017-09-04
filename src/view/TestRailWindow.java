@@ -101,20 +101,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                 casesFromSelectedPacks = getCasesForSelectedTreeRows();
 
-                List<CaseType> caseTypes = client.getCaseTypes();
-                StringBuilder builder = new StringBuilder();
-                for (CaseType type : caseTypes) {
-                    List<Case> casesWithOneType = casesFromSelectedPacks.stream()
-                            .filter(aCase -> aCase.getTypeId() == type.getId())
-                            .collect(Collectors.toList());
-                    builder.append(type.getName()).append(" : ").append(casesWithOneType.size()).append("<br>");
-
-                }
-
-                makeVisible(this.detailsLabel);
-                detailsLabel.setText("<html>" + builder.toString() + "</html>");
-                repaintComponent(detailsLabel);
-                //detailsPanel.add(detailsLabel);
+                displayCaseTypesInfo();
             });
         });
     }
@@ -237,5 +224,21 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return cases;
     }
 
+    private void displayCaseTypesInfo() {
+        List<CaseType> caseTypes = client.getCaseTypes();
+        StringBuilder builder = new StringBuilder();
+        for (CaseType type : caseTypes) {
+            List<Case> casesWithOneType = casesFromSelectedPacks.stream()
+                    .filter(aCase -> aCase.getTypeId() == type.getId())
+                    .collect(Collectors.toList());
+            builder.append(type.getName()).append(" : ").append(casesWithOneType.size()).append("<br>");
+
+        }
+
+        makeVisible(this.detailsLabel);
+        detailsLabel.setText("<html>" + builder.toString() + "</html>");
+        repaintComponent(detailsLabel);
+        //detailsPanel.add(detailsLabel);
+    }
     // endregion
 }
