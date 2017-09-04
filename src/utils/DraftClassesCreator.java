@@ -40,7 +40,7 @@ public class DraftClassesCreator {
         DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         HashMap<String, String> draftDataMap = new HashMap<>();
 
-        String preconditions = format(testCase.getPreconditions());
+        String preconditions = format(testCase.getPreconditions() == null ? "" :testCase.getPreconditions() );
         String className = getClassNameForTestCase(testCase);
         String description = getDescriptionForTestCase(testCase);
 
@@ -75,6 +75,11 @@ public class DraftClassesCreator {
 
     private String getDescriptionForTestCase(RailTestCase testCase) {
         int numberStep = 0;
+
+        if (testCase.getDescription() == null) {
+            return "";
+        }
+
         StringBuilder builder = new StringBuilder();
         for (Field.Step step : testCase.getDescription()) {
             numberStep++;
