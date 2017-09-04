@@ -98,21 +98,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         sectionTree.addTreeSelectionListener(e -> {
 
             GuiUtil.runInSeparateThread(() -> {
-                TreePath[] paths;
 
-                casesFromSelectedPacks.clear();
-                if (null != (paths = sectionTree.getSelectionPaths())) {
-                //draw stats
-                    for (TreePath path : paths) {
-                        Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
-
-                        if (userObject instanceof OurSection) {
-                            OurSection section = (OurSection) userObject;
-                            //TODO here need to add all cases from current folder or(and) children folders
-                            casesFromSelectedPacks.addAll(section.getCases());
-                        }
-                    }
-                }
+                casesFromSelectedPacks = getCasesForSelectedTreeRows();
 
                 List<CaseType> caseTypes = client.getCaseTypes();
                 StringBuilder builder = new StringBuilder();
@@ -121,7 +108,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                             .filter(aCase -> aCase.getTypeId() == type.getId())
                             .collect(Collectors.toList());
                     builder.append(type.getName()).append(" : ").append(casesWithOneType.size()).append("<br>");
-                    //TODO here need to create JLabel with details {TypeName and casesWithOneType.size()}
 
                 }
 
