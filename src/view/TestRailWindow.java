@@ -44,7 +44,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JLabel detailsLabel;
     private JPanel detailsPanel;
     private JComboBox customFieldsComboBox;
-    private JLabel loadingCustom;
+    private JLabel customFieldsLabel;
     private RailClient client;
     private ToolWindowData data;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
@@ -76,10 +76,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     public JPanel getDetailsPanel() {
         return detailsPanel;
-    }
-
-    public JLabel getLoadingCustom() {
-        return loadingCustom;
     }
 
     @Override
@@ -122,12 +118,14 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 //TODO stats by selected custom field
                 GuiUtil.runInSeparateThread(() -> {
                     disableComponent(customFieldsComboBox);
-                    makeVisible(loadingCustom);
+                    makeVisible(loadingLabel);
                     client.getCustomFields(data.getProjectId(),data.getSuiteId()).forEach(s -> customFieldsComboBox.addItem(s));
                     enableComponent(customFieldsComboBox);
-                    makeInvisible(loadingCustom);
+                    //TODO Render stat by selected custom field
+                    client.getCases(data.getProjectId(),data.getSuiteId()).stream().filter(aCase -> aCase.getCustomFields().keySet().contains(customFieldsComboBox.getSelectedItem()));
+                    makeInvisible(loadingLabel);
+                    repaintComponent(detailsPanel);
                 });
-
             });
         });
     }

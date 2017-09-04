@@ -34,7 +34,6 @@ public class WTMToolWindowFactory implements ToolWindowFactory {
         client.getProjectList().forEach(var -> testRailWindow.getProjectComboBox().addItem(var.getName()));
         disableComponent(testRailWindow.getSuitesComboBox());
         makeInvisible(testRailWindow.getDetailsPanel());
-        makeInvisible(testRailWindow.getLoadingCustom());
     }
 
 

@@ -1,8 +1,8 @@
 <idea-plugin>
   <id>com.your.company.unique.plugin.id</id>
-  <name>Plugin display name here</name>
+  <name>WTMPlugin</name>
   <version>1.1</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="alukashevi@wiley.com, dnizkopokl@wiley.com" url="http://www.my.com">My</vendor>
 
   <description><![CDATA[
       Enter short description for your plugin here.<br>

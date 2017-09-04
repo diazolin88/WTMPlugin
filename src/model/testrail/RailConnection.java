@@ -2,7 +2,6 @@ package model.testrail;
 
 import com.codepine.api.testrail.TestRail;
 import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import exceptions.AuthorizationException;
 import settings.WTMSettings;
