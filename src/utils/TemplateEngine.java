@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -32,8 +29,7 @@ public class TemplateEngine {
     public static final String PRECONDITIONS_KEY = "PRECONDITIONS";
     public static final String SUMMARY_KEY = "SUMMARY";
 
-    private static final String DRAFT_TEMPLATE_FILE_PATH = "src/test/resources/DraftTemplate.tpl";
-    private static final String DRAFT_DIRECTORY_PATH = "src/test/java/com/wiley/project/tests/drafts";
+    private static final String DRAFT_DIRECTORY_PATH = "D://drafts";
     private static final String KEY_WORD_TEMPLATE = "\\{\\{%s\\}\\}";
 
     private static TemplateEngine instance = null;
@@ -53,8 +49,8 @@ public class TemplateEngine {
      *
      * @param draftDataMap Map of draft data.
      */
-    public void generateDraftClass(HashMap<String, String> draftDataMap) {
-        List<String> rowList = getFileAsRowList(DRAFT_TEMPLATE_FILE_PATH);
+    public void generateDraftClass(HashMap<String, String> draftDataMap, String template) {
+        List<String> rowList = new ArrayList<>(Arrays.asList(template.split("\n")));
 
         // Creates directory if directory doesn't exist.
         File draftDirectory = new File(DRAFT_DIRECTORY_PATH);
@@ -79,32 +75,6 @@ public class TemplateEngine {
 
         LOGGER.info(String.format("Creating %s class", draftDataMap.get(CLASS_NAME_KEY)));
         writeRowListToFile(rowList, DRAFT_DIRECTORY_PATH + "/" + draftDataMap.get(CLASS_NAME_KEY) + ".java");
-    }
-
-    /**
-     * Gets file rows as list of string.
-     *
-     * @param filePath Path to file.
-     * @return List of string.
-     */
-    private List<String> getFileAsRowList(String filePath) {
-        File details = new File(filePath);
-
-        List<String> rowList = new ArrayList<>();
-        String row;
-
-        try (
-                FileReader fileReader = new FileReader(details);
-                BufferedReader bufferedReader = new BufferedReader(fileReader)
-        ) {
-            while ((row = bufferedReader.readLine()) != null) {
-                rowList.add(row);
-            }
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-
-        return rowList;
     }
 
     /**

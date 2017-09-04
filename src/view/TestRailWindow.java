@@ -169,7 +169,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 .collect(Collectors.toList());
 
         railTestCases.forEach(railTestCase -> {
-            DraftClassesCreator.getInstance().create(railTestCase);
+            DraftClassesCreator.getInstance().create(railTestCase, settings.getTemplate());
         });
     }
 
