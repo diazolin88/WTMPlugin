@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.treeStructure.Tree;
 import model.section.OurSection;
 import model.section.OurSectionInflator;
@@ -23,6 +24,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,20 +100,25 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    public void print() {
-        casesFromSelectedPacks.forEach(testCase -> {
-            System.out.println(testCase.getTitle());
-        });
-//        DraftClassesCreator.getInstance()
-    }
-
     private void setSectionsTreeAction() {
         sectionTree.addTreeSelectionListener(e -> {
 
             GuiUtil.runInSeparateThread(() -> {
-                //draw stats
+                TreePath[] paths;
 
-                List<Case> casesFromSelectedPacks = getCasesForSelectedTreeRows();
+                casesFromSelectedPacks.clear();
+                if (null != (paths = sectionTree.getSelectionPaths())) {
+
+                    for (TreePath path : paths) {
+                        Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+
+                        if (userObject instanceof OurSection) {
+                            OurSection section = (OurSection) userObject;
+                            //TODO here need to add all cases from current folder or(and) children folders
+                            casesFromSelectedPacks.addAll(section.getCases());
+                        }
+                    }
+                }
                 List<CaseType> caseTypes = client.getCaseTypes();
                 StringBuilder builder = new StringBuilder();
                 for (CaseType type : caseTypes) {
@@ -144,26 +151,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     disableComponent(this.projectComboBox);
                     makeVisible(this.loadingLabel);
                     makeInvisible(this.sectionTree);
-                    // Create root node.
-                    OurSection rootSection = new OurSection();
-                    rootSection.setId(null);
-                    rootSection.setName(selectedSuite);
-                    //TODO add children to rootsection!!!
 
-                    // Inflates root section.
-                    // TODO: i don't understand what is the line doing
-                    RailDataStorage railData = new RailDataStorage()
-                            .setCases(client.getCases(data.getProjectId(), data.getSuiteId()))
-                            .setSections(client.getSections(data.getProjectId(), data.getSuiteId()));
-                    OurSectionInflator.inflateOurSection(railData, null, rootSection);
-
-                    // Draw one node.
-
-                    DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootSection);
-                    // Draw tree.
-                    createTreeNode(rootSection, root);
-
-                    sectionTree.setModel(new DefaultTreeModel(root));
+                    // Shows section tree.
+                    showSectionTree(selectedSuite);
 
                     enableComponent(this.projectComboBox);
                     enableComponent(this.suitesComboBox);
@@ -176,7 +166,36 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             }
         });
     }
-// region Section tree
+
+    // region Draft classes
+
+    public void createDraftClasses() {
+        System.out.println("Create draft classes");
+        casesFromSelectedPacks.forEach(testCase -> {
+            System.out.println(testCase.getTitle());
+        });
+//        DraftClassesCreator.getInstance()
+    }
+
+    private void showSectionTree(String selectedSuite) {
+        // Create root node.
+        OurSection rootSection = new OurSection();
+        rootSection.setId(null);
+        rootSection.setName(selectedSuite);
+
+        // Inflates root section.
+        RailDataStorage railData = new RailDataStorage()
+                .setCases(client.getCases(data.getProjectId(), data.getSuiteId()))
+                .setSections(client.getSections(data.getProjectId(), data.getSuiteId()));
+        OurSectionInflator.inflateOurSection(railData, null, rootSection);
+
+        // Draw one node.
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootSection);
+        // Draw tree.
+        createTreeNode(rootSection, root);
+
+        sectionTree.setModel(new DefaultTreeModel(root));
+    }
 
     /**
      * Creates tree node for our section model of data.

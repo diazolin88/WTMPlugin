@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import utils.GuiUtil;
 import view.TestRailWindow;
-import view.WTMSettingsWindow;
 
 import javax.swing.*;
 
@@ -17,7 +16,7 @@ public class CreateDraftClassAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        //Instead of print() use method which builds draft classes
-        TestRailWindow.getInstance(e.getProject()).print();
+        //Instead of createDraftClasses() use method which builds draft classes
+        TestRailWindow.getInstance(e.getProject()).createDraftClasses();
     }
 }
