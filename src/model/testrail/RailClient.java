@@ -4,8 +4,7 @@ import com.codepine.api.testrail.TestRail;
 import com.codepine.api.testrail.model.*;
 import utils.ToolWindowData;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static model.testrail.RailConstants.*;
@@ -59,6 +58,15 @@ public final class RailClient {
     public List<Case> getCases(int projectId, int suiteId) {
         List<CaseField> caseFieldList = this.client.caseFields().list().execute();
         return this.client.cases().list(projectId, suiteId, caseFieldList).execute();
+    }
+
+    //TODO check if this fields created for all projects or for just one
+    public Set<String> getCustomFields(int projectId, int suiteId){
+        Set<String> customFields = new HashSet<>();
+        List<CaseField> caseFieldList = this.client.caseFields().list().execute();
+        this.client.cases().list(projectId, suiteId, caseFieldList).execute()
+                .forEach(aCase -> customFields.addAll(aCase.getCustomFields().keySet()));
+        return customFields;
     }
 
     public List<Section> getSections(int projectID, int suiteID) {
