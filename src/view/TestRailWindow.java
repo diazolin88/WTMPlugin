@@ -24,7 +24,6 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,22 +92,15 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    public void print() {
-        casesFromSelectedPacks.forEach(testCase -> {
-            System.out.println(testCase.getTitle());
-        });
-//        DraftClassesCreator.getInstance()
-    }
-
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
 
     private void setSectionsTreeAction() {
         sectionTree.addTreeSelectionListener(e -> {
 
             GuiUtil.runInSeparateThread(() -> {
-                clearAndRepaint(detailsPanel);
+                //clearAndRepaint(detailsPanel);
                 //draw stats
-                detailsPanel.setLayout(new GridLayout());
+                //detailsPanel.setLayout(new GridLayout());
                 TreePath[] paths;
 
                 casesFromSelectedPacks.clear();
@@ -169,6 +161,17 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             }
         });
     }
+
+    // region Draft classes
+
+    public void createDraftClasses() {
+        System.out.println("Create draft classes");
+        casesFromSelectedPacks.forEach(testCase -> {
+            System.out.println(testCase.getTitle());
+        });
+//        DraftClassesCreator.getInstance()
+    }
+    // endregion
 
     // region Toolbar
 
