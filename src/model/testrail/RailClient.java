@@ -74,27 +74,18 @@ public final class RailClient {
     }
 
 
-    public List<RailTestCase> getTestCasesBySectionId(int id) {
-        List<CaseField> caseFieldList = client.caseFields().list().execute();
-        List<Case> cases = client.cases().list(RAIL_PROJECT_ID, SUITE_ID, caseFieldList).execute();
-        return cases.stream()
-                .filter(aCase -> aCase.getSectionId() == id)
-                .map(aCase -> new RailTestCase(aCase.getId(), getUserName(aCase.getCreatedBy()) , aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD),aCase.getCustomField(PRECONDITION_FIELD) , aCase.getCustomField(KEYWORDS), getStoryNameBySectionId(aCase.getSectionId())))
-                .collect(Collectors.toList());
-    }
-
-    private List<Section> getSections() {
-        if (sectionList.isEmpty()) {
-            sectionList = client.sections().list(RAIL_PROJECT_ID, SUITE_ID).execute();
-            return sectionList;
-        } else {
-            return sectionList;
-        }
-    }
+//    public List<RailTestCase> getTestCasesBySectionId(int id) {
+//        List<CaseField> caseFieldList = client.caseFields().list().execute();
+//        List<Case> cases = client.cases().list(RAIL_PROJECT_ID, SUITE_ID, caseFieldList).execute();
+//        return cases.stream()
+//                .filter(aCase -> aCase.getSectionId() == id)
+//                .map(aCase -> new RailTestCase(aCase.getId(), getUserName(aCase.getCreatedBy()) , aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD),aCase.getCustomField(PRECONDITION_FIELD) , aCase.getCustomField(KEYWORDS), getStoryNameBySectionId(aCase.getSectionId())))
+//                .collect(Collectors.toList());
+//    }
 
     @SuppressWarnings("ConstantConditions")
-    private String getStoryNameBySectionId(int sectionId) {
-        return getSections()
+    public String getStoryNameBySectionId(int projectId, int sectionId) {
+        return getSections(projectId, sectionId)
                 .stream()
                 .filter(section -> section.getId() == sectionId)
                 .map(Section::getName)
@@ -102,7 +93,7 @@ public final class RailClient {
                 .get(0);
     }
 
-    private String getUserName(int userId){
+    public String getUserName(int userId){
         return getUsers()
                 .stream()
                 .filter(user -> user.getId() == userId)
