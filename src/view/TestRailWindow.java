@@ -72,12 +72,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     public void dispose() {
     }
 
-    private void addToolBar() {
-        DefaultActionGroup group = new DefaultActionGroup();
-        group.addAction(new CreateDraftClassAction());
-        GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
-    }
-
     @SuppressWarnings("unchecked")
     private void setProjectSelectedItemAction() {
         projectComboBox.addItemListener(e -> {
@@ -108,7 +102,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                 casesFromSelectedPacks.clear();
                 if (null != (paths = sectionTree.getSelectionPaths())) {
-
+                //draw stats
                     for (TreePath path : paths) {
                         Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
 
@@ -119,6 +113,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                         }
                     }
                 }
+
                 List<CaseType> caseTypes = client.getCaseTypes();
                 StringBuilder builder = new StringBuilder();
                 for (CaseType type : caseTypes) {
@@ -167,15 +162,23 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    // region Draft classes
-
     public void createDraftClasses() {
         System.out.println("Create draft classes");
         casesFromSelectedPacks.forEach(testCase -> {
             System.out.println(testCase.getTitle());
         });
-//        DraftClassesCreator.getInstance()
     }
+
+
+    private void addToolBar() {
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.addAction(new CreateDraftClassAction());
+        GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
+    }
+
+    // endregion
+
+    // region Section tree
 
     private void showSectionTree(String selectedSuite) {
         // Create root node.
