@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.treeStructure.Tree;
 import model.section.OurSection;
 import model.section.OurSectionInflator;
@@ -24,7 +23,6 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +39,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JLabel detailsLabel;
     private RailClient client;
     private ToolWindowData data;
+    private List<Case> casesFromSelectedPacks = new ArrayList<>();
 
     public TestRailWindow(Project project) {
         super(project);
@@ -67,14 +66,11 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return suitesComboBox;
     }
 
-    public JLabel getDetailsLabel() {
-        return detailsLabel;
-    }
     @Override
     public void dispose() {
     }
 
-    private void addToolBar(){
+    private void addToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();
         group.addAction(new CreateDraftClassAction());
         GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
@@ -103,7 +99,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     public void print() {
-        System.out.print("test");
+        casesFromSelectedPacks.forEach(testCase -> {
+            System.out.println(testCase.getTitle());
+        });
+//        DraftClassesCreator.getInstance()
     }
 
     private void setSectionsTreeAction() {
@@ -114,13 +113,13 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                 List<Case> casesFromSelectedPacks = getCasesForSelectedTreeRows();
                 List<CaseType> caseTypes = client.getCaseTypes();
-                         StringBuilder builder = new StringBuilder();
-
+                StringBuilder builder = new StringBuilder();
                 for (CaseType type : caseTypes) {
                     List<Case> casesWithOneType = casesFromSelectedPacks.stream()
                             .filter(aCase -> aCase.getTypeId() == type.getId())
                             .collect(Collectors.toList());
                     builder.append(type.getName()).append(" : ").append(casesWithOneType.size()).append("<br>");
+                    //TODO here need to create JLabel with details {TypeName and casesWithOneType.size()}
 
                 }
 
@@ -162,7 +161,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootSection);
                     // Draw tree.
-                    showTree(rootSection, root);
+                    createTreeNode(rootSection, root);
 
                     sectionTree.setModel(new DefaultTreeModel(root));
 
@@ -177,8 +176,15 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             }
         });
     }
+// region Section tree
 
-    private void showTree(OurSection rootSection, DefaultMutableTreeNode root) {
+    /**
+     * Creates tree node for our section model of data.
+     *
+     * @param rootSection Our section model of data.
+     * @param root        Tree node view.
+     */
+    private void createTreeNode(OurSection rootSection, DefaultMutableTreeNode root) {
         if (rootSection.getSectionList().isEmpty())
             return;
 
@@ -191,7 +197,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                         testCaseData.setId(testCase.getId());
                         subSection.add(new DefaultMutableTreeNode(testCaseData));
                     });
-            showTree(ourSection, subSection);
+            createTreeNode(ourSection, subSection);
         }
     }
 
@@ -222,4 +228,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         cases.addAll(section.getCases());
         return cases;
     }
+
+    // endregion
 }
