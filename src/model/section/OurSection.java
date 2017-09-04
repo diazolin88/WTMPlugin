@@ -13,7 +13,7 @@ public class OurSection {
     private Integer id;
     private String name;
     private List<OurSection> sectionList = new ArrayList<>();
-    private List<Case> cases;
+    private List<Case> cases = new ArrayList<>();
 
     // region Getters and setters.
 
