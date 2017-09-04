@@ -71,12 +71,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     public void dispose() {
     }
 
-    private void addToolBar() {
-        DefaultActionGroup group = new DefaultActionGroup();
-        group.addAction(new CreateDraftClassAction());
-        GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
-    }
-
     @SuppressWarnings("unchecked")
     private void setProjectSelectedItemAction() {
         projectComboBox.addItemListener(e -> {
@@ -119,7 +113,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                 casesFromSelectedPacks.clear();
                 if (null != (paths = sectionTree.getSelectionPaths())) {
-
                     for (TreePath path : paths) {
                         Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
 
@@ -176,6 +169,16 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             }
         });
     }
+
+    // region Toolbar
+
+    private void addToolBar() {
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.addAction(new CreateDraftClassAction());
+        GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
+    }
+
+    // endregion
 
     // region Section tree
 
