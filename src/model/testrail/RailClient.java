@@ -84,8 +84,8 @@ public final class RailClient {
 //    }
 
     @SuppressWarnings("ConstantConditions")
-    public String getStoryNameBySectionId(int projectId, int sectionId) {
-        return getSections(projectId, sectionId)
+    public String getStoryNameBySectionId(int projectId, int suiteId, int sectionId) {
+        return getSections(projectId, suiteId)
                 .stream()
                 .filter(section -> section.getId() == sectionId)
                 .map(Section::getName)
