@@ -15,8 +15,10 @@ import model.section.OurSectionInflator;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
 import model.testrail.RailDataStorage;
+import model.testrail.RailTestCase;
 import model.treerenderer.TestCase;
 import model.treerenderer.TreeRenderer;
+import utils.DraftClassesCreator;
 import utils.GuiUtil;
 import utils.ToolWindowData;
 
@@ -30,6 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static model.testrail.RailConstants.KEYWORDS;
+import static model.testrail.RailConstants.PRECONDITION_FIELD;
+import static model.testrail.RailConstants.STEPS_SEPARATED_FIELD;
 import static utils.ComponentUtil.*;
 
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
@@ -137,8 +142,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     public void createDraftClasses() {
         System.out.println("Create draft classes");
-        casesFromSelectedPacks.forEach(testCase -> {
-            System.out.println(testCase.getTitle());
+        List<RailTestCase> railTestCases = casesFromSelectedPacks.stream()
+                .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()) , aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD),aCase.getCustomField(PRECONDITION_FIELD) , aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), aCase.getSectionId())))
+                .collect(Collectors.toList());
+
+        railTestCases.forEach(railTestCase -> {
+            DraftClassesCreator.getInstance().create(railTestCase);
         });
     }
 
