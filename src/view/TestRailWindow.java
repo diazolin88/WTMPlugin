@@ -165,13 +165,18 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     public void createDraftClasses() {
-        System.out.println("Create draft classes");
-        List<RailTestCase> railTestCases = casesFromSelectedPacks.stream()
-                .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()) , aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD),aCase.getCustomField(PRECONDITION_FIELD) , aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
-                .collect(Collectors.toList());
+        GuiUtil.runInSeparateThread(()->{
+            makeVisible(loadingLabel);
 
-        railTestCases.forEach(railTestCase -> {
-            DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+            List<RailTestCase> railTestCases = casesFromSelectedPacks.stream()
+                    .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()) , aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD),aCase.getCustomField(PRECONDITION_FIELD) , aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
+                    .collect(Collectors.toList());
+
+            railTestCases.forEach(railTestCase -> {
+                DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+            });
+
+            makeInvisible(loadingLabel);
         });
     }
 
