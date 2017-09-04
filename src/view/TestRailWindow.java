@@ -36,6 +36,7 @@ import static model.testrail.RailConstants.STEPS_SEPARATED_FIELD;
 import static utils.ComponentUtil.*;
 
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
+    private Project project;
     private JPanel mainPanel;
     private JComboBox projectComboBox;
     private JComboBox suitesComboBox;
@@ -51,6 +52,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     public TestRailWindow(Project project) {
         super(project);
+        this.project = project;
         client = new RailClient(RailConnection.getInstance(project).getClient());
         makeInvisible(loadingLabel);
         setContent(mainPanel);
@@ -161,13 +163,18 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     public void createDraftClasses() {
-        System.out.println("Create draft classes");
-        List<RailTestCase> railTestCases = casesFromSelectedPacks.stream()
-                .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()) , aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD),aCase.getCustomField(PRECONDITION_FIELD) , aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
-                .collect(Collectors.toList());
+        GuiUtil.runInSeparateThread(()->{
+            makeVisible(loadingLabel);
 
-        railTestCases.forEach(railTestCase -> {
-            DraftClassesCreator.getInstance().create(railTestCase);
+            List<RailTestCase> railTestCases = casesFromSelectedPacks.stream()
+                    .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()) , aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD),aCase.getCustomField(PRECONDITION_FIELD) , aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
+                    .collect(Collectors.toList());
+
+            railTestCases.forEach(railTestCase -> {
+                DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+            });
+
+            makeInvisible(loadingLabel);
         });
     }
 

@@ -1,13 +1,11 @@
 package utils;
 
+import com.intellij.openapi.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -19,7 +17,7 @@ import java.util.stream.Collectors;
  * 2. Add to draft hash map key (he is equals with marker name in *tpl without '{' and '}' ).
  */
 public class TemplateEngine {
-
+    private Project project;
     private static final Logger LOGGER = LoggerFactory.getLogger(TemplateEngine.class);
 
     public static final String USER_NAME_KEY = "USER_NAME";
@@ -32,20 +30,12 @@ public class TemplateEngine {
     public static final String PRECONDITIONS_KEY = "PRECONDITIONS";
     public static final String SUMMARY_KEY = "SUMMARY";
 
-    private static final String DRAFT_TEMPLATE_FILE_PATH = "src/test/resources/DraftTemplate.tpl";
-    private static final String DRAFT_DIRECTORY_PATH = "src/test/java/com/wiley/project/tests/drafts";
+    private String draftDirectoryPath = "";
     private static final String KEY_WORD_TEMPLATE = "\\{\\{%s\\}\\}";
 
-    private static TemplateEngine instance = null;
-
-    private TemplateEngine() {
-    }
-
-    public static TemplateEngine getInstance() {
-        if (instance == null) {
-            instance = new TemplateEngine();
-        }
-        return instance;
+    public TemplateEngine(Project project) {
+        this.project = project;
+        draftDirectoryPath = project.getBasePath() +"/drafts";
     }
 
     /**
@@ -53,11 +43,11 @@ public class TemplateEngine {
      *
      * @param draftDataMap Map of draft data.
      */
-    public void generateDraftClass(HashMap<String, String> draftDataMap) {
-        List<String> rowList = getFileAsRowList(DRAFT_TEMPLATE_FILE_PATH);
+    public void generateDraftClass(HashMap<String, String> draftDataMap, String template) {
+        List<String> rowList = new ArrayList<>(Arrays.asList(template.split("\n")));
 
         // Creates directory if directory doesn't exist.
-        File draftDirectory = new File(DRAFT_DIRECTORY_PATH);
+        File draftDirectory = new File(draftDirectoryPath);
         if (!draftDirectory.exists()) {
             LOGGER.info("Created draft directory");
             draftDirectory.mkdir();
@@ -78,33 +68,7 @@ public class TemplateEngine {
         LOGGER.info("Ending of replacement of markers");
 
         LOGGER.info(String.format("Creating %s class", draftDataMap.get(CLASS_NAME_KEY)));
-        writeRowListToFile(rowList, DRAFT_DIRECTORY_PATH + "/" + draftDataMap.get(CLASS_NAME_KEY) + ".java");
-    }
-
-    /**
-     * Gets file rows as list of string.
-     *
-     * @param filePath Path to file.
-     * @return List of string.
-     */
-    private List<String> getFileAsRowList(String filePath) {
-        File details = new File(filePath);
-
-        List<String> rowList = new ArrayList<>();
-        String row;
-
-        try (
-                FileReader fileReader = new FileReader(details);
-                BufferedReader bufferedReader = new BufferedReader(fileReader)
-        ) {
-            while ((row = bufferedReader.readLine()) != null) {
-                rowList.add(row);
-            }
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-
-        return rowList;
+        writeRowListToFile(rowList, draftDirectoryPath + "/" + draftDataMap.get(CLASS_NAME_KEY) + ".java");
     }
 
     /**

@@ -1,6 +1,8 @@
 package utils;
 
 import com.codepine.api.testrail.model.Field;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
 import model.testrail.RailTestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,29 +16,27 @@ import java.util.List;
 import static utils.TemplateEngine.*;
 
 public class DraftClassesCreator {
+    private Project project;
     private static final Logger LOGGER = LoggerFactory.getLogger(DraftClassesCreator.class);
 
     private static final String DATE_FORMAT = "dd.MM.yyyy";
     private static final String PROJECT_PREFIX = "NG";
     private static final String CLASS_NAME_STUB = "TBD";
 
-    private static DraftClassesCreator instance = null;
-
-    // region Create draft class or classes
-    public void create(List<RailTestCase> testCaseList) {
+    public DraftClassesCreator(Project project){
+        this.project = project;
+    }
+    public static DraftClassesCreator getInstance(Project project) {
+        return ServiceManager.getService(project, DraftClassesCreator.class);
+    }
+       // region Create draft class or classes
+    public void create(List<RailTestCase> testCaseList, String template) {
         for (RailTestCase testCase : testCaseList) {
-            create(testCase);
+            create(testCase, template);
         }
     }
 
-    public static DraftClassesCreator getInstance() {
-        if (instance == null) {
-            instance = new DraftClassesCreator();
-        }
-        return instance;
-    }
-
-    public void create(RailTestCase testCase) {
+    public void create(RailTestCase testCase, String template) {
         DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         HashMap<String, String> draftDataMap = new HashMap<>();
 
@@ -55,7 +55,8 @@ public class DraftClassesCreator {
         draftDataMap.put(CLASS_NAME_KEY, className);
 
         LOGGER.info("------------------------------------------------");
-        TemplateEngine.getInstance().generateDraftClass(draftDataMap);
+        TemplateEngine engine = new TemplateEngine(project);
+        engine.generateDraftClass(draftDataMap, template);
         LOGGER.info("------------------------------------------------");
     }
 
