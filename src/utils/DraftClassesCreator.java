@@ -20,11 +20,20 @@ public class DraftClassesCreator {
     private static final String PROJECT_PREFIX = "NG";
     private static final String CLASS_NAME_STUB = "TBD";
 
+    private static DraftClassesCreator instance = null;
+
     // region Create draft class or classes
     public void create(List<RailTestCase> testCaseList) {
         for (RailTestCase testCase : testCaseList) {
             create(testCase);
         }
+    }
+
+    public static DraftClassesCreator getInstance() {
+        if (instance == null) {
+            instance = new DraftClassesCreator();
+        }
+        return instance;
     }
 
     public void create(RailTestCase testCase) {

@@ -100,9 +100,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     public void print(){
-        System.out.print("test");
+//        DraftClassesCreator.getInstance()
     }
 
+    private List<Case> casesFromSelectedPacks = new ArrayList<>();
     private void setSectionsTreeAction() {
         sectionTree.addTreeSelectionListener(e -> {
 
@@ -111,8 +112,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 //draw stats
                 detailsPanel.setLayout(new GridLayout());
                 TreePath[] paths;
-                List<Case> casesFromSelectedPacks = new ArrayList<>();
 
+                casesFromSelectedPacks.clear();
                 if (null != (paths = sectionTree.getSelectionPaths())) {
 
                     for (TreePath path : paths) {
