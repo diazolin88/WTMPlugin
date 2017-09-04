@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.treeStructure.Tree;
 import model.section.OurSection;
 import model.section.OurSectionInflator;
@@ -26,7 +25,6 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +42,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private Tree sectionTree;
     private JLabel loadingLabel;
     private JLabel detailsLabel;
+    private JPanel detailsPanel;
     private RailClient client;
     private ToolWindowData data;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
@@ -71,6 +70,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     public JComboBox getSuitesComboBox() {
         return suitesComboBox;
+    }
+
+    public JPanel getDetailsPanel() {
+        return detailsPanel;
     }
 
     @Override
@@ -124,6 +127,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     disableComponent(this.projectComboBox);
                     makeVisible(this.loadingLabel);
                     makeInvisible(this.sectionTree);
+                    makeInvisible(this.detailsPanel);
 
                     // Shows section tree.
                     showSectionTree(selectedSuite);
@@ -206,10 +210,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     private List<Case> getCasesForSelectedTreeRows() {
-        TreePath[] paths;
+        TreePath[] paths = sectionTree.getSelectionPaths();
         List<Case> casesFromSelectedPacks = new ArrayList<>();
 
-        if (null != (paths = sectionTree.getSelectionPaths())) {
+        if (null != paths) {
 
             for (TreePath path : paths) {
                 Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
@@ -220,6 +224,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     casesFromSelectedPacks.addAll(getCases(section));
                 }
             }
+            makeVisible(this.detailsPanel);
+        } else if( null == paths) {
+            makeInvisible(detailsPanel);
         }
         return casesFromSelectedPacks;
     }
@@ -244,10 +251,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
         }
 
-        makeVisible(this.detailsLabel);
         detailsLabel.setText("<html>" + builder.toString() + "</html>");
         repaintComponent(detailsLabel);
-        //detailsPanel.add(detailsLabel);
     }
     // endregion
 }
