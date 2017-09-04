@@ -71,7 +71,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     public void dispose() {
     }
 
-    private void addToolBar(){
+    private void addToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();
         group.addAction(new CreateDraftClassAction());
         GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
@@ -99,11 +99,15 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    public void print(){
+    public void print() {
+        casesFromSelectedPacks.forEach(testCase -> {
+            System.out.println(testCase.getTitle());
+        });
 //        DraftClassesCreator.getInstance()
     }
 
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
+
     private void setSectionsTreeAction() {
         sectionTree.addTreeSelectionListener(e -> {
 
@@ -136,13 +140,13 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     //TODO here need to create JLabel with details {TypeName and casesWithOneType.size()}
 
                 }
+
                 JLabel label = new JBLabel("<html>" + builder.toString() + "</html>");
                 detailsPanel.add(label);
                 repaintComponent(detailsPanel);
             });
         });
     }
-
 
     private void setSuiteSelectedItemAction() {
         suitesComboBox.addActionListener(e -> {
@@ -157,24 +161,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     disableComponent(this.projectComboBox);
                     makeVisible(this.loadingLabel);
                     makeInvisible(this.sectionTree);
-                    // Create root node.
-                    OurSection rootSection = new OurSection();
-                    rootSection.setId(null);
-                    rootSection.setName(selectedSuite);
 
-                    // Inflates root section.
-                    // TODO: i don't understand what is the line doing
-                    RailDataStorage railData = new RailDataStorage()
-                            .setCases(client.getCases(data.getProjectId(), data.getSuiteId()))
-                            .setSections(client.getSections(data.getProjectId(), data.getSuiteId()));
-                    OurSectionInflator.inflateOurSection(railData, null, rootSection);
-
-                    // Draw one node.
-                    DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootSection);
-                    // Draw tree.
-                    showTree(rootSection, root);
-
-                    sectionTree.setModel(new DefaultTreeModel(root));
+                    // Shows section tree.
+                    showSectionTree(selectedSuite);
 
                     enableComponent(this.projectComboBox);
                     enableComponent(this.suitesComboBox);
@@ -188,7 +177,35 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    private void showTree(OurSection rootSection, DefaultMutableTreeNode root) {
+    // region Section tree
+
+    private void showSectionTree(String selectedSuite) {
+        // Create root node.
+        OurSection rootSection = new OurSection();
+        rootSection.setId(null);
+        rootSection.setName(selectedSuite);
+
+        // Inflates root section.
+        RailDataStorage railData = new RailDataStorage()
+                .setCases(client.getCases(data.getProjectId(), data.getSuiteId()))
+                .setSections(client.getSections(data.getProjectId(), data.getSuiteId()));
+        OurSectionInflator.inflateOurSection(railData, null, rootSection);
+
+        // Draw one node.
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootSection);
+        // Draw tree.
+        createTreeNode(rootSection, root);
+
+        sectionTree.setModel(new DefaultTreeModel(root));
+    }
+
+    /**
+     * Creates tree node for our section model of data.
+     *
+     * @param rootSection Our section model of data.
+     * @param root        Tree node view.
+     */
+    private void createTreeNode(OurSection rootSection, DefaultMutableTreeNode root) {
         if (rootSection.getSectionList().isEmpty())
             return;
 
@@ -201,7 +218,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                         testCaseData.setId(testCase.getId());
                         subSection.add(new DefaultMutableTreeNode(testCaseData));
                     });
-            showTree(ourSection, subSection);
+            createTreeNode(ourSection, subSection);
         }
     }
+
+    // endregion
 }
