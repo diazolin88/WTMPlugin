@@ -195,7 +195,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         }
     }
 
-    @NotNull
     private List<Case> getCasesForSelectedTreeRows() {
         TreePath[] paths;
         List<Case> casesFromSelectedPacks = new ArrayList<>();
