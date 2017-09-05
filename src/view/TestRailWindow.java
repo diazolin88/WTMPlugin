@@ -35,6 +35,8 @@ import static model.testrail.RailConstants.*;
 import static utils.ComponentUtil.*;
 
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
+    private static final String HTML_CLOSE_TAG = "</html>";
+    private static final String HTML_OPEN_TAG = "<html>";
     private Project project;
     private JPanel mainPanel;
     private JComboBox projectComboBox;
@@ -49,8 +51,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private ToolWindowData data;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
     private List<RailClient.CaseFieldCustom> customProjectFieldsMap = new ArrayList<>();
-    private static final String HTML_CLOSE_TAG = "</html>";
-    private static final String HTML_OPEN_TAG = "<html>";
 
     public TestRailWindow(Project project) {
         super(project);
@@ -83,6 +83,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return detailsPanel;
     }
 
+    public Tree getSectionTree() {
+        return sectionTree;
+    }
+
     @Override
     public void dispose() {
     }
@@ -113,39 +117,42 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     private void setSectionsTreeAction() {
         sectionTree.addTreeSelectionListener(e -> {
-
             GuiUtil.runInSeparateThread(() -> {
-                customProjectFieldsMap = client.getCustomFieldNamesMap(data.getProjectId());
+                DefaultMutableTreeNode lastSelectedTreeNode = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
 
-                casesFromSelectedPacks = getCasesForSelectedTreeRows();
+                if (null != lastSelectedTreeNode && null != lastSelectedTreeNode.getUserObject() && !(lastSelectedTreeNode.getUserObject() instanceof OurSection)) {
+                    //DO nothing here as selection is Test case
+                    //TODO add logic here if selected test case
+                } else {
+                    customProjectFieldsMap = client.getCustomFieldNamesMap(data.getProjectId());
 
-                displayCaseTypesInfo();
+                    casesFromSelectedPacks = getCasesForSelectedTreeRows();
 
-                //TODO stats by selected custom field
-                GuiUtil.runInSeparateThread(() -> {
-                    disableComponent(customFieldsComboBox);
-                    makeVisible(loadingLabel);
-                    //client.getCustomFields(data.getProjectId(),data.getSuiteId()).forEach(s -> customFieldsComboBox.addItem(s));
-                    customFieldsComboBox.removeAllItems();
-                    //get Map<Integer, String>
-                    if (!customProjectFieldsMap.isEmpty()) {
-                        makeVisible(customFieldsComboBox);
-                        customProjectFieldsMap.stream().forEach(value -> customFieldsComboBox.addItem(value.getDisplayedName()));
-                        repaintComponent(customFieldsLabel);
-                    } else {
-                        makeInvisible(customFieldsComboBox);
-                        customFieldsLabel.setText("No defined custom fields found!");
-                        repaintComponent(customFieldsLabel);
-                    }
+                    displayCaseTypesInfo();
 
-                    //TODO Render stat by selected custom field
-                    client.getCases(data.getProjectId(), data.getSuiteId()).stream().filter(aCase -> aCase.getCustomFields().keySet().contains(customFieldsComboBox.getSelectedItem()));
-                    repaintComponent(detailsPanel);
-                    makeInvisible(loadingLabel);
-                    enableComponent(customFieldsComboBox);
-                });
+                    GuiUtil.runInSeparateThread(() -> {
+                        disableComponent(customFieldsComboBox);
+                        makeVisible(loadingLabel);
+
+                        customFieldsComboBox.removeAllItems();
+
+                        if (!customProjectFieldsMap.isEmpty()) {
+                            makeVisible(customFieldsComboBox);
+                            customProjectFieldsMap.forEach(value -> customFieldsComboBox.addItem(value.getDisplayedName()));
+                            repaintComponent(customFieldsLabel);
+                        } else {
+                            makeInvisible(customFieldsComboBox);
+                            customFieldsLabel.setText("No defined custom fields found!");
+                            repaintComponent(customFieldsLabel);
+                        }
+                        repaintComponent(detailsPanel);
+                        makeInvisible(loadingLabel);
+                        enableComponent(customFieldsComboBox);
+                    });
+                }
             });
         });
+
     }
 
     private void setSuiteSelectedItemAction() {
@@ -203,7 +210,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     /**
      * Render stats in @customFieldsLabel depends on TYPE which is defined in getCustomFieldNamesMap method
-     * */
+     */
     private void renderStats(StringBuilder builder, Field.Config config) {
         try {
             ((Field.Config.DropdownOptions) config.getOptions()).getItems().forEach((key, value) -> {
@@ -237,7 +244,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         }
     }
 
-    public void createDraftClasses() {
+    public synchronized void createDraftClasses() {
         GuiUtil.runInSeparateThread(() -> {
             makeVisible(loadingLabel);
 
