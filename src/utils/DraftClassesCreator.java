@@ -86,12 +86,26 @@ public class DraftClassesCreator {
             numberStep++;
             builder
                     .append(numberStep)
-                    .append(". ")
-                    .append(format(step.getContent()))
+                    .append(". ");
+
+            String content = step.getContent();
+            String[] contentArray = content.split(".");
+            if (contentArray.length != 0) {
+                content = "";
+                for (int i=0; i< contentArray.length; i++) {
+                    content += contentArray[i] + " \n * ";
+                }
+            }
+
+            builder
+                    .append(content)
                     .append("\n * Expected result:\n * ")
-                    .append(format(step.getExpected()));
+                    .append(format(step.getExpected()))
+                    .append("\n * ");
         }
-        return builder.toString();
+
+        String content = builder.toString();
+        return content.substring(0, content.length() - 4);
     }
 
     private String format(String formatString) {
