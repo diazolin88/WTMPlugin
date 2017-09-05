@@ -129,7 +129,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     customFieldsComboBox.removeAllItems();
                     //get Map<Integer, String>
                     if (!customProjectFieldsMap.isEmpty()) {
+                        makeVisible(customFieldsComboBox);
                         customProjectFieldsMap.stream().forEach(value -> customFieldsComboBox.addItem(value.getDisplayedName()));
+                        repaintComponent(customFieldsLabel);
                     } else {
                         makeInvisible(customFieldsComboBox);
                         customFieldsLabel.setText("No defined custom fields found!");
