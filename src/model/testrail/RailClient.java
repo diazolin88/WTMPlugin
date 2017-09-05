@@ -108,7 +108,9 @@ public final class RailClient {
                         caseField.getConfigs()
                         .stream()
                         .filter(config -> config.getContext().getProjectIds() != null)
-                                .filter(config -> config.getOptions().getClass().isAssignableFrom(Field.Config.DropdownOptions.class) || config.getOptions().getClass().isAssignableFrom(Field.Config.MultiSelectOptions.class))
+                                .filter(config ->
+                                        config.getOptions().getClass().isAssignableFrom(Field.Config.DropdownOptions.class)
+                                        || config.getOptions().getClass().isAssignableFrom(Field.Config.MultiSelectOptions.class))
                         .anyMatch(config -> config.getContext().getProjectIds().contains(projectID)))
                .forEach(caseField -> caseFieldCustoms.add(new CaseFieldCustom(caseField.getId(),caseField.getSystemName(),caseField.getLabel(),caseField.getConfigs())));
        return caseFieldCustoms;

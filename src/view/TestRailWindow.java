@@ -49,6 +49,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private ToolWindowData data;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
     private List<RailClient.CaseFieldCustom> customProjectFieldsMap = new ArrayList<>();
+    private static final String HTML_CLOSE_TAG = "</html>";
+    private static final String HTML_OPEN_TAG = "<html>";
 
     public TestRailWindow(Project project) {
         super(project);
@@ -126,7 +128,13 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     //client.getCustomFields(data.getProjectId(),data.getSuiteId()).forEach(s -> customFieldsComboBox.addItem(s));
                     customFieldsComboBox.removeAllItems();
                     //get Map<Integer, String>
-                    customProjectFieldsMap.stream().forEach(value -> customFieldsComboBox.addItem(value.getDisplayedName()));
+                    if (!customProjectFieldsMap.isEmpty()) {
+                        customProjectFieldsMap.stream().forEach(value -> customFieldsComboBox.addItem(value.getDisplayedName()));
+                    } else {
+                        makeInvisible(customFieldsComboBox);
+                        customFieldsLabel.setText("No defined custom fields found!");
+                        repaintComponent(customFieldsLabel);
+                    }
 
                     //TODO Render stat by selected custom field
                     client.getCases(data.getProjectId(), data.getSuiteId()).stream().filter(aCase -> aCase.getCustomFields().keySet().contains(customFieldsComboBox.getSelectedItem()));
@@ -174,7 +182,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 GuiUtil.runInSeparateThread(() -> {
                     String selectedValue = (String) this.customFieldsComboBox.getSelectedItem();
                     StringBuilder builder = new StringBuilder();
-                    builder.append("<html>");
+                    builder.append(HTML_OPEN_TAG);
                     customProjectFieldsMap
                             .stream()
                             .filter(caseField -> caseField.getDisplayedName().equals(selectedValue))
@@ -182,7 +190,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                             .forEach(caseField -> caseField.getConfigs()
                                     .forEach(
                                             config -> {
-                                                tryCastToClass(builder, config);
+                                                renderStats(builder, config);
                                             }));
 
                 });
@@ -191,7 +199,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    private void tryCastToClass(StringBuilder builder, Field.Config config) {
+    /**
+     * Render stats in @customFieldsLabel depends on TYPE which is defined in getCustomFieldNamesMap method
+     * */
+    private void renderStats(StringBuilder builder, Field.Config config) {
         try {
             ((Field.Config.DropdownOptions) config.getOptions()).getItems().forEach((key, value) -> {
                 //filter cases by option
@@ -202,16 +213,24 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                 builder.append(value + " : " + cases.size()).append("<br>");
             });
-            builder.append("</html>");
+            builder.append(HTML_CLOSE_TAG);
             customFieldsLabel.setText(builder.toString());
             repaintComponent(customFieldsLabel);
         } catch (ClassCastException ex1) {
             try {
-                ((Field.Config.TextOptions) config.getOptions()).getRows();
-            }catch (ClassCastException ex2){
-
+                ((Field.Config.MultiSelectOptions) config.getOptions()).getItems().forEach((key, value) -> {
+                    List<Case> cases = casesFromSelectedPacks.stream()
+                            .filter(caseField1 -> caseField1.getCustomFields().entrySet().stream()
+                                    .anyMatch(o -> o.getValue() != null && o.getValue().equals(key)))
+                            .collect(Collectors.toList());
+                    builder.append(value).append(" : ").append(cases.size()).append("<br>");
+                });
+            } catch (ClassCastException ex2) {
+                customFieldsLabel.setText("No Options!");
+                repaintComponent(customFieldsLabel);
             }
-            customFieldsLabel.setText("No Options!");
+            builder.append(HTML_CLOSE_TAG);
+            customFieldsLabel.setText(builder.toString());
             repaintComponent(customFieldsLabel);
         }
     }
@@ -327,7 +346,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
         }
 
-        detailsLabel.setText("<html>" + builder.toString() + "</html>");
+        detailsLabel.setText(HTML_OPEN_TAG + builder.toString() + HTML_CLOSE_TAG);
         repaintComponent(detailsLabel);
     }
     // endregion
