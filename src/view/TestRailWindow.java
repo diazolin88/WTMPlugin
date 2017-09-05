@@ -3,6 +3,7 @@ package view;
 import actions.CreateDraftClassAction;
 import com.codepine.api.testrail.model.Case;
 import com.codepine.api.testrail.model.CaseType;
+import com.codepine.api.testrail.model.Field;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -30,9 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static model.testrail.RailConstants.KEYWORDS;
-import static model.testrail.RailConstants.PRECONDITION_FIELD;
-import static model.testrail.RailConstants.STEPS_SEPARATED_FIELD;
+import static model.testrail.RailConstants.*;
 import static utils.ComponentUtil.*;
 
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
@@ -49,6 +48,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private RailClient client;
     private ToolWindowData data;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
+    private List<RailClient.CaseFieldCustom> customProjectFieldsMap = new ArrayList<>();
 
     public TestRailWindow(Project project) {
         super(project);
@@ -61,6 +61,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
         setSectionsTreeAction();
+        setCustomFieldsComboBoxAction();
         addToolBar();
     }
 
@@ -112,6 +113,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         sectionTree.addTreeSelectionListener(e -> {
 
             GuiUtil.runInSeparateThread(() -> {
+                customProjectFieldsMap = client.getCustomFieldNamesMap(data.getProjectId());
 
                 casesFromSelectedPacks = getCasesForSelectedTreeRows();
 
@@ -121,12 +123,16 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 GuiUtil.runInSeparateThread(() -> {
                     disableComponent(customFieldsComboBox);
                     makeVisible(loadingLabel);
-                    client.getCustomFields(data.getProjectId(),data.getSuiteId()).forEach(s -> customFieldsComboBox.addItem(s));
-                    enableComponent(customFieldsComboBox);
+                    //client.getCustomFields(data.getProjectId(),data.getSuiteId()).forEach(s -> customFieldsComboBox.addItem(s));
+                    customFieldsComboBox.removeAllItems();
+                    //get Map<Integer, String>
+                    customProjectFieldsMap.stream().forEach(value -> customFieldsComboBox.addItem(value.getDisplayedName()));
+
                     //TODO Render stat by selected custom field
-                    client.getCases(data.getProjectId(),data.getSuiteId()).stream().filter(aCase -> aCase.getCustomFields().keySet().contains(customFieldsComboBox.getSelectedItem()));
-                    makeInvisible(loadingLabel);
+                    client.getCases(data.getProjectId(), data.getSuiteId()).stream().filter(aCase -> aCase.getCustomFields().keySet().contains(customFieldsComboBox.getSelectedItem()));
                     repaintComponent(detailsPanel);
+                    makeInvisible(loadingLabel);
+                    enableComponent(customFieldsComboBox);
                 });
             });
         });
@@ -162,12 +168,60 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
+    private void setCustomFieldsComboBoxAction() {
+        customFieldsComboBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                GuiUtil.runInSeparateThread(() -> {
+                    String selectedValue = (String) this.customFieldsComboBox.getSelectedItem();
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("<html>");
+                    customProjectFieldsMap
+                            .stream()
+                            .filter(caseField -> caseField.getDisplayedName().equals(selectedValue))
+                            .collect(Collectors.toList())
+                            .forEach(caseField -> caseField.getConfigs()
+                                    .forEach(
+                                            config -> {
+                                                tryCastToClass(builder, config);
+                                            }));
+
+                });
+
+            }
+        });
+    }
+
+    private void tryCastToClass(StringBuilder builder, Field.Config config) {
+        try {
+            ((Field.Config.DropdownOptions) config.getOptions()).getItems().forEach((key, value) -> {
+                //filter cases by option
+                List<Case> cases = casesFromSelectedPacks.stream()
+                        .filter(caseField1 -> caseField1.getCustomFields().entrySet().stream()
+                                .anyMatch(o -> o.getValue() != null && o.getValue().equals(key)))
+                        .collect(Collectors.toList());
+
+                builder.append(value + " : " + cases.size()).append("<br>");
+            });
+            builder.append("</html>");
+            customFieldsLabel.setText(builder.toString());
+            repaintComponent(customFieldsLabel);
+        } catch (ClassCastException ex1) {
+            try {
+                ((Field.Config.TextOptions) config.getOptions()).getRows();
+            }catch (ClassCastException ex2){
+
+            }
+            customFieldsLabel.setText("No Options!");
+            repaintComponent(customFieldsLabel);
+        }
+    }
+
     public void createDraftClasses() {
-        GuiUtil.runInSeparateThread(()->{
+        GuiUtil.runInSeparateThread(() -> {
             makeVisible(loadingLabel);
 
             List<RailTestCase> railTestCases = casesFromSelectedPacks.stream()
-                    .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()) , aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD),aCase.getCustomField(PRECONDITION_FIELD) , aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
+                    .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
                     .collect(Collectors.toList());
 
             railTestCases.forEach(railTestCase -> {
@@ -247,7 +301,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 }
             }
             makeVisible(this.detailsPanel);
-        } else if( null == paths) {
+        } else if (null == paths) {
             makeInvisible(detailsPanel);
         }
         return casesFromSelectedPacks;

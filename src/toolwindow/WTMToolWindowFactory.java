@@ -11,6 +11,8 @@ import model.testrail.RailConnection;
 import settings.WTMSettings;
 import view.TestRailWindow;
 
+import java.util.Arrays;
+
 import static utils.ComponentUtil.disableComponent;
 import static utils.ComponentUtil.makeInvisible;
 
@@ -24,11 +26,12 @@ public class WTMToolWindowFactory implements ToolWindowFactory {
     public void createToolWindowContent(Project project, ToolWindow toolWindow) {
         initDesiredFields(project);
         setClient();
-
+        if(!railConnection.isLoggedIn()){
+            toolWindow.getComponent().removeAll();
+        }
         ContentFactory factory = ContentFactory.SERVICE.getInstance();
         Content content = factory.createContent(testRailWindow, "", true);
         toolWindow.getContentManager().addContent(content);
-
         //Render default items
         testRailWindow.getProjectComboBox().addItem("Select project...");
         client.getProjectList().forEach(var -> testRailWindow.getProjectComboBox().addItem(var.getName()));
