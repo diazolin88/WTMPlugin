@@ -9,6 +9,12 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.ui.popup.Balloon;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.wm.StatusBar;
+import com.intellij.openapi.wm.WindowManager;
+import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.treeStructure.Tree;
 import model.section.OurSection;
 import model.section.OurSectionInflator;
@@ -255,6 +261,16 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             railTestCases.forEach(railTestCase -> {
                 DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
             });
+
+            StatusBar statusBar = WindowManager.getInstance()
+                    .getStatusBar(project);
+
+            JBPopupFactory.getInstance()
+                    .createHtmlTextBalloonBuilder("<html>Draft classes created! <br>Please sync if not appeared</html>", MessageType.INFO, null)
+                    .setFadeoutTime(7500)
+                    .createBalloon()
+                    .show(RelativePoint.getCenterOf(statusBar.getComponent()),
+                            Balloon.Position.atLeft);
 
             makeInvisible(loadingLabel);
         });

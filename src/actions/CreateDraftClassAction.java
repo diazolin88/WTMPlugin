@@ -29,16 +29,6 @@ public class CreateDraftClassAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         //TODO createDraftClasses should throw and exception if something goes wrong, so we will handle it and show on baloon message
         TestRailWindow.getInstance(e.getProject()).createDraftClasses();
-
-        StatusBar statusBar = WindowManager.getInstance()
-                .getStatusBar(e.getProject());
-
-        JBPopupFactory.getInstance()
-                .createHtmlTextBalloonBuilder("<html>Draft classes created! <br>Please sync if not appeared</html>", MessageType.INFO, null)
-                .setFadeoutTime(7500)
-                .createBalloon()
-                .show(RelativePoint.getCenterOf(statusBar.getComponent()),
-                        Balloon.Position.atRight);
     }
 
     @Override
