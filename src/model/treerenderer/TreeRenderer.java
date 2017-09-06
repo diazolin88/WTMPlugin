@@ -1,5 +1,6 @@
 package model.treerenderer;
 
+import com.codepine.api.testrail.model.Case;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import model.section.OurSection;
 import utils.GuiUtil;
@@ -23,9 +24,9 @@ public class TreeRenderer extends ColoredTreeCellRenderer {
             OurSection pack = (OurSection) userObject;
             append(pack.getName());
             setIcon(PACKAGE_ICON);
-        }else if( userObject instanceof TestCase){
-            TestCase pack = (TestCase) userObject;
-            append(pack.getName());
+        }else if( userObject instanceof Case){
+            Case pack = (Case) userObject;
+            append(pack.getTitle());
             setIcon(PACKAGE_ICON);
             setIcon(GuiUtil.loadIcon("text_file_icon_16_16.png"));
         }

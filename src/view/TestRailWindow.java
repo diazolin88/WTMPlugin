@@ -30,7 +30,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.event.ItemEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,6 +56,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private ToolWindowData data;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
     private List<RailClient.CaseFieldCustom> customProjectFieldsMap = new ArrayList<>();
+    private JPopupMenu testCasePopupMenu;
 
     public TestRailWindow(Project project) {
         super(project);
@@ -77,6 +78,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         setSuiteSelectedItemAction();
         setSectionsTreeAction();
         setCustomFieldsComboBoxAction();
+        initTestCasePopupMenu();
     }
 
     public static TestRailWindow getInstance(Project project) {
@@ -129,7 +131,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     private void setSectionsTreeAction() {
+        addRightClickListenerToTree();
+
         sectionTree.addTreeSelectionListener(e -> {
+
             GuiUtil.runInSeparateThread(() -> {
                 DefaultMutableTreeNode lastSelectedTreeNode = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
 
@@ -176,7 +181,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             if (selectedSuite != null && !selectedSuite.equals("Select your suite...")) {
 
                 GuiUtil.runInSeparateThread(() -> {
-                    // TODO: view layer.
                     disableComponent(this.suitesComboBox);
                     disableComponent(this.projectComboBox);
                     makeVisible(this.loadingLabel);
@@ -283,7 +287,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-
     // endregion
 
     // region Section tree
@@ -322,11 +325,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             DefaultMutableTreeNode subSection = new DefaultMutableTreeNode(ourSection);
             root.add(subSection);
             ourSection.getCases()
-                    .forEach(testCase -> {
-                        TestCase testCaseData = new TestCase(testCase.getTitle());
-                        testCaseData.setId(testCase.getId());
-                        subSection.add(new DefaultMutableTreeNode(testCaseData));
-                    });
+                    .forEach(testCase -> subSection.add(new DefaultMutableTreeNode(testCase)));
             createTreeNode(ourSection, subSection);
         }
     }
@@ -376,5 +375,73 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         detailsLabel.setText(HTML_OPEN_TAG + builder.toString() + HTML_CLOSE_TAG);
         repaintComponent(detailsLabel);
     }
+    // endregion
+
+    // region Test case Tree popup
+
+    private void initTestCasePopupMenu() {
+        testCasePopupMenu = new JPopupMenu();
+        ActionListener menuListener = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                GuiUtil.runInSeparateThread(() -> {
+                    makeVisible(loadingLabel);
+
+                    Case aCase = (Case) currentSelectedTreeNode.getUserObject();
+                    RailTestCase railTestCase = new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId()));
+                    DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+
+                    StatusBar statusBar = WindowManager.getInstance()
+                            .getStatusBar(project);
+
+                    JBPopupFactory.getInstance()
+                            .createHtmlTextBalloonBuilder("<html>Draft classes created! <br>Please sync if not appeared</html>", MessageType.INFO, null)
+                            .setFadeoutTime(7500)
+                            .createBalloon()
+                            .show(RelativePoint.getCenterOf(statusBar.getComponent()),
+                                    Balloon.Position.atLeft);
+
+                    makeInvisible(loadingLabel);
+                });
+
+                System.out.println("Popup menu item ["
+                        + event.getActionCommand() + "] was pressed.");
+            }
+        };
+        JMenuItem item = new JMenuItem("Create draft class", null);
+        item.addActionListener(menuListener);
+        testCasePopupMenu.add(item);
+    }
+
+    private void addRightClickListenerToTree() {
+        MouseListener mouseListener = new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                handleContextMenu(mouseEvent);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+                handleContextMenu(mouseEvent);
+            }
+        };
+
+        sectionTree.addMouseListener(mouseListener);
+    }
+
+    private DefaultMutableTreeNode currentSelectedTreeNode = null;
+    private void handleContextMenu(MouseEvent mouseEvent) {
+        if (mouseEvent.isPopupTrigger()) {
+            TreePath pathForLocation = sectionTree.getPathForLocation(mouseEvent.getPoint().x, mouseEvent.getPoint().y);
+            if (pathForLocation != null) {
+                currentSelectedTreeNode = (DefaultMutableTreeNode) pathForLocation.getLastPathComponent();
+                if (currentSelectedTreeNode.getUserObject() instanceof Case) {
+                    testCasePopupMenu.show(mouseEvent.getComponent(),
+                            mouseEvent.getX(),
+                            mouseEvent.getY());
+                }
+            }
+        }
+    }
+
     // endregion
 }
