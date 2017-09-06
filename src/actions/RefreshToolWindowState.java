@@ -30,18 +30,18 @@ public class RefreshToolWindowState extends AnAction {
     }
 
     public void update(AnActionEvent e){
-        if(!WTMSettings.getInstance(e.getProject()).isLogged){
-            StatusBar statusBar = WindowManager.getInstance()
-                    .getStatusBar(project);
-
-            JBPopupFactory.getInstance()
-                    .createHtmlTextBalloonBuilder("You are not logged in, <br>so may be not allowed to use plugin fully", MessageType.ERROR, null)
-                    .setFadeoutTime(7500)
-                    .createBalloon()
-                    .show(RelativePoint.getCenterOf(statusBar.getComponent()),
-                            Balloon.Position.atLeft);
-
-        }
+//        if(!WTMSettings.getInstance(e.getProject()).isLogged){
+//            StatusBar statusBar = WindowManager.getInstance()
+//                    .getStatusBar(project);
+//
+//            JBPopupFactory.getInstance()
+//                    .createHtmlTextBalloonBuilder("You are not logged in, <br>so may be not allowed to use plugin fully", MessageType.ERROR, null)
+//                    .setFadeoutTime(7500)
+//                    .createBalloon()
+//                    .show(RelativePoint.getCenterOf(statusBar.getComponent()),
+//                            Balloon.Position.atLeft);
+//
+//        }
 
     }
 }
