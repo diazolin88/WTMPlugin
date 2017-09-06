@@ -4,6 +4,7 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import model.testrail.RailConnection;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +20,7 @@ import javax.swing.*;
  * Following line should be added to plugin.xml
  * <applicationConfigurable groupId="tools" displayName="Single File Execution Plugin" id="preferences.SingleFileExecutionConfigurable" instance="settings.WTMSettings" />
  */
-public class WTMSettingsWindowRenderer implements SearchableConfigurable,ProjectComponent {
+public class WTMSettingsWindowRenderer implements SearchableConfigurable, ProjectComponent {
 
     public final WTMSettings wtmSettings;
     private WTMSettingsWindow settingsComponent;

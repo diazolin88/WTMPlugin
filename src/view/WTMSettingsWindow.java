@@ -59,7 +59,13 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         settings.setRailUserName(railUserNameTextField.getText());
         settings.setRailUrl(railUrlTextField.getText());
         settings.setTemplate(temlateTextArea.getText());
-    }
+       try {
+           RailConnection.getInstance(project).login(this);
+           settings.setLogged(true);
+       } catch (AuthorizationException e) {
+           settings.setLogged(false);
+       }
+   }
 
     public static WTMSettingsWindow getInstance(Project project) {
         return ServiceManager.getService(project, WTMSettingsWindow.class);
@@ -82,6 +88,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         railUserNameTextField.setText(settings.getRailUserName());
         railUrlTextField.setText(settings.getRailUrl());
         temlateTextArea.setText(settings.getTemplate());
+        settings.setLogged(settings.isLogged());
     }
 
     private void railTestConnectionButtonClickedAction(Project project) {

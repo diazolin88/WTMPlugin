@@ -9,15 +9,13 @@ import exceptions.AuthorizationException;
 import model.testrail.RailClient;
 import model.testrail.RailConnection;
 import settings.WTMSettings;
-import view.TestRailWindow;
-
-import java.util.Arrays;
+import view.MainPanel;
 
 import static utils.ComponentUtil.disableComponent;
 import static utils.ComponentUtil.makeInvisible;
 
 public class WTMToolWindowFactory implements ToolWindowFactory {
-    private TestRailWindow testRailWindow;
+    private MainPanel mainWindow;
     private RailConnection railConnection;
     private WTMSettings settings;
     private RailClient client;
@@ -26,19 +24,11 @@ public class WTMToolWindowFactory implements ToolWindowFactory {
     public void createToolWindowContent(Project project, ToolWindow toolWindow) {
         initDesiredFields(project);
         setClient();
-        if(!railConnection.isLoggedIn()){
-            toolWindow.getComponent().removeAll();
-        }
         ContentFactory factory = ContentFactory.SERVICE.getInstance();
-        Content content = factory.createContent(testRailWindow, "", true);
-        toolWindow.getContentManager().addContent(content);
+        Content testRailWindowContent = factory.createContent(mainWindow, "", true);
+        toolWindow.getContentManager().addContent(testRailWindowContent);
         //Render default items
-        testRailWindow.getProjectComboBox().addItem("Select project...");
-        client.getProjectList().forEach(var -> testRailWindow.getProjectComboBox().addItem(var.getName()));
-        disableComponent(testRailWindow.getSuitesComboBox());
-        makeInvisible(testRailWindow.getDetailsPanel());
     }
-
 
     public void init(ToolWindow window) {
         window.hide(null);
@@ -46,7 +36,7 @@ public class WTMToolWindowFactory implements ToolWindowFactory {
     }
 
     private void initDesiredFields(Project project) {
-        testRailWindow = TestRailWindow.getInstance(project);
+        mainWindow = MainPanel.getInstance(project);
         railConnection = RailConnection.getInstance(project);
         settings = WTMSettings.getInstance(project);
     }

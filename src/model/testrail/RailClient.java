@@ -2,6 +2,7 @@ package model.testrail;
 
 import com.codepine.api.testrail.TestRail;
 import com.codepine.api.testrail.model.*;
+import settings.WTMSettings;
 import utils.ToolWindowData;
 
 import java.util.*;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 public final class RailClient {
     private TestRail client;
     private ToolWindowData data;
+    private Project project;
 
     private static List<Section> sectionList = new ArrayList<>();
     private static List<User> userList = new ArrayList<>();
@@ -21,9 +23,8 @@ public final class RailClient {
         this.client = client;
     }
 
-    public RailClient(TestRail client, ToolWindowData data) {
-        this.data = data;
-        this.client = client;
+    public RailClient(Project project) {
+        this.project = project;
     }
 
     public List<Project> getProjectList() {

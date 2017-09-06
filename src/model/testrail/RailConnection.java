@@ -9,7 +9,6 @@ import view.WTMSettingsWindow;
 
 
 public final class RailConnection {
-    private boolean isLoggedIn = false;
     private TestRail client;
 
     private RailConnection() {
@@ -26,10 +25,8 @@ public final class RailConnection {
         try {
             client = TestRail.builder(state.getRailUrl(), state.getRailUserName(), state.getRailPassword()).build();
             client.projects().list().execute();
-            isLoggedIn = true;
             return client;
         } catch (Exception e) {
-            isLoggedIn = false;
             throw new AuthorizationException("Unable to login due to invalid login data or url");
         }
     }
@@ -38,16 +35,10 @@ public final class RailConnection {
             try {
                 client = TestRail.builder(window.getRailUrlTextField().getText(), window.getRailUserNameTextField().getText(), String.valueOf(window.getRailPasswordField().getPassword())).build();
                 client.projects().list().execute();
-                isLoggedIn = true;
                 return client;
             } catch (Exception e) {
-                isLoggedIn = false;
                 throw new AuthorizationException("Unable to login due to invalid login data or url");
             }
-    }
-
-    public boolean isLoggedIn() {
-      return isLoggedIn;
     }
 
     public TestRail getClient() {

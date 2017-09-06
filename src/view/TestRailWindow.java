@@ -1,18 +1,16 @@
 package view;
 
-import actions.CreateDraftClassAction;
 import com.codepine.api.testrail.model.Case;
 import com.codepine.api.testrail.model.CaseType;
 import com.codepine.api.testrail.model.Field;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.wm.StatusBar;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.treeStructure.Tree;
@@ -53,6 +51,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JPanel detailsPanel;
     private JComboBox customFieldsComboBox;
     private JLabel customFieldsLabel;
+    private RailConnection connection;
     private RailClient client;
     private ToolWindowData data;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
@@ -61,16 +60,23 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     public TestRailWindow(Project project) {
         super(project);
         this.project = project;
-        client = new RailClient(RailConnection.getInstance(project).getClient());
+
+        disableComponent(this.suitesComboBox);
+        makeInvisible(this.detailsPanel);
+        makeInvisible(sectionTree);
+        connection = RailConnection.getInstance(project);
+        client = new RailClient(connection.getClient());
+        this.projectComboBox.addItem("Select project...");
+        client.getProjectList().forEach(var -> this.projectComboBox.addItem(var.getName()));
         makeInvisible(loadingLabel);
         setContent(mainPanel);
-
         sectionTree.setCellRenderer(new TreeRenderer());
+
+        //Listeners
         setProjectSelectedItemAction();
         setSuiteSelectedItemAction();
         setSectionsTreeAction();
         setCustomFieldsComboBoxAction();
-        addToolBar();
     }
 
     public static TestRailWindow getInstance(Project project) {
@@ -95,6 +101,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     @Override
     public void dispose() {
+        ToolWindowManager.getInstance(project).unregisterToolWindow("WTM plugin");
     }
 
     //region Listeners
@@ -276,11 +283,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    private void addToolBar() {
-        DefaultActionGroup group = new DefaultActionGroup();
-        group.addAction(new CreateDraftClassAction());
-        GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
-    }
 
     // endregion
 
