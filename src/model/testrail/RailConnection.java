@@ -27,6 +27,7 @@ public final class RailConnection {
             client.projects().list().execute();
             return client;
         } catch (Exception e) {
+            client = null;
             throw new AuthorizationException("Unable to login due to invalid login data or url");
         }
     }
@@ -37,6 +38,7 @@ public final class RailConnection {
                 client.projects().list().execute();
                 return client;
             } catch (Exception e) {
+                client = null;
                 throw new AuthorizationException("Unable to login due to invalid login data or url");
             }
     }

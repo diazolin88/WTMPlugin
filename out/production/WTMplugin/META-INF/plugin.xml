@@ -35,6 +35,7 @@
     <projectService serviceInterface="view.NotLoggedIn" serviceImplementation="view.NotLoggedIn"/>
     <projectService serviceInterface="view.MainPanel" serviceImplementation="view.MainPanel"/>
     <projectService serviceInterface="model.testrail.RailClient" serviceImplementation="model.testrail.RailClient"/>
+    <projectService serviceInterface="settings.WTMSettingsWindowRenderer" serviceImplementation="settings.WTMSettingsWindowRenderer"/>
 
     <toolWindow id="WTMPlugin" icon="/files/icons/13_13_wiley-interscience.png" anchor="left" factoryClass="toolwindow.WTMToolWindowFactory"/>
     <!--<toolWindow id="Failed test case" icon="/files/icons/Untitled.png" anchor="right" factoryClass="toolwindow.TestRunnerToolWindowFactory"/>-->

@@ -1,16 +1,18 @@
 package settings;
 
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
-import model.testrail.RailConnection;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import view.View;
 import view.WTMSettingsWindow;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * Class implementing @SearchableConfigurable to be able to see
@@ -22,6 +24,7 @@ import javax.swing.*;
  */
 public class WTMSettingsWindowRenderer implements SearchableConfigurable, ProjectComponent {
 
+    private static java.util.List<View> subscribers = new ArrayList<>();
     public final WTMSettings wtmSettings;
     private WTMSettingsWindow settingsComponent;
     private Project project;
@@ -30,6 +33,10 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable, Projec
         this.project = project;
         this.wtmSettings = WTMSettings.getInstance(project);
 
+    }
+
+    public static WTMSettingsWindowRenderer getInstance(Project project){
+        return ServiceManager.getService(project, WTMSettingsWindowRenderer.class);
     }
 
     @NotNull
@@ -64,6 +71,7 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable, Projec
     @Override
     public void apply() throws ConfigurationException {
         settingsComponent.setSettings();
+        subscribers.forEach(view -> view.update(this.wtmSettings));
     }
 
     /**
@@ -78,5 +86,9 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable, Projec
     @Override
     public void disposeUIResources() {
         WTMSettingsWindow.getInstance(project).dispose();
+    }
+
+    public void addSubcsr(View view){
+        subscribers.add(view);
     }
 }

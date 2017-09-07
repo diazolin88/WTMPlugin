@@ -11,6 +11,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 
 /**
  * Class needs for save user settings in file WTMSettings.xml such as:
@@ -28,7 +30,9 @@ import org.jetbrains.annotations.Nullable;
                 @Storage("WTMSettings.xml")
         }
 )
-public class WTMSettings implements PersistentStateComponent<WTMSettings> {
+public class WTMSettings implements PersistentStateComponent<WTMSettings>{
+
+    // region Settings vars
     public static final String DEFAULT_VALUE = "";
     public boolean isLogged;
     private static final String RAIL_P_KEY = "wtm.settings.rail.password.key";
@@ -64,6 +68,7 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings> {
             "    }\n" +
             "}";
 
+    //endregion
     public static WTMSettings getInstance(Project project) {
         return ServiceManager.getService(project, WTMSettings.class);
     }

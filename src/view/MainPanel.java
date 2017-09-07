@@ -6,6 +6,8 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import settings.WTMSettings;
+import settings.WTMSettingsWindowRenderer;
 import utils.GuiUtil;
 
 import javax.swing.*;
@@ -13,38 +15,28 @@ import java.awt.*;
 
 import static utils.ComponentUtil.repaintComponent;
 
-public class MainPanel extends WindowPanelAbstract {
+public class MainPanel extends WindowPanelAbstract implements View {
     private JPanel mainPanel;
     private Project project;
-    private TestRailWindow testRailWindow;
-    private NotLoggedIn notLoggedIn;
+    private WTMSettingsWindowRenderer settingsWindow;
 
     public MainPanel(Project project) {
         super(project);
         this.project = project;
-
-        initViewVariants(project);
+        settingsWindow = WTMSettingsWindowRenderer.getInstance(project);
         setContent(mainPanel);
         mainPanel.setLayout(new CardLayout());
-
-        renderComponentDependsOnLoginState(project);
+        renderComponentDependsOnLoginState();
         addToolBar();
-    }
-
-    public TestRailWindow getTestRailWindow() {
-        return testRailWindow;
-    }
-
-    public NotLoggedIn getNotLoggedIn() {
-        return notLoggedIn;
+        settingsWindow.addSubcsr(this);
     }
 
     public static MainPanel getInstance(Project project) {
         return ServiceManager.getService(project, MainPanel.class);
     }
 
-    public void refresh(){
-        renderComponentDependsOnLoginState(project);
+    public void refreshPanel() {
+        renderComponentDependsOnLoginState();
     }
 
 
@@ -55,24 +47,26 @@ public class MainPanel extends WindowPanelAbstract {
         GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
     }
 
-    private void renderComponentDependsOnLoginState(Project project) {
-        if (settings.isLogged) {
+    private void renderComponentDependsOnLoginState() {
+        renderWindows(settings);
+    }
+
+    @Override
+    public void update(WTMSettings settingsWindow) {
+        renderWindows(settingsWindow);
+    }
+
+    private void renderWindows(WTMSettings settingsWindow) {
+        if (settingsWindow.isLogged()) {
             mainPanel.removeAll();
-            mainPanel.add(TestRailWindow.getInstance(project));
+            TestRailWindow testRailWindow = TestRailWindow.getInstance(project);
+            testRailWindow.setDefaultFields();
+            mainPanel.add(testRailWindow);
         } else {
             mainPanel.removeAll();
             mainPanel.setLayout(new CardLayout());
             mainPanel.add(NotLoggedIn.getInstance(project));
         }
         repaintComponent(mainPanel);
-    }
-
-
-    /**
-     * Initialize windows which will be used in mainWindow depends on login state
-     * */
-    private void initViewVariants(Project project) {
-        testRailWindow = TestRailWindow.getInstance(project);
-        notLoggedIn = NotLoggedIn.getInstance(project);
     }
 }
