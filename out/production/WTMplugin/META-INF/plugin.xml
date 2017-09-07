@@ -48,6 +48,7 @@
     <action id="CreateDraftClass" class="actions.CreateDraftClassAction" text="CreateDraftClass" description="create draft classes"/>
 
     <action id="actions.RefreshToolWindowState" class="actions.RefreshToolWindowState" text="refresh"/>
+    <action id="actions.SettingsActions" class="actions.SettingsActions" text="settings" description="show settings"/>
   </actions>
 
   <application-components>

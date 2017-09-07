@@ -50,15 +50,15 @@ public class MainPanel extends WindowPanelAbstract implements View {
     }
 
     private void renderComponentDependsOnLoginState() {
-        renderWindows(settings);
+        renderWindowsDependsOnSettings(settings);
     }
 
     @Override
     public void update(WTMSettings settingsWindow) {
-        renderWindows(settingsWindow);
+        renderWindowsDependsOnSettings(settingsWindow);
     }
 
-    private void renderWindows(WTMSettings settingsWindow) {
+    private void renderWindowsDependsOnSettings(WTMSettings settingsWindow) {
         if (settingsWindow.isLogged()) {
             mainPanel.removeAll();
             TestRailWindow testRailWindow = TestRailWindow.getInstance(project);
@@ -66,7 +66,6 @@ public class MainPanel extends WindowPanelAbstract implements View {
             mainPanel.add(testRailWindow);
         } else {
             mainPanel.removeAll();
-            mainPanel.setLayout(new CardLayout());
             mainPanel.add(NotLoggedIn.getInstance(project));
         }
         repaintComponent(mainPanel);
