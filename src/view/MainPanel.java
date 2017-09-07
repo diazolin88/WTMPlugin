@@ -2,6 +2,7 @@ package view;
 
 import actions.CreateDraftClassAction;
 import actions.RefreshToolWindowState;
+import actions.SettingsActions;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
@@ -44,6 +45,7 @@ public class MainPanel extends WindowPanelAbstract implements View {
         DefaultActionGroup group = new DefaultActionGroup();
         group.addAction(new CreateDraftClassAction());
         group.addAction(new RefreshToolWindowState());
+        group.addAction(new SettingsActions());
         GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
     }
 
