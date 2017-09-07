@@ -29,6 +29,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -140,6 +141,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
             GuiUtil.runInSeparateThread(() -> {
                 DefaultMutableTreeNode lastSelectedTreeNode = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
+
+                selectedTreeNodeList.clear();
+                for (TreePath path : sectionTree.getSelectionPaths()) {
+                    Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+                    selectedTreeNodeList.add(userObject);
+                }
 
                 if (null != lastSelectedTreeNode && null != lastSelectedTreeNode.getUserObject() && !(lastSelectedTreeNode.getUserObject() instanceof OurSection)) {
                     //DO nothing here as selection is Test case
@@ -382,39 +389,54 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         repaintComponent(detailsLabel);
     }
 
+    private List<Object> selectedTreeNodeList = new ArrayList<>();
+
     private void initTestCasePopupMenu() {
         testCasePopupMenu = new JPopupMenu();
-        ActionListener menuListener = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                GuiUtil.runInSeparateThread(() -> {
-                    makeVisible(loadingLabel);
+        ActionListener menuListener = event -> {
+            GuiUtil.runInSeparateThread(() -> {
+                makeVisible(loadingLabel);
 
-                    Case aCase = (Case) currentSelectedTreeNode.getUserObject();
-                    RailTestCase railTestCase = new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId()));
+                System.out.println("Create draft classes button pressed " + selectedTreeNodeList.size());
+                List<Case> caseList = selectedTreeNodeList
+                        .stream()
+                        .map(treeNode -> (Case)treeNode)
+                        .collect(Collectors.toList());
+                System.out.println("Case list " + caseList.size());
+
+                List<RailTestCase> railTestCases = caseList.stream()
+                        .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
+                        .collect(Collectors.toList());
+                System.out.println("Rail Test case list " + caseList.size());
+
+                railTestCases.forEach(railTestCase -> {
+                    System.out.println("Rail Test case with name " + railTestCase.getName() + "was created");
                     DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
-
-                    StatusBar statusBar = WindowManager.getInstance()
-                            .getStatusBar(project);
-
-                    JBPopupFactory.getInstance()
-                            .createHtmlTextBalloonBuilder("<html>Draft classes created! <br>Please sync if not appeared</html>", MessageType.INFO, null)
-                            .setFadeoutTime(7500)
-                            .createBalloon()
-                            .show(RelativePoint.getCenterOf(statusBar.getComponent()),
-                                    Balloon.Position.atLeft);
-
-                    makeInvisible(loadingLabel);
                 });
 
-                System.out.println("Popup menu item ["
-                        + event.getActionCommand() + "] was pressed.");
-            }
+                StatusBar statusBar = WindowManager.getInstance()
+                        .getStatusBar(project);
+
+                JBPopupFactory.getInstance()
+                        .createHtmlTextBalloonBuilder("<html>Draft classes created! <br>Please sync if not appeared</html>", MessageType.INFO, null)
+                        .setFadeoutTime(7500)
+                        .createBalloon()
+                        .show(RelativePoint.getCenterOf(statusBar.getComponent()),
+                                Balloon.Position.atLeft);
+
+                makeInvisible(loadingLabel);
+            });
+
+            System.out.println("Popup menu item ["
+                    + event.getActionCommand() + "] was pressed.");
         };
-        JMenuItem item = new JMenuItem("Create draft class", null);
+        JMenuItem item = new JMenuItem("Create draft class");
+        item.setIcon(new ImageIcon("../resources/files/icons/draft.png"));
         item.addActionListener(menuListener);
         testCasePopupMenu.add(item);
     }
 
+    private boolean isCtrlPressed = false;
     private void addRightClickListenerToTree() {
         MouseListener mouseListener = new MouseAdapter() {
             @Override
@@ -429,17 +451,48 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         };
 
         sectionTree.addMouseListener(mouseListener);
+
+        sectionTree.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent keyEvent) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    isCtrlPressed = true;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    isCtrlPressed = false;
+                }
+            }
+        });
     }
 
     private void handleContextMenu(MouseEvent mouseEvent) {
         if (mouseEvent.isPopupTrigger()) {
             TreePath pathForLocation = sectionTree.getPathForLocation(mouseEvent.getPoint().x, mouseEvent.getPoint().y);
             if (pathForLocation != null) {
-                currentSelectedTreeNode = (DefaultMutableTreeNode) pathForLocation.getLastPathComponent();
-                if (currentSelectedTreeNode.getUserObject() instanceof Case) {
-                    testCasePopupMenu.show(mouseEvent.getComponent(),
-                            mouseEvent.getX(),
-                            mouseEvent.getY());
+                boolean isSection = false;
+                for (Object item: selectedTreeNodeList) {
+                    if (item instanceof OurSection) {
+                        isSection = true;
+                        break;
+                    }
+                }
+
+                if (!isSection) {
+                    currentSelectedTreeNode = (DefaultMutableTreeNode) pathForLocation.getLastPathComponent();
+                    if (currentSelectedTreeNode.getUserObject() instanceof Case) {
+                        testCasePopupMenu.show(mouseEvent.getComponent(),
+                                mouseEvent.getX(),
+                                mouseEvent.getY());
+                    }
                 }
             }
         }
