@@ -2,7 +2,7 @@
   <id>wiley.com</id>
   <name>WTMPlugin</name>
   <version>1.1</version>
-  <vendor email="alukashevi@wiley.com" url="http://www.my.com">My</vendor>
+  <vendor email="alukashevi@wiley.com, dnizkopokl@wiley.com" url="http://www.my.com">WTMPlugin</vendor>
 
   <description><![CDATA[
       Enter short description for your plugin here.<br>

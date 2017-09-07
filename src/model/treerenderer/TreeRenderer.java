@@ -28,7 +28,7 @@ public class TreeRenderer extends ColoredTreeCellRenderer {
             Case pack = (Case) userObject;
             append(pack.getTitle());
             setIcon(PACKAGE_ICON);
-            setIcon(GuiUtil.loadIcon("text_file_icon_16_16.png"));
+            setIcon(GuiUtil.loadIcon("test_case_icon.png"));
         }
     }
 }
