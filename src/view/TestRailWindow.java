@@ -29,6 +29,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -392,46 +393,45 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     private void initTestCasePopupMenu() {
         testCasePopupMenu = new JPopupMenu();
-        ActionListener menuListener = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                GuiUtil.runInSeparateThread(() -> {
-                    makeVisible(loadingLabel);
+        ActionListener menuListener = event -> {
+            GuiUtil.runInSeparateThread(() -> {
+                makeVisible(loadingLabel);
 
-                    System.out.println("Create draft classes button pressed " + selectedTreeNodeList.size());
-                    List<Case> caseList = selectedTreeNodeList
-                            .stream()
-                            .map(treeNode -> (Case)treeNode)
-                            .collect(Collectors.toList());
-                    System.out.println("Case list " + caseList.size());
+                System.out.println("Create draft classes button pressed " + selectedTreeNodeList.size());
+                List<Case> caseList = selectedTreeNodeList
+                        .stream()
+                        .map(treeNode -> (Case)treeNode)
+                        .collect(Collectors.toList());
+                System.out.println("Case list " + caseList.size());
 
-                    List<RailTestCase> railTestCases = caseList.stream()
-                            .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
-                            .collect(Collectors.toList());
-                    System.out.println("Rail Test case list " + caseList.size());
+                List<RailTestCase> railTestCases = caseList.stream()
+                        .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
+                        .collect(Collectors.toList());
+                System.out.println("Rail Test case list " + caseList.size());
 
-                    railTestCases.forEach(railTestCase -> {
-                        System.out.println("Rail Test case with name " + railTestCase.getName() + "was created");
-                        DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
-                    });
-
-                    StatusBar statusBar = WindowManager.getInstance()
-                            .getStatusBar(project);
-
-                    JBPopupFactory.getInstance()
-                            .createHtmlTextBalloonBuilder("<html>Draft classes created! <br>Please sync if not appeared</html>", MessageType.INFO, null)
-                            .setFadeoutTime(7500)
-                            .createBalloon()
-                            .show(RelativePoint.getCenterOf(statusBar.getComponent()),
-                                    Balloon.Position.atLeft);
-
-                    makeInvisible(loadingLabel);
+                railTestCases.forEach(railTestCase -> {
+                    System.out.println("Rail Test case with name " + railTestCase.getName() + "was created");
+                    DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
                 });
 
-                System.out.println("Popup menu item ["
-                        + event.getActionCommand() + "] was pressed.");
-            }
+                StatusBar statusBar = WindowManager.getInstance()
+                        .getStatusBar(project);
+
+                JBPopupFactory.getInstance()
+                        .createHtmlTextBalloonBuilder("<html>Draft classes created! <br>Please sync if not appeared</html>", MessageType.INFO, null)
+                        .setFadeoutTime(7500)
+                        .createBalloon()
+                        .show(RelativePoint.getCenterOf(statusBar.getComponent()),
+                                Balloon.Position.atLeft);
+
+                makeInvisible(loadingLabel);
+            });
+
+            System.out.println("Popup menu item ["
+                    + event.getActionCommand() + "] was pressed.");
         };
-        JMenuItem item = new JMenuItem("Create draft class", null);
+        JMenuItem item = new JMenuItem("Create draft class");
+        item.setIcon(new ImageIcon("../resources/files/icons/draft.png"));
         item.addActionListener(menuListener);
         testCasePopupMenu.add(item);
     }
