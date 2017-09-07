@@ -1,22 +1,20 @@
 <idea-plugin>
-  <id>wiley.com</id>
   <name>WTMPlugin</name>
-  <version>1.1</version>
-  <vendor email="alukashevi@wiley.com, dnizkopokl@wiley.com" url="http://www.my.com">WTMPlugin</vendor>
+  <description>A Test Rail Plugin for Intellij</description>
+  <version>1.2</version>
+  <vendor email="alukashevi@wiley.com, dnizkopokl@wiley.com">WTMPlugin</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      Test Rail integration plugin
     ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      No changes yet!
     ]]>
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="171.0"/>
+  <idea-version since-build="162"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
