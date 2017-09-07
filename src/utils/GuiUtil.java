@@ -18,13 +18,19 @@ package utils;
 
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.PopupHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 import java.net.URL;
 
 public final class GuiUtil {
@@ -99,5 +105,21 @@ public final class GuiUtil {
         JComponent actionToolbar = ActionManager.getInstance()
                 .createActionToolbar(toolBarName, actionGroup, true).getComponent();
         toolWindowPanel.setToolbar(actionToolbar);
+    }
+
+    public static MouseListener installPopupHandler(JComponent component, @NotNull final ActionGroup group, final String place, final ActionManager actionManager) {
+        if (ApplicationManager.getApplication() == null) {
+            return new MouseAdapter() {
+            };
+        } else {
+            PopupHandler popupHandler = new PopupHandler() {
+                public void invokePopup(Component comp, int x, int y) {
+                    ActionPopupMenu popupMenu = actionManager.createActionPopupMenu(place, group);
+                    popupMenu.getComponent().show(comp, x, y);
+                }
+            };
+            component.addMouseListener(popupHandler);
+            return popupHandler;
+        }
     }
 }
