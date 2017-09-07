@@ -138,6 +138,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             GuiUtil.runInSeparateThread(() -> {
                 DefaultMutableTreeNode lastSelectedTreeNode = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
 
+                selectedTreeNodeList.clear();
+                for (TreePath path : sectionTree.getSelectionPaths()) {
+                    Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+                    selectedTreeNodeList.add(userObject);
+                }
+
                 if (null != lastSelectedTreeNode && null != lastSelectedTreeNode.getUserObject() && !(lastSelectedTreeNode.getUserObject() instanceof OurSection)) {
                     //DO nothing here as selection is Test case
                     //TODO add logic here if selected test case
@@ -379,6 +385,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     // region Test case Tree popup
 
+    private List<Object> selectedTreeNodeList = new ArrayList<>();
+
     private void initTestCasePopupMenu() {
         testCasePopupMenu = new JPopupMenu();
         ActionListener menuListener = new ActionListener() {
@@ -386,9 +394,22 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 GuiUtil.runInSeparateThread(() -> {
                     makeVisible(loadingLabel);
 
-                    Case aCase = (Case) currentSelectedTreeNode.getUserObject();
-                    RailTestCase railTestCase = new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId()));
-                    DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+                    System.out.println("Create draft classes button pressed " + selectedTreeNodeList.size());
+                    List<Case> caseList = selectedTreeNodeList
+                            .stream()
+                            .map(treeNode -> (Case)treeNode)
+                            .collect(Collectors.toList());
+                    System.out.println("Case list " + caseList.size());
+
+                    List<RailTestCase> railTestCases = caseList.stream()
+                            .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
+                            .collect(Collectors.toList());
+                    System.out.println("Rail Test case list " + caseList.size());
+
+                    railTestCases.forEach(railTestCase -> {
+                        System.out.println("Rail Test case with name " + railTestCase.getName() + "was created");
+                        DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+                    });
 
                     StatusBar statusBar = WindowManager.getInstance()
                             .getStatusBar(project);
@@ -412,6 +433,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         testCasePopupMenu.add(item);
     }
 
+    private boolean isCtrlPressed = false;
     private void addRightClickListenerToTree() {
         MouseListener mouseListener = new MouseAdapter() {
             @Override
@@ -426,6 +448,27 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         };
 
         sectionTree.addMouseListener(mouseListener);
+
+        sectionTree.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent keyEvent) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    isCtrlPressed = true;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    isCtrlPressed = false;
+                }
+            }
+        });
     }
 
     private DefaultMutableTreeNode currentSelectedTreeNode = null;
@@ -433,11 +476,21 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         if (mouseEvent.isPopupTrigger()) {
             TreePath pathForLocation = sectionTree.getPathForLocation(mouseEvent.getPoint().x, mouseEvent.getPoint().y);
             if (pathForLocation != null) {
-                currentSelectedTreeNode = (DefaultMutableTreeNode) pathForLocation.getLastPathComponent();
-                if (currentSelectedTreeNode.getUserObject() instanceof Case) {
-                    testCasePopupMenu.show(mouseEvent.getComponent(),
-                            mouseEvent.getX(),
-                            mouseEvent.getY());
+                boolean isSection = false;
+                for (Object item: selectedTreeNodeList) {
+                    if (item instanceof OurSection) {
+                        isSection = true;
+                        break;
+                    }
+                }
+
+                if (!isSection) {
+                    currentSelectedTreeNode = (DefaultMutableTreeNode) pathForLocation.getLastPathComponent();
+                    if (currentSelectedTreeNode.getUserObject() instanceof Case) {
+                        testCasePopupMenu.show(mouseEvent.getComponent(),
+                                mouseEvent.getX(),
+                                mouseEvent.getY());
+                    }
                 }
             }
         }
