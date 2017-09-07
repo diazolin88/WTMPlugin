@@ -20,7 +20,6 @@ import model.testrail.RailClient;
 import model.testrail.RailConnection;
 import model.testrail.RailDataStorage;
 import model.testrail.RailTestCase;
-import model.treerenderer.TestCase;
 import model.treerenderer.TreeRenderer;
 import utils.DraftClassesCreator;
 import utils.GuiUtil;
@@ -57,6 +56,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
     private List<RailClient.CaseFieldCustom> customProjectFieldsMap = new ArrayList<>();
     private JPopupMenu testCasePopupMenu;
+    private DefaultMutableTreeNode currentSelectedTreeNode = null;
 
     public TestRailWindow(Project project) {
         super(project);
@@ -66,10 +66,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         makeInvisible(this.detailsPanel);
         makeInvisible(sectionTree);
         connection = RailConnection.getInstance(project);
-        client = new RailClient(connection.getClient());
-        this.projectComboBox.addItem("Select project...");
-        client.getProjectList().forEach(var -> this.projectComboBox.addItem(var.getName()));
-        makeInvisible(loadingLabel);
         setContent(mainPanel);
         sectionTree.setCellRenderer(new TreeRenderer());
 
@@ -83,6 +79,13 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     public static TestRailWindow getInstance(Project project) {
         return ServiceManager.getService(project, TestRailWindow.class);
+    }
+
+    public void setDefaultFields() {
+        client = new RailClient(connection.getClient());
+        this.projectComboBox.addItem("Select project...");
+        client.getProjectList().forEach(var -> this.projectComboBox.addItem(var.getName()));
+        makeInvisible(loadingLabel);
     }
 
     public JComboBox getProjectComboBox() {
@@ -101,12 +104,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return sectionTree;
     }
 
+    //region Listeners
+
     @Override
     public void dispose() {
         ToolWindowManager.getInstance(project).unregisterToolWindow("WTM plugin");
     }
-
-    //region Listeners
 
     @SuppressWarnings("unchecked")
     private void setProjectSelectedItemAction() {
@@ -261,6 +264,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         }
     }
 
+    // endregion
+
+    // region Section tree
+
     public synchronized void createDraftClasses() {
         GuiUtil.runInSeparateThread(() -> {
             makeVisible(loadingLabel);
@@ -286,10 +293,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             makeInvisible(loadingLabel);
         });
     }
-
-    // endregion
-
-    // region Section tree
 
     private void showSectionTree(String selectedSuite) {
         // Create root node.
@@ -360,6 +363,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         cases.addAll(section.getCases());
         return cases;
     }
+    // endregion
+
+    // region Test case Tree popup
 
     private void displayCaseTypesInfo() {
         List<CaseType> caseTypes = client.getCaseTypes();
@@ -375,9 +381,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         detailsLabel.setText(HTML_OPEN_TAG + builder.toString() + HTML_CLOSE_TAG);
         repaintComponent(detailsLabel);
     }
-    // endregion
-
-    // region Test case Tree popup
 
     private void initTestCasePopupMenu() {
         testCasePopupMenu = new JPopupMenu();
@@ -428,7 +431,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         sectionTree.addMouseListener(mouseListener);
     }
 
-    private DefaultMutableTreeNode currentSelectedTreeNode = null;
     private void handleContextMenu(MouseEvent mouseEvent) {
         if (mouseEvent.isPopupTrigger()) {
             TreePath pathForLocation = sectionTree.getPathForLocation(mouseEvent.getPoint().x, mouseEvent.getPoint().y);

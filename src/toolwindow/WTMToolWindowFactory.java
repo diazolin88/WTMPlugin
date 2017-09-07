@@ -11,10 +11,7 @@ import model.testrail.RailConnection;
 import settings.WTMSettings;
 import view.MainPanel;
 
-import static utils.ComponentUtil.disableComponent;
-import static utils.ComponentUtil.makeInvisible;
-
-public class WTMToolWindowFactory implements ToolWindowFactory {
+public class WTMToolWindowFactory implements ToolWindowFactory{
     private MainPanel mainWindow;
     private RailConnection railConnection;
     private WTMSettings settings;
@@ -48,4 +45,5 @@ public class WTMToolWindowFactory implements ToolWindowFactory {
             e.printStackTrace();
         }
     }
+
 }
