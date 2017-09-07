@@ -431,7 +431,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     + event.getActionCommand() + "] was pressed.");
         };
         JMenuItem item = new JMenuItem("Create draft class");
-        item.setIcon(new ImageIcon("../resources/files/icons/draft.png"));
+        item.setIcon(GuiUtil.loadIcon("draft.png"));
         item.addActionListener(menuListener);
         testCasePopupMenu.add(item);
     }
