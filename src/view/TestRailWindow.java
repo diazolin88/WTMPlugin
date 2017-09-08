@@ -21,6 +21,7 @@ import model.testrail.RailConnection;
 import model.testrail.RailDataStorage;
 import model.testrail.RailTestCase;
 import model.treerenderer.TreeRenderer;
+import utils.ClassScanner;
 import utils.DraftClassesCreator;
 import utils.GuiUtil;
 import utils.ToolWindowData;
@@ -31,11 +32,14 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static model.testrail.RailConstants.*;
 import static utils.ComponentUtil.*;
+
+import java.io.File;
 
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private static final String HTML_CLOSE_TAG = "</html>";
@@ -59,6 +63,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private DefaultMutableTreeNode currentSelectedTreeNode = null;
     private boolean isCtrlPressed = false;
     private List<Object> selectedTreeNodeList = new ArrayList<>();
+
+    private static int ROOT_ID = -1;
 
     public TestRailWindow(Project project) {
         super(project);
@@ -311,8 +317,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
                     .collect(Collectors.toList());
 
+            Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
             railTestCases.forEach(railTestCase -> {
-                DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+                List<File> fileList = classList.stream().filter(clazzName-> clazzName.getName().contains(railTestCase.getName())).collect(Collectors.toList());
+                if (fileList.size() == 0 ) {
+                    DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+                }
             });
 
             StatusBar statusBar = WindowManager.getInstance()
@@ -332,7 +342,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private void showSectionTree(String selectedSuite) {
         // Create root node.
         OurSection rootSection = new OurSection();
-        rootSection.setId(null);
+        rootSection.setId(ROOT_ID);
         rootSection.setName(selectedSuite);
 
         // Inflates root section.
@@ -435,9 +445,13 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                         .collect(Collectors.toList());
                 System.out.println("Rail Test case list " + caseList.size());
 
+                Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
                 railTestCases.forEach(railTestCase -> {
-                    System.out.println("Rail Test case with name " + railTestCase.getName() + "was created");
-                    DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+                    List<File> fileList = classList.stream().filter(clazzName-> clazzName.getName().contains(railTestCase.getName())).collect(Collectors.toList());
+                    if (fileList.size() == 0 ) {
+                        System.out.println("Rail Test case with name " + railTestCase.getName() + "was created");
+                        DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+                    }
                 });
 
                 StatusBar statusBar = WindowManager.getInstance()
