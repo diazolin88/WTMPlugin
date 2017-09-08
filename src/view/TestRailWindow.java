@@ -112,19 +112,21 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     DefaultTreeModel model = (DefaultTreeModel) sectionTree.getModel();
                     //wrap
                     DefaultMutableTreeNode node1 = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
-
                     //Find cases and add those that not exists
                     casesFromServer.removeAll(section.getCases());
-                    casesFromServer.forEach(caze -> node1.add(new DefaultMutableTreeNode(caze)));
-
+                    casesFromServer.forEach(caze -> {
+                        node1.add(new DefaultMutableTreeNode(caze));
+                        List<Case> cases = section.getCases();
+                        cases.add(caze);
+                        section.setCases(cases);
+                    });
                     model.nodeStructureChanged(node1);
-                    model.reload();
                     sectionTree.setModel(model);
+                    model.reload(node1);
 
-                    //clearAndRepaint(sectionTree);
                 }
+                repaintComponent(sectionTree);
 
-                //sectionTree.getModel().getChildCount(section);
             }
         }
     }
@@ -423,7 +425,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 System.out.println("Create draft classes button pressed " + selectedTreeNodeList.size());
                 List<Case> caseList = selectedTreeNodeList
                         .stream()
-                        .map(treeNode -> (Case)treeNode)
+                        .map(treeNode -> (Case) treeNode)
                         .collect(Collectors.toList());
                 System.out.println("Case list " + caseList.size());
 
@@ -501,7 +503,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             TreePath pathForLocation = sectionTree.getPathForLocation(mouseEvent.getPoint().x, mouseEvent.getPoint().y);
             if (pathForLocation != null) {
                 boolean isSection = false;
-                for (Object item: selectedTreeNodeList) {
+                for (Object item : selectedTreeNodeList) {
                     if (item instanceof OurSection) {
                         isSection = true;
                         break;
