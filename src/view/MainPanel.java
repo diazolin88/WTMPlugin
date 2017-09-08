@@ -37,8 +37,9 @@ public class MainPanel extends WindowPanelAbstract implements View {
     }
 
     public void refreshSelectedFolder() {
-        TestRailWindow.getInstance(project).refreshSelectedFolder();
-        mainPanel.add(TestRailWindow.getInstance(project));
+        GuiUtil.runInSeparateThread(() -> {
+            TestRailWindow.getInstance(project).refreshSelectedFolder();
+        });
     }
 
 

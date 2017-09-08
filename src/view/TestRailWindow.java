@@ -101,7 +101,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             if (node != null && node.getUserObject() instanceof OurSection) {
                 OurSection section = (OurSection) node.getUserObject();
 
-                sectionTree.getSelectionModel();
+                //if(null != section.getId()) {
                 List<Case> casesFromServer = client.getCases(data.getProjectId(), data.getSuiteId())
                         .stream()
                         .filter(caze -> caze.getSectionId() == section.getId())
@@ -109,22 +109,23 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                 if (section.getCases().size() != casesFromServer.size()) {
                     //sectionTree.set
-                    DefaultTreeModel model = (DefaultTreeModel) sectionTree.getModel();
+                    DefaultTreeModel sectionTreeModel = (DefaultTreeModel) sectionTree.getModel();
                     //wrap
-                    DefaultMutableTreeNode node1 = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
+                    DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
                     //Find cases and add those that not exists
                     casesFromServer.removeAll(section.getCases());
                     casesFromServer.forEach(caze -> {
-                        node1.add(new DefaultMutableTreeNode(caze));
+                        selectedNode.add(new DefaultMutableTreeNode(caze));
                         List<Case> cases = section.getCases();
                         cases.add(caze);
                         section.setCases(cases);
                     });
-                    model.nodeStructureChanged(node1);
-                    sectionTree.setModel(model);
-                    model.reload(node1);
-
+                    sectionTreeModel.nodeStructureChanged(selectedNode);
+                    sectionTreeModel.reload(selectedNode);
+                    sectionTree.setModel(sectionTreeModel);
+                    sectionTree.setPaintBusy(true);
                 }
+                //   }
                 repaintComponent(sectionTree);
 
             }
