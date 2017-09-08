@@ -120,7 +120,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     //Find cases and add those that not exists
                     casesFromServer.removeAll(section.getCases());
                     casesFromServer.forEach(caze -> {
-                        selectedNode.add(new DefaultMutableTreeNode(caze));
+                        selectedNode.insert(new DefaultMutableTreeNode(caze), section.getCases().size());
                         List<Case> cases = section.getCases();
                         cases.add(caze);
                         section.setCases(cases);
@@ -130,8 +130,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     sectionTree.setModel(sectionTreeModel);
                     sectionTree.setPaintBusy(true);
                 }
-
-                repaintComponent(sectionTree);
 
             }
         }
