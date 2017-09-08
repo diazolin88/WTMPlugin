@@ -64,7 +64,7 @@ public class DraftClassesCreator {
 
     // region Formatting strings for test case
 
-    private String getClassNameForTestCase(RailTestCase testCase) {
+    public String getClassNameForTestCase(RailTestCase testCase) {
         return new StringBuilder()
                 .append(PROJECT_PREFIX)
                 .append("_C")

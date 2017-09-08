@@ -30,6 +30,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.xml.soap.SOAPPart;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -318,7 +319,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
             Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
             railTestCases.forEach(railTestCase -> {
-                List<File> fileList = classList.stream().filter(clazzName-> clazzName.getName().contains(railTestCase.getName())).collect(Collectors.toList());
+                String railTestCaseName = DraftClassesCreator.getInstance(project).getClassNameForTestCase(railTestCase);
+                List<File> fileList = classList.stream().filter(clazzName-> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
                 if (fileList.size() == 0 ) {
                     DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
                 }
@@ -446,7 +448,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                 Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
                 railTestCases.forEach(railTestCase -> {
-                    List<File> fileList = classList.stream().filter(clazzName-> clazzName.getName().contains(railTestCase.getName())).collect(Collectors.toList());
+                    String railTestCaseName = DraftClassesCreator.getInstance(project).getClassNameForTestCase(railTestCase);
+                    List<File> fileList = classList.stream().filter(clazzName-> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
                     if (fileList.size() == 0 ) {
                         System.out.println("Rail Test case with name " + railTestCase.getName() + "was created");
                         DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
