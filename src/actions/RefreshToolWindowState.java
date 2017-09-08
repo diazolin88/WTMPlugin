@@ -24,7 +24,7 @@ public class RefreshToolWindowState extends AnAction {
     public void update(AnActionEvent e) {
         TestRailWindow window = TestRailWindow.getInstance(e.getProject());
         DefaultMutableTreeNode node = ((DefaultMutableTreeNode) window.getSectionTree().getLastSelectedPathComponent());
-        if (null != node && node.getUserObject() instanceof OurSection && !(((OurSection) node.getUserObject()).getId() == -1)) {
+        if (null != node && node.getUserObject() instanceof OurSection && ((OurSection) node.getUserObject()).getId() != -1) {
             e.getPresentation().setEnabled(true);
         } else {
             e.getPresentation().setEnabled(false);
