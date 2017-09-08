@@ -29,7 +29,6 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +57,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private List<RailClient.CaseFieldCustom> customProjectFieldsMap = new ArrayList<>();
     private JPopupMenu testCasePopupMenu;
     private DefaultMutableTreeNode currentSelectedTreeNode = null;
-
+    private boolean isCtrlPressed = false;
+    
     public TestRailWindow(Project project) {
         super(project);
         this.project = project;
@@ -89,18 +89,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         makeInvisible(loadingLabel);
     }
 
-    public JComboBox getProjectComboBox() {
-        return projectComboBox;
-    }
-
-    public JComboBox getSuitesComboBox() {
-        return suitesComboBox;
-    }
-
-    public JPanel getDetailsPanel() {
-        return detailsPanel;
-    }
-
     public Tree getSectionTree() {
         return sectionTree;
     }
@@ -120,14 +108,14 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 GuiUtil.runInSeparateThread(() -> {
                     makeInvisible(sectionTree);
                     String selectedProject = (String) projectComboBox.getSelectedItem();
-                    if (!selectedProject.equals("Select project...")) {
-                        getSuitesComboBox().removeAllItems();
-                        getSuitesComboBox().addItem("Select your suite...");
+                    if (null != selectedProject && !selectedProject.equals("Select project...")) {
+                        this.suitesComboBox.removeAllItems();
+                        this.suitesComboBox.addItem("Select your suite...");
                         client.getSuitesList(selectedProject)
-                                .forEach(suite -> getSuitesComboBox().addItem(suite.getName()));
+                                .forEach(suite -> this.suitesComboBox.addItem(suite.getName()));
                         enableComponent(this.suitesComboBox);
                     } else {
-                        getSuitesComboBox().removeAllItems();
+                        this.suitesComboBox.removeAllItems();
                     }
                 });
             }
@@ -143,11 +131,12 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 DefaultMutableTreeNode lastSelectedTreeNode = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
 
                 selectedTreeNodeList.clear();
-                for (TreePath path : sectionTree.getSelectionPaths()) {
-                    Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
-                    selectedTreeNodeList.add(userObject);
+                if (null != sectionTree.getSelectionPaths()) {
+                    for (TreePath path : sectionTree.getSelectionPaths()) {
+                        Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+                        selectedTreeNodeList.add(userObject);
+                    }
                 }
-
                 if (null != lastSelectedTreeNode && null != lastSelectedTreeNode.getUserObject() && !(lastSelectedTreeNode.getUserObject() instanceof OurSection)) {
                     //DO nothing here as selection is Test case
                     //TODO add logic here if selected test case
@@ -356,7 +345,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 }
             }
             makeVisible(this.detailsPanel);
-        } else if (null == paths) {
+        } else {
             makeInvisible(detailsPanel);
         }
         return casesFromSelectedPacks;
@@ -436,7 +425,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         testCasePopupMenu.add(item);
     }
 
-    private boolean isCtrlPressed = false;
     private void addRightClickListenerToTree() {
         MouseListener mouseListener = new MouseAdapter() {
             @Override

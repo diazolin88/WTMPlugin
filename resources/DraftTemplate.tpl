@@ -23,7 +23,7 @@ public class {{CLASS_NAME}} {
 
     @Title("{{TEST_RAIL_TITLE}}")
     @Test(groups = {toAutomate})
-    public void test_{{PROJECT_PREFIX}}_{{TEST_RAIL_ID}}_{{CLASS_NAME}}() {
+    public void test_{{CLASS_NAME}}() {
         // specially do nothing
     }
 }
