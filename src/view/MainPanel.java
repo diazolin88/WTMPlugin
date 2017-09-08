@@ -37,11 +37,8 @@ public class MainPanel extends WindowPanelAbstract implements View {
     }
 
     public void refreshSelectedFolder() {
-        GuiUtil.runInSeparateThread(() -> {
-            TestRailWindow.getInstance(project).refreshSelectedFolder();
-        });
+        GuiUtil.runInSeparateThread(() -> TestRailWindow.getInstance(project).refreshSelectedFolder());
     }
-
 
     private void addToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();
