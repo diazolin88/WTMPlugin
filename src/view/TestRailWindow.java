@@ -32,6 +32,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.xml.soap.SOAPPart;
 import java.awt.event.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,8 +40,6 @@ import java.util.stream.Collectors;
 
 import static model.testrail.RailConstants.*;
 import static utils.ComponentUtil.*;
-
-import java.io.File;
 
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private static final String HTML_CLOSE_TAG = "</html>";
@@ -105,6 +104,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         TreePath[] paths = sectionTree.getSelectionPaths();
         if (null != paths && paths.length == 1) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
+            //TODO add possibility to refresh folder and all folders inside
             if (node != null && node.getUserObject() instanceof OurSection) {
                 OurSection section = (OurSection) node.getUserObject();
 
@@ -121,7 +121,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     //Find cases and add those that not exists
                     casesFromServer.removeAll(section.getCases());
                     casesFromServer.forEach(caze -> {
-                        selectedNode.add(new DefaultMutableTreeNode(caze));
+                        selectedNode.insert(new DefaultMutableTreeNode(caze), section.getCases().size());
                         List<Case> cases = section.getCases();
                         cases.add(caze);
                         section.setCases(cases);
@@ -131,8 +131,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     sectionTree.setModel(sectionTreeModel);
                     sectionTree.setPaintBusy(true);
                 }
-
-                repaintComponent(sectionTree);
 
             }
         }

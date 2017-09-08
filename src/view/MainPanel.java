@@ -1,7 +1,7 @@
 package view;
 
 import actions.CreateDraftClassAction;
-import actions.RefreshToolWindowState;
+import actions.RefreshFolderAction;
 import actions.SettingsActions;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -37,16 +37,13 @@ public class MainPanel extends WindowPanelAbstract implements View {
     }
 
     public void refreshSelectedFolder() {
-        GuiUtil.runInSeparateThread(() -> {
-            TestRailWindow.getInstance(project).refreshSelectedFolder();
-        });
+        GuiUtil.runInSeparateThread(() -> TestRailWindow.getInstance(project).refreshSelectedFolder());
     }
-
 
     private void addToolBar() {
         DefaultActionGroup group = new DefaultActionGroup();
         group.addAction(new CreateDraftClassAction());
-        group.addAction(new RefreshToolWindowState());
+        group.addAction(new RefreshFolderAction());
         group.addAction(new SettingsActions());
         GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
     }

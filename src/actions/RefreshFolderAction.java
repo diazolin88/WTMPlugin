@@ -10,9 +10,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import static com.intellij.util.PlatformIcons.SYNCHRONIZE_ICON;
 
-public class RefreshToolWindowState extends AnAction {
+public class RefreshFolderAction extends AnAction {
 
-    public RefreshToolWindowState(){
+    public RefreshFolderAction() {
         super("Refresh folder", "Refresh folder, add new cases", SYNCHRONIZE_ICON);
     }
 
@@ -24,7 +24,7 @@ public class RefreshToolWindowState extends AnAction {
     public void update(AnActionEvent e) {
         TestRailWindow window = TestRailWindow.getInstance(e.getProject());
         DefaultMutableTreeNode node = ((DefaultMutableTreeNode) window.getSectionTree().getLastSelectedPathComponent());
-        if (null != node && node.getUserObject() instanceof OurSection) {
+        if (null != node && node.getUserObject() instanceof OurSection && ((OurSection) node.getUserObject()).getId() != -1) {
             e.getPresentation().setEnabled(true);
         } else {
             e.getPresentation().setEnabled(false);
