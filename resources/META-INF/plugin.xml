@@ -47,7 +47,7 @@
     <action id="CreateDraftClass" class="actions.CreateDraftClassAction" text="CreateDraftClass" description="create draft classes"/>
 
     <action id="actions.SettingsActions" class="actions.SettingsActions" text="settings" description="show settings"/>
-    <action id="actions.RefreshToolWindowState" class="actions.RefreshToolWindowState" text="refresh"
+    <action id="actions.RefreshFolderAction" class="actions.RefreshFolderAction" text="refresh"
             description="Refresh folder, add new cases"/>
   </actions>
 
