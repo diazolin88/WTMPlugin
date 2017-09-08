@@ -58,7 +58,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JPopupMenu testCasePopupMenu;
     private DefaultMutableTreeNode currentSelectedTreeNode = null;
     private boolean isCtrlPressed = false;
-    
+    private List<Object> selectedTreeNodeList = new ArrayList<>();
+
     public TestRailWindow(Project project) {
         super(project);
         this.project = project;
@@ -377,8 +378,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         detailsLabel.setText(HTML_OPEN_TAG + builder.toString() + HTML_CLOSE_TAG);
         repaintComponent(detailsLabel);
     }
-
-    private List<Object> selectedTreeNodeList = new ArrayList<>();
 
     private void initTestCasePopupMenu() {
         testCasePopupMenu = new JPopupMenu();
