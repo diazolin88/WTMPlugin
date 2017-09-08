@@ -101,7 +101,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             if (node != null && node.getUserObject() instanceof OurSection) {
                 OurSection section = (OurSection) node.getUserObject();
 
-                //if(null != section.getId()) {
                 List<Case> casesFromServer = client.getCases(data.getProjectId(), data.getSuiteId())
                         .stream()
                         .filter(caze -> caze.getSectionId() == section.getId())
@@ -125,7 +124,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     sectionTree.setModel(sectionTreeModel);
                     sectionTree.setPaintBusy(true);
                 }
-                //   }
+
                 repaintComponent(sectionTree);
 
             }
