@@ -94,6 +94,41 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return sectionTree;
     }
 
+    public void refreshSelectedFolder() {
+        TreePath[] paths = sectionTree.getSelectionPaths();
+        if (null != paths && paths.length == 1) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
+            if (node != null && node.getUserObject() instanceof OurSection) {
+                OurSection section = (OurSection) node.getUserObject();
+
+                sectionTree.getSelectionModel();
+                List<Case> casesFromServer = client.getCases(data.getProjectId(), data.getSuiteId())
+                        .stream()
+                        .filter(caze -> caze.getSectionId() == section.getId())
+                        .collect(Collectors.toList());
+
+                if (section.getCases().size() != casesFromServer.size()) {
+                    //sectionTree.set
+                    DefaultTreeModel model = (DefaultTreeModel) sectionTree.getModel();
+                    //wrap
+                    DefaultMutableTreeNode node1 = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
+
+                    //Find cases and add those that not exists
+                    casesFromServer.removeAll(section.getCases());
+                    casesFromServer.forEach(caze -> node1.add(new DefaultMutableTreeNode(caze)));
+
+                    model.nodeStructureChanged(node1);
+                    model.reload();
+                    sectionTree.setModel(model);
+
+                    //clearAndRepaint(sectionTree);
+                }
+
+                //sectionTree.getModel().getChildCount(section);
+            }
+        }
+    }
+
     //region Listeners
 
     @Override

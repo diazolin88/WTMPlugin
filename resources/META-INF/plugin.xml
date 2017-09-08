@@ -20,6 +20,7 @@
        on how to target different products -->
 
   <depends>com.intellij.modules.lang</depends>
+  <depends>com.intellij.modules.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <!--to see settings window on Settings > Tools window-->
@@ -45,8 +46,9 @@
     <!-- Add your actions here -->
     <action id="CreateDraftClass" class="actions.CreateDraftClassAction" text="CreateDraftClass" description="create draft classes"/>
 
-    <action id="actions.RefreshToolWindowState" class="actions.RefreshToolWindowState" text="refresh"/>
     <action id="actions.SettingsActions" class="actions.SettingsActions" text="settings" description="show settings"/>
+    <action id="actions.RefreshToolWindowState" class="actions.RefreshToolWindowState" text="refresh"
+            description="Refresh folder, add new cases"/>
   </actions>
 
   <application-components>

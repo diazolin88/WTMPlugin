@@ -36,8 +36,9 @@ public class MainPanel extends WindowPanelAbstract implements View {
         return ServiceManager.getService(project, MainPanel.class);
     }
 
-    public void refreshPanel() {
-        renderComponentDependsOnLoginState();
+    public void refreshSelectedFolder() {
+        TestRailWindow.getInstance(project).refreshSelectedFolder();
+        mainPanel.add(TestRailWindow.getInstance(project));
     }
 
 
