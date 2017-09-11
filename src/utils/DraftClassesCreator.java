@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static utils.TemplateEngine.*;
 
@@ -88,21 +90,21 @@ public class DraftClassesCreator {
         for (Field.Step step : testCase.getDescription()) {
             numberStep++;
             builder
+                    .append("<p>\n")
+                    .append(" * Step ")
                     .append(numberStep)
-                    .append(". ");
+                    .append(": \n");
 
             String content = step.getContent();
-            String[] contentArray = content.split(".");
-            if (contentArray.length != 0) {
-                content = "";
-                for (int i = 0; i < contentArray.length; i++) {
-                    content += contentArray[i] + " \n * ";
-                }
-            }
+
+            String[] c = content.split("\n");
+            List<String> out = Arrays.stream(c).map(s -> " *   " + s.replaceAll("_", "")).collect(Collectors.toList());
+            StringBuilder b2 = new StringBuilder();
+            out.forEach(s -> b2.append(s).append("\n"));
 
             builder
-                    .append(content)
-                    .append("\n * Expected result:\n * ")
+                    .append(b2.toString())
+                    .append(" * Expected result:\n *   ")
                     .append(format(step.getExpected()))
                     .append("\n * ");
         }
@@ -115,7 +117,7 @@ public class DraftClassesCreator {
         if (formatString.endsWith("\n")) {
             formatString = formatString.substring(0, formatString.length() - 1);
         }
-        formatString = formatString.replaceAll("\n", "\n * ");
+        formatString = formatString.replaceAll("\n", "\n *   ").replaceAll("_", "");
         return formatString;
     }
 
