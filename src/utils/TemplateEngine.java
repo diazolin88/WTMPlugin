@@ -4,7 +4,10 @@ import com.intellij.openapi.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +32,8 @@ public class TemplateEngine {
     public static final String CLASS_NAME_KEY = "CLASS_NAME";
     public static final String PRECONDITIONS_KEY = "PRECONDITIONS";
     public static final String SUMMARY_KEY = "SUMMARY";
+    public static final String TEST_METHOD_NAME_KEY = "TEST_METHOD_NAME_KEY";
+    public static final String CASE_PREFIX_KEY = "CASE_PREFIX_KEY";
 
     private String draftDirectoryPath = "";
     private static final String KEY_WORD_TEMPLATE = "\\{\\{%s\\}\\}";

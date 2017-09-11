@@ -16,20 +16,21 @@ import java.util.List;
 import static utils.TemplateEngine.*;
 
 public class DraftClassesCreator {
-    private Project project;
     private static final Logger LOGGER = LoggerFactory.getLogger(DraftClassesCreator.class);
-
     private static final String DATE_FORMAT = "dd.MM.yyyy";
     private static final String PROJECT_PREFIX = "NG";
     private static final String CLASS_NAME_STUB = "TBD";
+    private Project project;
 
-    public DraftClassesCreator(Project project){
+    public DraftClassesCreator(Project project) {
         this.project = project;
     }
+
     public static DraftClassesCreator getInstance(Project project) {
         return ServiceManager.getService(project, DraftClassesCreator.class);
     }
-       // region Create draft class or classes
+
+    // region Create draft class or classes
     public void create(List<RailTestCase> testCaseList, String template) {
         for (RailTestCase testCase : testCaseList) {
             create(testCase, template);
@@ -40,7 +41,7 @@ public class DraftClassesCreator {
         DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         HashMap<String, String> draftDataMap = new HashMap<>();
 
-        String preconditions = format(testCase.getPreconditions() == null ? "" :testCase.getPreconditions() );
+        String preconditions = format(testCase.getPreconditions() == null ? "" : testCase.getPreconditions());
         String className = getClassNameForTestCase(testCase);
         String description = getDescriptionForTestCase(testCase);
 
@@ -53,6 +54,8 @@ public class DraftClassesCreator {
         draftDataMap.put(TEST_RAIL_TITLE_KEY, testCase.getName());
         draftDataMap.put(PRECONDITIONS_KEY, preconditions);
         draftDataMap.put(CLASS_NAME_KEY, className);
+        draftDataMap.put(TEST_METHOD_NAME_KEY, getUserCreds(testCase));
+        draftDataMap.put(CASE_PREFIX_KEY, "_C");
 
         LOGGER.info("------------------------------------------------");
         TemplateEngine engine = new TemplateEngine(project);
@@ -70,7 +73,7 @@ public class DraftClassesCreator {
                 .append("_C")
                 .append(testCase.getId())
                 .append("_")
-                .append(CLASS_NAME_STUB)
+                .append(testCase.getName())
                 .toString();
     }
 
@@ -92,7 +95,7 @@ public class DraftClassesCreator {
             String[] contentArray = content.split(".");
             if (contentArray.length != 0) {
                 content = "";
-                for (int i=0; i< contentArray.length; i++) {
+                for (int i = 0; i < contentArray.length; i++) {
                     content += contentArray[i] + " \n * ";
                 }
             }
@@ -114,6 +117,10 @@ public class DraftClassesCreator {
         }
         formatString = formatString.replaceAll("\n", "\n * ");
         return formatString;
+    }
+
+    private String getUserCreds(RailTestCase testCase) {
+        return testCase.getUserName().split(" ")[0].subSequence(0, 1).toString() + testCase.getUserName().toString().split(" ")[1].subSequence(0, 1).toString().trim().toUpperCase();
     }
 
     // endregion

@@ -34,6 +34,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,7 @@ import static utils.ComponentUtil.*;
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private static final String HTML_CLOSE_TAG = "</html>";
     private static final String HTML_OPEN_TAG = "<html>";
+    private static int ROOT_ID = -1;
     private Project project;
     private JPanel mainPanel;
     private JComboBox projectComboBox;
@@ -62,8 +64,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private DefaultMutableTreeNode currentSelectedTreeNode = null;
     private boolean isCtrlPressed = false;
     private List<Object> selectedTreeNodeList = new ArrayList<>();
-
-    private static int ROOT_ID = -1;
 
     public TestRailWindow(Project project) {
         super(project);
@@ -112,7 +112,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                         .filter(caze -> caze.getSectionId() == section.getId())
                         .collect(Collectors.toList());
 
-                if (section.getCases().size() != casesFromServer.size()) {
+                if (!section.getCases().equals(casesFromServer)) {
                     //sectionTree.set
                     DefaultTreeModel sectionTreeModel = (DefaultTreeModel) sectionTree.getModel();
                     //wrap
@@ -120,6 +120,19 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     //Find cases and add those that not exists
                     casesFromServer.removeAll(section.getCases());
                     casesFromServer.forEach(caze -> {
+                        if (section.getCases().stream().anyMatch(aCase -> aCase.getId() == caze.getId())) {
+                            //remove this case from treeNode and rewrite
+                            Enumeration s = selectedNode.children();
+                            while (s.hasMoreElements()) {
+                                DefaultMutableTreeNode caze1 = ((DefaultMutableTreeNode) s.nextElement());
+                                Case cazeToMatch = (Case) caze1.getUserObject();
+                                if (caze.getId() == cazeToMatch.getId()) {
+                                    selectedNode.remove(caze1);
+                                    section.getCases().remove(cazeToMatch);
+                                    break;
+                                }
+                            }
+                        }
                         selectedNode.insert(new DefaultMutableTreeNode(caze), section.getCases().size());
                         List<Case> cases = section.getCases();
                         cases.add(caze);
@@ -317,8 +330,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
             railTestCases.forEach(railTestCase -> {
                 String railTestCaseName = DraftClassesCreator.getInstance(project).getClassNameForTestCase(railTestCase);
-                List<File> fileList = classList.stream().filter(clazzName-> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
-                if (fileList.size() == 0 ) {
+                List<File> fileList = classList.stream().filter(clazzName -> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
+                if (fileList.size() == 0) {
                     DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
                 }
             });
@@ -446,8 +459,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
                 railTestCases.forEach(railTestCase -> {
                     String railTestCaseName = DraftClassesCreator.getInstance(project).getClassNameForTestCase(railTestCase);
-                    List<File> fileList = classList.stream().filter(clazzName-> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
-                    if (fileList.size() == 0 ) {
+                    List<File> fileList = classList.stream().filter(clazzName -> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
+                    if (fileList.size() == 0) {
                         System.out.println("Rail Test case with name " + railTestCase.getName() + "was created");
                         DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
                     }
