@@ -30,7 +30,6 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import javax.xml.soap.SOAPPart;
 import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -78,10 +77,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         sectionTree.setCellRenderer(new TreeRenderer());
 
         //Listeners
-        setProjectSelectedItemAction();
-        setSuiteSelectedItemAction();
-        setSectionsTreeAction();
-        setCustomFieldsComboBoxAction();
+        setProjectSelectedItemListener();
+        setSuiteSelectedItemListener();
+        setSectionsTreeListener();
+        setCustomFieldsComboBoxListener();
         initTestCasePopupMenu();
     }
 
@@ -144,7 +143,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     @SuppressWarnings("unchecked")
-    private void setProjectSelectedItemAction() {
+    private void setProjectSelectedItemListener() {
         projectComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 disableComponent(this.suitesComboBox);
@@ -165,7 +164,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    private void setSectionsTreeAction() {
+    private void setSectionsTreeListener() {
         addRightClickListenerToTree();
 
         sectionTree.addTreeSelectionListener(e -> {
@@ -215,7 +214,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     }
 
-    private void setSuiteSelectedItemAction() {
+    private void setSuiteSelectedItemListener() {
         suitesComboBox.addActionListener(e -> {
             //Set data to use in every other cases
             data = new ToolWindowData((String) this.suitesComboBox.getSelectedItem(), (String) projectComboBox.getSelectedItem(), client);
@@ -244,7 +243,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         });
     }
 
-    private void setCustomFieldsComboBoxAction() {
+    private void setCustomFieldsComboBoxListener() {
         customFieldsComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 GuiUtil.runInSeparateThread(() -> {

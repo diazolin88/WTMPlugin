@@ -1,6 +1,5 @@
 package utils;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -24,8 +23,7 @@ public class ClassScanner {
 
     public Collection<File> getAllClassList(Project project) {
         File file = new File(project.getBasePath());
-        Collection<File> fileList = FileUtils.listFiles(file, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-        return fileList;
+        return FileUtils.listFiles(file, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
     }
 
 //    public boolean isClassExistInProject(Project project, String className) {
