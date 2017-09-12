@@ -7,6 +7,7 @@
     </constraints>
     <properties>
       <background color="-1184014"/>
+      <opaque value="false"/>
     </properties>
     <border type="none"/>
     <children>
