@@ -4,6 +4,7 @@ import actions.CreateDraftClassAction;
 import actions.RefreshFolderAction;
 import actions.SettingsActions;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
@@ -36,8 +37,8 @@ public class MainPanel extends WindowPanelAbstract implements View {
         return ServiceManager.getService(project, MainPanel.class);
     }
 
-    public void refreshSelectedFolder() {
-        GuiUtil.runInSeparateThread(() -> TestRailWindow.getInstance(project).refreshSelectedFolder());
+    public void refreshSelectedFolder(AnActionEvent e) {
+        GuiUtil.runInSeparateThread(() -> TestRailWindow.getInstance(project).refreshSelectedFolder(e));
     }
 
     private void addToolBar() {

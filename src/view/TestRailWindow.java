@@ -4,6 +4,7 @@ import com.codepine.api.testrail.model.Case;
 import com.codepine.api.testrail.model.CaseType;
 import com.codepine.api.testrail.model.Field;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
@@ -32,11 +33,9 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.event.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static model.testrail.RailConstants.*;
 import static utils.ComponentUtil.*;
@@ -99,7 +98,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return sectionTree;
     }
 
-    public void refreshSelectedFolder() {
+    public void refreshSelectedFolder(AnActionEvent e) {
+        e.getPresentation().setEnabled(false);
+        sectionTree.setPaintBusy(true);
         TreePath[] paths = sectionTree.getSelectionPaths();
         if (null != paths && paths.length == 1) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
@@ -113,37 +114,73 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                         .collect(Collectors.toList());
 
                 if (!section.getCases().equals(casesFromServer)) {
-                    //sectionTree.set
+                    //get section tree model
                     DefaultTreeModel sectionTreeModel = (DefaultTreeModel) sectionTree.getModel();
-                    //wrap
+                    //get selected folder Node
                     DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) sectionTree.getLastSelectedPathComponent();
-                    //Find cases and add those that not exists
-                    casesFromServer.removeAll(section.getCases());
-                    casesFromServer.forEach(caze -> {
-                        if (section.getCases().stream().anyMatch(aCase -> aCase.getId() == caze.getId())) {
-                            //remove this case from treeNode and rewrite
-                            Enumeration s = selectedNode.children();
-                            while (s.hasMoreElements()) {
-                                DefaultMutableTreeNode caze1 = ((DefaultMutableTreeNode) s.nextElement());
-                                Case cazeToMatch = (Case) caze1.getUserObject();
-                                if (caze.getId() == cazeToMatch.getId()) {
-                                    selectedNode.remove(caze1);
-                                    section.getCases().remove(cazeToMatch);
-                                    break;
-                                }
-                            }
+                    //section children
+                    List<Case> outCases = section.getCases();
+                    outCases.clear();
+                    Enumeration children = selectedNode.children();
+                    Collections.list(children).stream().forEach(child -> {
+                        DefaultMutableTreeNode s = (DefaultMutableTreeNode) child;
+                        if (s.getUserObject() instanceof Case) {
+                            selectedNode.remove(s);
                         }
-                        selectedNode.insert(new DefaultMutableTreeNode(caze), section.getCases().size());
-                        List<Case> cases = section.getCases();
-                        cases.add(caze);
-                        section.setCases(cases);
+                    });
+                    IntStream.range(0, casesFromServer.size()).boxed().forEach(i -> {
+                        selectedNode.insert(new DefaultMutableTreeNode(casesFromServer.get(i)), i);
+                        outCases.add(casesFromServer.get(i));
+                        section.setCases(outCases);
                     });
                     sectionTreeModel.nodeStructureChanged(selectedNode);
                     sectionTreeModel.reload(selectedNode);
                     sectionTree.setModel(sectionTreeModel);
-                    sectionTree.setPaintBusy(true);
+                    repaintComponent(sectionTree);
+                    //TODO END
+
+
+//                    Enumeration s = selectedNode.children();
+//
+//
+//                    Iterator sectionCasesIterator = section.getCases().iterator();
+//
+//                    while (sectionCasesIterator.hasNext()) {
+//
+//                        Case sectionCase = (Case) sectionCasesIterator.next();
+//                        boolean caseExistsOnServer = casesFromServer.stream().anyMatch(serverCase -> serverCase.getId() == sectionCase.getId());
+//
+//                        if (caseExistsOnServer) {
+//                            Case serverCaseToUpdate = casesFromServer.stream().filter(aCase -> aCase.getId() == sectionCase.getId()).findFirst().get();
+//                            if (sectionCase != serverCaseToUpdate) {
+//                                //Remove case
+//                                removeNodeFromSection(section, selectedNode, s, sectionCase);
+//                                //Rewrite case
+//                                selectedNode.insert(new DefaultMutableTreeNode(sectionCase), section.getCases().size());
+//                                List<Case> cases = section.getCases();
+//                                cases.add(sectionCase);
+//                                section.setCases(cases);
+//                            }
+//                        } else {
+//                            removeNodeFromSection(section, selectedNode, s, sectionCase);
+//                        }
+//                    }
                 }
 
+            }
+        }
+        sectionTree.setPaintBusy(false);
+        e.getPresentation().setEnabled(true);
+    }
+
+    private void removeNodeFromSection(OurSection section, DefaultMutableTreeNode selectedNode, Enumeration s, Case sectionCase) {
+        while (s.hasMoreElements()) {
+            DefaultMutableTreeNode cazeChild = ((DefaultMutableTreeNode) s.nextElement());
+            Case cazeToMatch = (Case) cazeChild.getUserObject();
+            if (sectionCase.getId() == cazeToMatch.getId()) {
+                selectedNode.remove(cazeChild);
+                section.getCases().remove(cazeToMatch);
+                break;
             }
         }
     }

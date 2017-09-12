@@ -18,7 +18,7 @@ public class RefreshFolderAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        MainPanel.getInstance(e.getProject()).refreshSelectedFolder();
+        MainPanel.getInstance(e.getProject()).refreshSelectedFolder(e);
     }
 
     public void update(AnActionEvent e) {
