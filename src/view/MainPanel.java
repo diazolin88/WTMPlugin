@@ -47,6 +47,7 @@ public class MainPanel extends WindowPanelAbstract implements View {
         group.addAction(new CreateDraftClassAction());
         group.addAction(new RefreshFolderAction());
         group.addAction(new OpenTestCaseInBrowserAction());
+        group.addSeparator();
         group.addAction(new SettingsActions());
 
         GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");

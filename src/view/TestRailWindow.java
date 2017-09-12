@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.lang.System.out;
 import static model.testrail.RailConstants.*;
 import static utils.ComponentUtil.*;
 
@@ -474,24 +475,24 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             GuiUtil.runInSeparateThread(() -> {
                 makeVisible(loadingLabel);
 
-                System.out.println("Create draft classes button pressed " + selectedTreeNodeList.size());
+                out.println("Create draft classes button pressed " + selectedTreeNodeList.size());
                 List<Case> caseList = selectedTreeNodeList
                         .stream()
                         .map(treeNode -> (Case) treeNode)
                         .collect(Collectors.toList());
-                System.out.println("Case list " + caseList.size());
+                out.println("Case list " + caseList.size());
 
                 List<RailTestCase> railTestCases = caseList.stream()
                         .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
                         .collect(Collectors.toList());
-                System.out.println("Rail Test case list " + caseList.size());
+                out.println("Rail Test case list " + caseList.size());
 
                 Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
                 railTestCases.forEach(railTestCase -> {
                     String railTestCaseName = DraftClassesCreator.getInstance(project).getClassNameForTestCase(railTestCase);
                     List<File> fileList = classList.stream().filter(clazzName -> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
                     if (fileList.size() == 0) {
-                        System.out.println("Rail Test case with name " + railTestCase.getName() + "was created");
+                        out.println("Rail Test case with name " + railTestCase.getName() + "was created");
                         DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
                     }
                 });
@@ -509,7 +510,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 makeInvisible(loadingLabel);
             });
 
-            System.out.println("Popup menu item ["
+            out.println("Popup menu item ["
                     + event.getActionCommand() + "] was pressed.");
         };
         JMenuItem item = new JMenuItem("Create draft class");
@@ -585,7 +586,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         try {
             Desktop.getDesktop().browse(new URI(settings.getRailUrl() + "/index.php?/cases/view/" + selectedCase.getId()));
         } catch (IOException | URISyntaxException e) {
-            System.out.println("Unable to open, url is incorrect");
+            out.println("Unable to open, url is incorrect");
         }
     }
     // endregion
