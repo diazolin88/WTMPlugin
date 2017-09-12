@@ -19,7 +19,7 @@ public class CreateDraftClassAction extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         //TODO createDraftClasses should throw and exception if something goes wrong, so we will handle it and show on baloon message
-        TestRailWindow.getInstance(e.getProject()).createDraftClasses();
+        TestRailWindow.getInstance(e.getProject()).createDraftClasses(e);
     }
 
     @Override

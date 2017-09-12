@@ -61,7 +61,7 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings>{
             "\n" +
             "    @Title(\"{{TEST_RAIL_TITLE}}\")\n" +
             "    @Test(groups = {toAutomate})\n" +
-            "    public void test{{TEST_RAIL_ID}}_{{TEST_METHOD_NAME_KEY}}() {\n" +
+            "    public void test{{CASE_PREFIX_KEY}}{{TEST_RAIL_ID}}_{{TEST_METHOD_NAME_KEY}}() {\n" +
             "        // specially do nothing\n" +
             "    }\n" +
             "}";

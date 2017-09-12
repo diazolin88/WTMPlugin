@@ -4,11 +4,12 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.ui.JBColor;
 import exceptions.AuthorizationException;
 import model.testrail.RailConnection;
 
 import javax.swing.*;
+
+import static utils.ComponentUtil.repaintComponent;
 
 public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable {
     private JPanel mainPanel;
@@ -96,13 +97,12 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
             {
                 try {
                     RailConnection.getInstance(project).login(this);
-                    railDebugTextPane.setForeground(JBColor.GREEN);
                     railDebugTextPane.setText("Connected!");
                 } catch (AuthorizationException e) {
-                    railDebugTextPane.setForeground(JBColor.RED);
                     railDebugTextPane.setText(e.getMessage());
                 }
             });
+        repaintComponent(railDebugTextPane);
     }
 
 

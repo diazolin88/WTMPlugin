@@ -350,8 +350,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     // region Section tree
 
-    public synchronized void createDraftClasses() {
+    public synchronized void createDraftClasses(AnActionEvent e) {
         GuiUtil.runInSeparateThread(() -> {
+            e.getPresentation().setEnabled(false);
             makeVisible(loadingLabel);
 
             List<RailTestCase> railTestCases = casesFromSelectedPacks.stream()
@@ -378,6 +379,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                             Balloon.Position.atLeft);
 
             makeInvisible(loadingLabel);
+            e.getPresentation().setVisible(true);
         });
     }
 
