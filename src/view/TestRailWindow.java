@@ -31,9 +31,14 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -574,5 +579,14 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         }
     }
 
+    public void openInBrowser() {
+        Case selectedCase = (Case) ((DefaultMutableTreeNode) getSectionTree().getLastSelectedPathComponent()).getUserObject();
+
+        try {
+            Desktop.getDesktop().browse(new URI(settings.getRailUrl() + "/index.php?/cases/view/" + selectedCase.getId()));
+        } catch (IOException | URISyntaxException e) {
+            System.out.println("Unable to open, url is incorrect");
+        }
+    }
     // endregion
 }

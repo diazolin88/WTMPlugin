@@ -49,6 +49,8 @@
     <action id="actions.SettingsActions" class="actions.SettingsActions" text="settings" description="show settings"/>
     <action id="actions.RefreshFolderAction" class="actions.RefreshFolderAction" text="refresh"
             description="Refresh folder, add new cases"/>
+    <action id="actions.OpenTestCaseInBrowserAction" class="actions.OpenTestCaseInBrowserAction" text="openInBrowser"
+            description="Open test case in browser"/>
   </actions>
 
   <application-components>
