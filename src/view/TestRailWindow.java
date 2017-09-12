@@ -580,11 +580,11 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         }
     }
 
-    public void openInBrowser() {
+    public void openSelectedTestCaseInBrowser() {
         Case selectedCase = (Case) ((DefaultMutableTreeNode) getSectionTree().getLastSelectedPathComponent()).getUserObject();
 
         try {
-            Desktop.getDesktop().browse(new URI(settings.getRailUrl() + "/index.php?/cases/view/" + selectedCase.getId()));
+            Desktop.getDesktop().browse(new URI(settings.getRailUrl() + TEST_CASE_URL_PART + selectedCase.getId()));
         } catch (IOException | URISyntaxException e) {
             out.println("Unable to open, url is incorrect");
         }
