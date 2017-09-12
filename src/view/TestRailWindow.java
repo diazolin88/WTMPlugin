@@ -589,5 +589,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             out.println("Unable to open, url is incorrect");
         }
     }
+    
     // endregion
 }
