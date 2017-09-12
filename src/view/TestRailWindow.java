@@ -173,18 +173,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         e.getPresentation().setEnabled(true);
     }
 
-    private void removeNodeFromSection(OurSection section, DefaultMutableTreeNode selectedNode, Enumeration s, Case sectionCase) {
-        while (s.hasMoreElements()) {
-            DefaultMutableTreeNode cazeChild = ((DefaultMutableTreeNode) s.nextElement());
-            Case cazeToMatch = (Case) cazeChild.getUserObject();
-            if (sectionCase.getId() == cazeToMatch.getId()) {
-                selectedNode.remove(cazeChild);
-                section.getCases().remove(cazeToMatch);
-                break;
-            }
-        }
-    }
-
     //region Listeners
 
     @Override
