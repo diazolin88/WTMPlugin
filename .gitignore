@@ -1,5 +1,4 @@
 *.sw?
-*.iml
 *.jar
 out/
 .idea/
