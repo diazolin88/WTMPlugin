@@ -48,8 +48,8 @@ import static utils.ComponentUtil.*;
 public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private static final String HTML_CLOSE_TAG = "</html>";
     private static final String HTML_OPEN_TAG = "<html>";
-    private static int ROOT_ID = -1;
-    private Project project;
+    private static final int ROOT_ID = -1;
+    private final Project project;
     private JPanel mainPanel;
     private JComboBox projectComboBox;
     private JComboBox suitesComboBox;

@@ -22,7 +22,7 @@ public class DraftClassesCreator {
     private static final String DATE_FORMAT = "dd.MM.yyyy";
     private static final String PROJECT_PREFIX = "NG";
     private static final String CLASS_NAME_STUB = "TBD";
-    private Project project;
+    private final Project project;
 
     private DraftClassesCreator(Project project) {
         this.project = project;

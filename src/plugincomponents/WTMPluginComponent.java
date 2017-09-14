@@ -17,8 +17,7 @@ import settings.WTMSettingsWindowRenderer;
 public class WTMPluginComponent implements ProjectComponent {
     private static final NotificationGroup GROUP_DISPLAY_ID_INFO = new NotificationGroup("WTMplugin_group", NotificationDisplayType.STICKY_BALLOON, true);
     private WTMSettings settings;
-    private Project project;
-    private RailClient client;
+    private final Project project;
 
     private WTMPluginComponent(Project project) {
         this.project = project;

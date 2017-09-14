@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * 2. Add to draft hash map key (he is equals with marker name in *tpl without '{' and '}' ).
  */
 public class TemplateEngine {
-    private Project project;
+    private final Project project;
     private static final Logger LOGGER = LoggerFactory.getLogger(TemplateEngine.class);
 
     public static final String USER_NAME_KEY = "USER_NAME";

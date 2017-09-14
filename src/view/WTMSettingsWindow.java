@@ -21,7 +21,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
     private JTextPane railDebugTextPane;
     private JTextArea temlateTextArea;
 
-    private Project project;
+    private final Project project;
 
     private WTMSettingsWindow(Project project) {
         super(project);

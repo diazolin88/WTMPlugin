@@ -27,7 +27,7 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable, Projec
     private static java.util.List<View> subscribers = new ArrayList<>();
     public final WTMSettings wtmSettings;
     private WTMSettingsWindow settingsComponent;
-    private Project project;
+    private final Project project;
 
     private WTMSettingsWindowRenderer(@NotNull Project project) {
         this.project = project;

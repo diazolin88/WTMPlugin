@@ -21,7 +21,7 @@ import static utils.ComponentUtil.repaintComponent;
 
 public class MainPanel extends WindowPanelAbstract implements View {
     private JPanel mainPanel;
-    private Project project;
+    private final Project project;
     private RailClient client;
 
     private MainPanel(Project project) {
