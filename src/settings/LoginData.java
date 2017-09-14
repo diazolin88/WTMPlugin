@@ -12,6 +12,4 @@ public interface LoginData {
     default String getURL() {
         return null;
     }
-
-    ;
 }

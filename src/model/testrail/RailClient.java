@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Test Rail client. Main activities should be done here.
  */
-public final class RailClient implements Loginable<RailClient> {
+public final class RailClient implements Loginable {
     private TestRail client;
     private boolean isLoggedIn = false;
     private static List<User> userList = new ArrayList<>();
@@ -114,7 +114,7 @@ public final class RailClient implements Loginable<RailClient> {
     }
 
     @Override
-    public RailClient login(LoginData data) throws AuthorizationException {
+    public void login(LoginData data) throws AuthorizationException {
         try {
             client = TestRail.builder(data.getURL(), data.getUserName(), data.getPassword()).build();
             client.projects().list().execute();
@@ -123,7 +123,6 @@ public final class RailClient implements Loginable<RailClient> {
             isLoggedIn = false;
             throw new AuthorizationException("Unable to login due to invalid login data or url");
         }
-        return this;
     }
 
     public class CaseFieldCustom {

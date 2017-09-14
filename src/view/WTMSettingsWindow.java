@@ -36,9 +36,8 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         settings.setUserName(railUserNameTextField.getText());
         settings.setURL(railUrlTextField.getText());
         settings.setTemplate(temlateTextArea.getText());
-        RailClient client = RailClient.getInstance(project);
        try {
-           client.login(this);
+           RailClient.getInstance(project).login(this);
        } catch (AuthorizationException e) {
            //DO nothing
        }
