@@ -5,13 +5,9 @@ public interface LoginData {
         return null;
     }
 
-    ;
-
     default String getPassword() {
         return null;
     }
-
-    ;
 
     default String getURL() {
         return null;
