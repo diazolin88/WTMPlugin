@@ -12,6 +12,7 @@ import static com.intellij.util.PlatformIcons.PACKAGE_ICON;
 
 // TODO: not a model.
 public class TreeRenderer extends ColoredTreeCellRenderer {
+    private static final Icon CASE_ICON = GuiUtil.loadIcon("test_case_icon.png");
 
     @Override
     public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
@@ -27,8 +28,7 @@ public class TreeRenderer extends ColoredTreeCellRenderer {
         }else if( userObject instanceof Case){
             Case pack = (Case) userObject;
             append(pack.getTitle());
-            setIcon(PACKAGE_ICON);
-            setIcon(GuiUtil.loadIcon("test_case_icon.png"));
+            setIcon(CASE_ICON);
         }
     }
 }
