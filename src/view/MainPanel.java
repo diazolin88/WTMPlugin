@@ -10,7 +10,6 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import model.testrail.RailClient;
-import settings.WTMSettings;
 import settings.WTMSettingsWindowRenderer;
 import utils.GuiUtil;
 
@@ -30,7 +29,7 @@ public class MainPanel extends WindowPanelAbstract implements View {
         client = RailClient.getInstance(project);
         setContent(mainPanel);
         mainPanel.setLayout(new CardLayout());
-        renderComponentDependsOnLoginState();
+        update();
         addToolBar();
         WTMSettingsWindowRenderer.getInstance(project).addSubcsr(this);
     }
@@ -43,27 +42,8 @@ public class MainPanel extends WindowPanelAbstract implements View {
         GuiUtil.runInSeparateThread(() -> TestRailWindow.getInstance(project).refreshSelectedFolder(e));
     }
 
-    private void addToolBar() {
-        DefaultActionGroup group = new DefaultActionGroup();
-        group.addAction(new CreateDraftClassAction());
-        group.addAction(new RefreshFolderAction());
-        group.addAction(new OpenTestCaseInBrowserAction());
-        group.addSeparator();
-        group.addAction(new SettingsActions());
-
-        GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
-    }
-
-    private void renderComponentDependsOnLoginState() {
-        renderWindowsDependsOnSettings(settings);
-    }
-
     @Override
-    public void update(WTMSettings settingsWindow) {
-        renderWindowsDependsOnSettings(settingsWindow);
-    }
-
-    private void renderWindowsDependsOnSettings(WTMSettings settingsWindow) {
+    public void update() {
         if (client.isLoggedIn()) {
             mainPanel.removeAll();
             TestRailWindow testRailWindow = TestRailWindow.getInstance(project);
@@ -74,5 +54,16 @@ public class MainPanel extends WindowPanelAbstract implements View {
             mainPanel.add(NotLoggedIn.getInstance(project));
         }
         repaintComponent(mainPanel);
+    }
+
+    private void addToolBar() {
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.addAction(new CreateDraftClassAction());
+        group.addAction(new RefreshFolderAction());
+        group.addAction(new OpenTestCaseInBrowserAction());
+        group.addSeparator();
+        group.addAction(new SettingsActions());
+
+        GuiUtil.installActionGroupInToolBar(group, this, ActionManager.getInstance(), "TestRailWindowToolBar");
     }
 }

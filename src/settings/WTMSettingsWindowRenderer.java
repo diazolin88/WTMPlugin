@@ -71,7 +71,7 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable, Projec
     @Override
     public void apply() throws ConfigurationException {
         settingsComponent.setSettings();
-        subscribers.forEach(view -> view.update(this.wtmSettings));
+        subscribers.forEach(view -> view.update());
     }
 
     /**
