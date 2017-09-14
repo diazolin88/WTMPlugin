@@ -2,10 +2,11 @@ package model.testrail;
 
 import com.codepine.api.testrail.TestRail;
 import com.codepine.api.testrail.model.*;
-import settings.WTMSettings;
-import utils.ToolWindowData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -13,7 +14,6 @@ import java.util.stream.Collectors;
  */
 public final class RailClient {
     private TestRail client;
-    private ToolWindowData data;
     private Project project;
 
     private static List<Section> sectionList = new ArrayList<>();
@@ -71,16 +71,6 @@ public final class RailClient {
     public List<Section> getSections(int projectID, int suiteID) {
         return this.client.sections().list(projectID, suiteID).execute();
     }
-
-
-//    public List<RailTestCase> getTestCasesBySectionId(int id) {
-//        List<CaseField> caseFieldList = client.caseFields().list().execute();
-//        List<Case> cases = client.cases().list(RAIL_PROJECT_ID, SUITE_ID, caseFieldList).execute();
-//        return cases.stream()
-//                .filter(aCase -> aCase.getSectionId() == id)
-//                .map(aCase -> new RailTestCase(aCase.getId(), getUserName(aCase.getCreatedBy()) , aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD),aCase.getCustomField(PRECONDITION_FIELD) , aCase.getCustomField(KEYWORDS), getStoryNameBySectionId(aCase.getSectionId())))
-//                .collect(Collectors.toList());
-//    }
 
     @SuppressWarnings("ConstantConditions")
     public String getStoryNameBySectionId(int projectId, int suiteId, int sectionId) {

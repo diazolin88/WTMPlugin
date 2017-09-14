@@ -15,7 +15,16 @@ public class OurSection {
     private List<OurSection> sectionList = new ArrayList<>();
     private List<Case> cases = new ArrayList<>();
 
-    // region Getters and setters.
+    public OurSection() {
+    }
+
+    public OurSection(Integer id, String name, List<OurSection> sectionList, List<Case> cases) {
+        this.id = id;
+        this.name = name;
+        this.sectionList = sectionList;
+        this.cases = cases;
+    }
+// region Getters and setters.
 
     public List<OurSection> getSectionList() {
         return sectionList;
@@ -53,10 +62,6 @@ public class OurSection {
 
     public void addSubSection(OurSection section) {
         sectionList.add(section);
-    }
-
-    public boolean hasChildren(){
-        return sectionList.isEmpty();
     }
 
     @Override
