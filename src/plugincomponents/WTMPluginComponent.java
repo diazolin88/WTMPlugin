@@ -15,7 +15,7 @@ import settings.WTMSettings;
 import settings.WTMSettingsWindowRenderer;
 
 public class WTMPluginComponent implements ProjectComponent {
-    private static final NotificationGroup GROUP_DISPLAY_ID_INFO = new NotificationGroup("WTMplugin_group", NotificationDisplayType.STICKY_BALLOON, true);
+    private static final NotificationGroup GROUP_DISPLAY_ID_INFO = new NotificationGroup("WTMplugin_group", NotificationDisplayType.TOOL_WINDOW, true);
     private WTMSettings settings;
     private final Project project;
 
