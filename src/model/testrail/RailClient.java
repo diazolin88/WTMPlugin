@@ -6,7 +6,6 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import exceptions.AuthorizationException;
 import settings.LoginData;
-import settings.WTMSettings;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
  */
 public final class RailClient implements Loginable<RailClient> {
     private TestRail client;
-    private WTMSettings settings;
     private boolean isLoggedIn = false;
 
     private static List<Section> sectionList = new ArrayList<>();
@@ -29,12 +27,7 @@ public final class RailClient implements Loginable<RailClient> {
         return isLoggedIn;
     }
 
-    public void setLoggedIn(boolean loggedIn) {
-        isLoggedIn = loggedIn;
-    }
-
     public RailClient(Project project) {
-        this.settings = WTMSettings.getInstance(project);
     }
 
     public static RailClient getInstance(com.intellij.openapi.project.Project project) {
@@ -122,7 +115,7 @@ public final class RailClient implements Loginable<RailClient> {
     }
 
     @Override
-    public synchronized RailClient login(LoginData data) throws AuthorizationException {
+    public RailClient login(LoginData data) throws AuthorizationException {
         try {
             client = TestRail.builder(data.getURL(), data.getUserName(), data.getPassword()).build();
             client.projects().list().execute();
