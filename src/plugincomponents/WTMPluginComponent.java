@@ -2,6 +2,8 @@ package plugincomponents;
 
 import com.intellij.notification.*;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.options.ShowSettingsUtil;
@@ -45,6 +47,8 @@ public class WTMPluginComponent implements ProjectComponent {
                     .addAction(new NotificationAction("Settings") {
                         @Override
                         public void actionPerformed(@NotNull AnActionEvent anActionEvent, @NotNull Notification notification) {
+                            DataContext dataContext = anActionEvent.getDataContext();
+                            Project project = PlatformDataKeys.PROJECT.getData(dataContext);
                             ShowSettingsUtil.getInstance().showSettingsDialog(project, WTMSettingsWindowRenderer.class);
                         }
                     });
