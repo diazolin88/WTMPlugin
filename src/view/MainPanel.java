@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import model.testrail.RailClient;
 import settings.WTMSettings;
 import settings.WTMSettingsWindowRenderer;
 import utils.GuiUtil;
@@ -22,10 +23,12 @@ public class MainPanel extends WindowPanelAbstract implements View {
     private JPanel mainPanel;
     private Project project;
     private WTMSettingsWindowRenderer settingsWindow;
+    private RailClient client;
 
     public MainPanel(Project project) {
         super(project);
         this.project = project;
+        client = RailClient.getInstance(project);
         settingsWindow = WTMSettingsWindowRenderer.getInstance(project);
         setContent(mainPanel);
         mainPanel.setLayout(new CardLayout());
@@ -63,10 +66,10 @@ public class MainPanel extends WindowPanelAbstract implements View {
     }
 
     private void renderWindowsDependsOnSettings(WTMSettings settingsWindow) {
-        if (settingsWindow.isLogged()) {
+        if (client.isLoggedIn()) {
             mainPanel.removeAll();
             TestRailWindow testRailWindow = TestRailWindow.getInstance(project);
-            testRailWindow.setDefaultFields();
+            testRailWindow.setDefaultFields(project);
             mainPanel.add(testRailWindow);
         } else {
             mainPanel.removeAll();

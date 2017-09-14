@@ -2,7 +2,6 @@ package utils;
 
 import com.codepine.api.testrail.model.Suite;
 import model.testrail.RailClient;
-import model.testrail.RailConnection;
 
 /**
  * This class should present current selected values in window

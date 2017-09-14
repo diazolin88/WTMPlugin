@@ -2,6 +2,11 @@ package model.testrail;
 
 import com.codepine.api.testrail.TestRail;
 import com.codepine.api.testrail.model.*;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
+import exceptions.AuthorizationException;
+import settings.LoginData;
+import settings.WTMSettings;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,22 +17,31 @@ import java.util.stream.Collectors;
 /**
  * Test Rail client.
  */
-public final class RailClient {
+public final class RailClient implements Loginable<RailClient> {
     private TestRail client;
-    private Project project;
+    private WTMSettings settings;
+    private boolean isLoggedIn = false;
 
     private static List<Section> sectionList = new ArrayList<>();
     private static List<User> userList = new ArrayList<>();
 
-    public RailClient(TestRail client) {
-        this.client = client;
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        isLoggedIn = loggedIn;
     }
 
     public RailClient(Project project) {
-        this.project = project;
+        this.settings = WTMSettings.getInstance(project);
     }
 
-    public List<Project> getProjectList() {
+    public static RailClient getInstance(com.intellij.openapi.project.Project project) {
+        return ServiceManager.getService(project, RailClient.class);
+    }
+
+    public List<com.codepine.api.testrail.model.Project> getProjectList() {
         return this.client.projects().list().execute();
     }
 
@@ -41,16 +55,16 @@ public final class RailClient {
         return this.client.suites().list(projectId).execute();
     }
 
-    private List<User> getUsers(){
-        if(userList.isEmpty()){
+    private List<User> getUsers() {
+        if (userList.isEmpty()) {
             userList = client.users().list().execute();
             return userList;
-        }else{
+        } else {
             return userList;
         }
     }
 
-    public List<CaseType> getCaseTypes(){
+    public List<CaseType> getCaseTypes() {
         return client.caseTypes().list().execute();
     }
 
@@ -60,7 +74,7 @@ public final class RailClient {
     }
 
     //TODO check if this fields created for all projects or for just one
-    public Set<String> getCustomFields(int projectId, int suiteId){
+    public Set<String> getCustomFields(int projectId, int suiteId) {
         Set<String> customFields = new HashSet<>();
         List<CaseField> caseFieldList = this.client.caseFields().list().execute();
         this.client.cases().list(projectId, suiteId, caseFieldList).execute()
@@ -82,7 +96,7 @@ public final class RailClient {
                 .get(0);
     }
 
-    public String getUserName(int userId){
+    public String getUserName(int userId) {
         return getUsers()
                 .stream()
                 .filter(user -> user.getId() == userId)
@@ -92,28 +106,41 @@ public final class RailClient {
     }
 
     //probably it's better to return caseFields as id to handle it later
-    public List<CaseFieldCustom> getCustomFieldNamesMap(int projectID){
+    public List<CaseFieldCustom> getCustomFieldNamesMap(int projectID) {
         List<CaseFieldCustom> caseFieldCustoms = new ArrayList<>();
-       client.caseFields().list().execute().stream()
+        client.caseFields().list().execute().stream()
                 .filter(caseField ->
                         caseField.getConfigs()
-                        .stream()
-                        .filter(config -> config.getContext().getProjectIds() != null)
+                                .stream()
+                                .filter(config -> config.getContext().getProjectIds() != null)
                                 .filter(config ->
                                         config.getOptions().getClass().isAssignableFrom(Field.Config.DropdownOptions.class)
-                                        || config.getOptions().getClass().isAssignableFrom(Field.Config.MultiSelectOptions.class))
-                        .anyMatch(config -> config.getContext().getProjectIds().contains(projectID)))
-               .forEach(caseField -> caseFieldCustoms.add(new CaseFieldCustom(caseField.getId(),caseField.getSystemName(),caseField.getLabel(),caseField.getConfigs())));
-       return caseFieldCustoms;
+                                                || config.getOptions().getClass().isAssignableFrom(Field.Config.MultiSelectOptions.class))
+                                .anyMatch(config -> config.getContext().getProjectIds().contains(projectID)))
+                .forEach(caseField -> caseFieldCustoms.add(new CaseFieldCustom(caseField.getId(), caseField.getSystemName(), caseField.getLabel(), caseField.getConfigs())));
+        return caseFieldCustoms;
     }
 
-    public class CaseFieldCustom{
+    @Override
+    public synchronized RailClient login(LoginData data) throws AuthorizationException {
+        try {
+            client = TestRail.builder(data.getURL(), data.getUserName(), data.getPassword()).build();
+            client.projects().list().execute();
+            isLoggedIn = true;
+        } catch (Exception e) {
+            isLoggedIn = false;
+            throw new AuthorizationException("Unable to login due to invalid login data or url");
+        }
+        return this;
+    }
+
+    public class CaseFieldCustom {
         private int id;
         private String systemName;
         private String displayedName;
         private List<Field.Config> configs;
 
-        public CaseFieldCustom(int id, String sysName, String dispName, List<Field.Config> configs){
+        public CaseFieldCustom(int id, String sysName, String dispName, List<Field.Config> configs) {
             this.id = id;
             this.systemName = sysName;
             this.displayedName = dispName;

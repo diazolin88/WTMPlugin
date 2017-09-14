@@ -5,15 +5,15 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
 import exceptions.AuthorizationException;
-import model.testrail.RailConnection;
+import model.testrail.RailClient;
+import settings.LoginData;
 
 import javax.swing.*;
 
 import static utils.ComponentUtil.repaintComponent;
 
-public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable {
+public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable, LoginData {
     private JPanel mainPanel;
-    private JTabbedPane tabbedPane1;
     private JTextField railUrlTextField;
     private JPasswordField railPasswordField;
     private JTextField railUserNameTextField;
@@ -31,40 +31,16 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
 
     }
 
-    public JTextField getRailUrlTextField() {
-
-        return railUrlTextField;
-    }
-
-    public JPasswordField getRailPasswordField() {
-        return railPasswordField;
-    }
-
-    public JTextField getRailUserNameTextField() {
-        return railUserNameTextField;
-    }
-    //Mb need to remove
-    @Deprecated
-    public JButton getRailTestConnectionButton() {
-        return railTestConnectionButton;
-    }
-
-    //Mb need to remove
-    @Deprecated
-    public JTextPane getRailDebugTextPane() {
-        return railDebugTextPane;
-    }
-
-   public void setSettings() {
-        settings.setRailPassword(railPasswordField.getPassword());
-        settings.setRailUserName(railUserNameTextField.getText());
-        settings.setRailUrl(railUrlTextField.getText());
+    public void setSettings() {
+        settings.setPassword(railPasswordField.getPassword());
+        settings.setUserName(railUserNameTextField.getText());
+        settings.setURL(railUrlTextField.getText());
         settings.setTemplate(temlateTextArea.getText());
+        RailClient client = RailClient.getInstance(project);
        try {
-           RailConnection.getInstance(project).login(this);
-           settings.setLogged(true);
+           client.login(this);
        } catch (AuthorizationException e) {
-           settings.setLogged(false);
+           //DO nothing
        }
    }
 
@@ -78,25 +54,24 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
     }
 
     public boolean isModified() {
-                return !railUserNameTextField.getText().equals(settings.getRailUserName())
-                || !String.valueOf(railPasswordField.getPassword()).equals(settings.getRailPassword())
-                || !railUrlTextField.getText().equals(settings.getRailUrl())
+        return !railUserNameTextField.getText().equals(settings.getUserName())
+                || !String.valueOf(railPasswordField.getPassword()).equals(settings.getPassword())
+                || !railUrlTextField.getText().equals(settings.getURL())
                 ||!temlateTextArea.getText().equals(settings.getTemplate());
     }
 
     public void reset() {
-        railPasswordField.setText(settings.getRailPassword());
-        railUserNameTextField.setText(settings.getRailUserName());
-        railUrlTextField.setText(settings.getRailUrl());
+        railPasswordField.setText(settings.getPassword());
+        railUserNameTextField.setText(settings.getUserName());
+        railUrlTextField.setText(settings.getURL());
         temlateTextArea.setText(settings.getTemplate());
-        settings.setLogged(settings.isLogged());
     }
 
     private void railTestConnectionButtonClickedAction(Project project) {
             railTestConnectionButton.addActionListener(listener ->
             {
                 try {
-                    RailConnection.getInstance(project).login(this);
+                    RailClient.getInstance(project).login(this);
                     railDebugTextPane.setText("Connected!");
                 } catch (AuthorizationException e) {
                     railDebugTextPane.setText(e.getMessage());
@@ -105,5 +80,15 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         repaintComponent(railDebugTextPane);
     }
 
+    public String getUserName() {
+        return railUserNameTextField.getText();
+    }
 
+    public String getPassword() {
+        return String.valueOf(railPasswordField.getPassword());
+    }
+
+    public String getURL() {
+        return railUrlTextField.getText();
+    }
 }

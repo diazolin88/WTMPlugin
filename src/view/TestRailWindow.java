@@ -18,7 +18,6 @@ import com.intellij.ui.treeStructure.Tree;
 import model.section.OurSection;
 import model.section.OurSectionInflator;
 import model.testrail.RailClient;
-import model.testrail.RailConnection;
 import model.testrail.RailDataStorage;
 import model.testrail.RailTestCase;
 import model.treerenderer.TreeRenderer;
@@ -60,7 +59,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JPanel detailsPanel;
     private JComboBox customFieldsComboBox;
     private JLabel customFieldsLabel;
-    private RailConnection connection;
     private RailClient client;
     private ToolWindowData data;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
@@ -77,7 +75,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         disableComponent(this.suitesComboBox);
         makeInvisible(this.detailsPanel);
         makeInvisible(sectionTree);
-        connection = RailConnection.getInstance(project);
         setContent(mainPanel);
         sectionTree.setCellRenderer(new TreeRenderer());
 
@@ -93,8 +90,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return ServiceManager.getService(project, TestRailWindow.class);
     }
 
-    public void setDefaultFields() {
-        client = new RailClient(connection.getClient());
+    public void setDefaultFields(Project project) {
+        client = RailClient.getInstance(project);
         this.projectComboBox.addItem("Select project...");
         client.getProjectList().forEach(var -> this.projectComboBox.addItem(var.getName()));
         makeInvisible(loadingLabel);
@@ -586,7 +583,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         Case selectedCase = (Case) ((DefaultMutableTreeNode) getSectionTree().getLastSelectedPathComponent()).getUserObject();
 
         try {
-            Desktop.getDesktop().browse(new URI(settings.getRailUrl() + TEST_CASE_URL_PART + selectedCase.getId()));
+            Desktop.getDesktop().browse(new URI(settings.getURL() + TEST_CASE_URL_PART + selectedCase.getId()));
         } catch (IOException | URISyntaxException e) {
             out.println("Unable to open, url is incorrect");
         }

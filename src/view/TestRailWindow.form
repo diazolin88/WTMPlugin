@@ -78,7 +78,9 @@
         <children>
           <component id="7f9ec" class="com.intellij.ui.treeStructure.Tree" binding="sectionTree">
             <constraints/>
-            <properties/>
+            <properties>
+              <horizontalAutoScrollingEnabled value="true"/>
+            </properties>
           </component>
         </children>
       </scrollpane>

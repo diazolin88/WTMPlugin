@@ -26,7 +26,6 @@
     <!--to see settings window on Settings > Tools window-->
     <projectConfigurable groupId="tools" displayName="WTM plugin" id="preferences.SingleFileExecutionConfigurable" instance="settings.WTMSettingsWindowRenderer"/>
     <projectService serviceInterface="settings.WTMSettings" serviceImplementation="settings.WTMSettings"/>
-    <projectService serviceInterface="model.testrail.RailConnection" serviceImplementation="model.testrail.RailConnection"/>
     <projectService serviceInterface="view.WTMSettingsWindow" serviceImplementation="view.WTMSettingsWindow"/>
     <projectService serviceInterface="view.TestRailWindow" serviceImplementation="view.TestRailWindow"/>
     <projectService serviceInterface="plugincomponents.WTMPluginComponent" serviceImplementation="plugincomponents.WTMPluginComponent"/>

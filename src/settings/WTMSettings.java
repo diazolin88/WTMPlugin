@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
                 @Storage("WTMSettings.xml")
         }
 )
-public class WTMSettings implements PersistentStateComponent<WTMSettings>{
+public class WTMSettings implements PersistentStateComponent<WTMSettings>, LoginData {
 
     // region Settings vars
     public static final String DEFAULT_VALUE = "";
@@ -90,39 +90,34 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings>{
         this.template = template;
     }
 
-    public String getRailUserName() {
-        return this.railUserName;
-    }
-
-    public void setRailUserName(String userName) {
+    public void setUserName(String userName) {
         this.railUserName = userName;
     }
 
-    public String getRailUrl() {
-        return this.railUrl;
-    }
-
-    public void setRailUrl(String url) {
+    public void setURL(String url) {
         this.railUrl = url;
     }
 
-    public String getRailPassword() {
-        CredentialAttributes attributes = new CredentialAttributes(RAIL_P_KEY, this.railUserName, this.getClass(), false);
-        String password = PasswordSafe.getInstance().getPassword(attributes);
-        return null == password ? "" : password;
-    }
-
-    public void setRailPassword(char[] password) {
+    public void setPassword(char[] password) {
         CredentialAttributes attributes = new CredentialAttributes(RAIL_P_KEY, this.railUserName, this.getClass(), false);
         Credentials saveCredentials = new Credentials(attributes.getUserName(), password);
         PasswordSafe.getInstance().set(attributes, saveCredentials);
     }
 
-    public void setLogged(boolean logged) {
-        isLogged = logged;
+    @Override
+    public String getPassword() {
+        CredentialAttributes attributes = new CredentialAttributes(RAIL_P_KEY, this.railUserName, this.getClass(), false);
+        String password = PasswordSafe.getInstance().getPassword(attributes);
+        return null == password ? "" : password;
     }
 
-    public boolean isLogged() {
-        return isLogged;
+    @Override
+    public String getUserName() {
+        return this.railUserName;
+    }
+
+    @Override
+    public String getURL() {
+        return this.railUrl;
     }
 }
