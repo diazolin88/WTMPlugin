@@ -24,7 +24,7 @@ public class DraftClassesCreator {
     private static final String CLASS_NAME_STUB = "TBD";
     private Project project;
 
-    public DraftClassesCreator(Project project) {
+    private DraftClassesCreator(Project project) {
         this.project = project;
     }
 

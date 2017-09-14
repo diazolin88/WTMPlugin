@@ -23,7 +23,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
 
     private Project project;
 
-    public WTMSettingsWindow(Project project) {
+    private WTMSettingsWindow(Project project) {
         super(project);
         this.project = project;
         railTestConnectionButtonClickedAction(project);

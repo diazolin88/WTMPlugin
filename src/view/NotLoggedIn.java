@@ -9,7 +9,7 @@ public class NotLoggedIn extends WindowPanelAbstract{
 
     private JPanel mainPanel;
 
-    NotLoggedIn(Project project) {
+    private NotLoggedIn(Project project) {
         super(project);
         setContent(mainPanel);
     }

@@ -6,7 +6,9 @@ import java.util.List;
 
 /**
  * Model for TestRail test case.
+ * Should be removed or refactored
  */
+@Deprecated
 public class RailTestCase {
     private int id;
     private String userName;

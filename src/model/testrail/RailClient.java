@@ -6,6 +6,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import exceptions.AuthorizationException;
 import settings.LoginData;
+import utils.ToolWindowData;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,20 +15,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Test Rail client.
+ * Test Rail client. Main activities should be done here.
  */
 public final class RailClient implements Loginable<RailClient> {
     private TestRail client;
     private boolean isLoggedIn = false;
-
-    private static List<Section> sectionList = new ArrayList<>();
     private static List<User> userList = new ArrayList<>();
+
+    private RailClient(Project project) {
+    }
 
     public boolean isLoggedIn() {
         return isLoggedIn;
-    }
-
-    public RailClient(Project project) {
     }
 
     public static RailClient getInstance(com.intellij.openapi.project.Project project) {
@@ -61,9 +60,9 @@ public final class RailClient implements Loginable<RailClient> {
         return client.caseTypes().list().execute();
     }
 
-    public List<Case> getCases(int projectId, int suiteId) {
+    public List<Case> getCases(ToolWindowData data) {
         List<CaseField> caseFieldList = this.client.caseFields().list().execute();
-        return this.client.cases().list(projectId, suiteId, caseFieldList).execute();
+        return this.client.cases().list(data.getProjectId(), data.getSuiteId(), caseFieldList).execute();
     }
 
     //TODO check if this fields created for all projects or for just one
@@ -75,13 +74,13 @@ public final class RailClient implements Loginable<RailClient> {
         return customFields;
     }
 
-    public List<Section> getSections(int projectID, int suiteID) {
-        return this.client.sections().list(projectID, suiteID).execute();
+    public List<Section> getSections(ToolWindowData data) {
+        return this.client.sections().list(data.getProjectId(), data.getSuiteId()).execute();
     }
 
     @SuppressWarnings("ConstantConditions")
-    public String getStoryNameBySectionId(int projectId, int suiteId, int sectionId) {
-        return getSections(projectId, suiteId)
+    public String getStoryNameBySectionId(ToolWindowData data, int sectionId) {
+        return getSections(data)
                 .stream()
                 .filter(section -> section.getId() == sectionId)
                 .map(Section::getName)

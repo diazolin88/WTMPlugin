@@ -68,7 +68,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private boolean isCtrlPressed = false;
     private List<Object> selectedTreeNodeList = new ArrayList<>();
 
-    public TestRailWindow(Project project) {
+    private TestRailWindow(Project project) {
         super(project);
         this.project = project;
 
@@ -111,7 +111,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             if (node != null && node.getUserObject() instanceof OurSection) {
                 OurSection section = (OurSection) node.getUserObject();
 
-                List<Case> casesFromServer = client.getCases(data.getProjectId(), data.getSuiteId())
+                List<Case> casesFromServer = client.getCases(data)
                         .stream()
                         .filter(caze -> caze.getSectionId() == section.getId())
                         .collect(Collectors.toList());
@@ -353,7 +353,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             makeVisible(loadingLabel);
 
             List<RailTestCase> railTestCases = casesFromSelectedPacks.stream()
-                    .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
+                    .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data, aCase.getSectionId())))
                     .collect(Collectors.toList());
 
             Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
@@ -388,8 +388,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
         // Inflates root section.
         RailDataStorage railData = new RailDataStorage()
-                .setCases(client.getCases(data.getProjectId(), data.getSuiteId()))
-                .setSections(client.getSections(data.getProjectId(), data.getSuiteId()));
+                .setCases(client.getCases(data))
+                .setSections(client.getSections(data));
         OurSectionInflator.inflateOurSection(railData, null, rootSection);
 
         // Draw one node.
@@ -482,7 +482,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 out.println("Case list " + caseList.size());
 
                 List<RailTestCase> railTestCases = caseList.stream()
-                        .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
+                        .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data, aCase.getSectionId())))
                         .collect(Collectors.toList());
                 out.println("Rail Test case list " + caseList.size());
 

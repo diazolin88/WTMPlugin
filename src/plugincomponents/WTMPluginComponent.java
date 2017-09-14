@@ -20,15 +20,15 @@ public class WTMPluginComponent implements ProjectComponent {
     private Project project;
     private RailClient client;
 
-    public WTMPluginComponent(Project project) {
+    private WTMPluginComponent(Project project) {
+        this.project = project;
         settings = WTMSettings.getInstance(project);
-        client = RailClient.getInstance(project);
     }
 
     @Override
     public void projectOpened() {
         try {
-            client.login(settings);
+            RailClient.getInstance(project).login(settings);
         } catch (AuthorizationException e) {
             showMyMessage();
         }
@@ -39,6 +39,7 @@ public class WTMPluginComponent implements ProjectComponent {
     }
 
     private void showMyMessage() {
+        Project[] project = new Project[1];
         ApplicationManager.getApplication().invokeLater(() -> {
             com.intellij.notification.Notification notification = GROUP_DISPLAY_ID_INFO
                     .createNotification("<html>TestRail login failed", " Go to settings to setup login data!</html>",
@@ -48,11 +49,11 @@ public class WTMPluginComponent implements ProjectComponent {
                         @Override
                         public void actionPerformed(@NotNull AnActionEvent anActionEvent, @NotNull Notification notification) {
                             DataContext dataContext = anActionEvent.getDataContext();
-                            Project project = PlatformDataKeys.PROJECT.getData(dataContext);
-                            ShowSettingsUtil.getInstance().showSettingsDialog(project, WTMSettingsWindowRenderer.class);
+                            project[0] = PlatformDataKeys.PROJECT.getData(dataContext);
+                            ShowSettingsUtil.getInstance().showSettingsDialog(project[0], WTMSettingsWindowRenderer.class);
                         }
                     });
-            Notifications.Bus.notify(notification, project);
+            Notifications.Bus.notify(notification, project[0]);
         });
     }
 }

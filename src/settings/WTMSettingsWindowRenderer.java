@@ -29,7 +29,7 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable, Projec
     private WTMSettingsWindow settingsComponent;
     private Project project;
 
-    public WTMSettingsWindowRenderer(@NotNull Project project) {
+    private WTMSettingsWindowRenderer(@NotNull Project project) {
         this.project = project;
         this.wtmSettings = WTMSettings.getInstance(project);
 
@@ -54,7 +54,7 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable, Projec
     @Override
     public JComponent createComponent() {
         if (settingsComponent == null) {
-            settingsComponent = new WTMSettingsWindow(project);
+            settingsComponent = WTMSettingsWindow.getInstance(project);
         }
         return settingsComponent;
     }

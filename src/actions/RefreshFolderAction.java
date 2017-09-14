@@ -19,6 +19,7 @@ public class RefreshFolderAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
+        //TODO Now works only for cases inside folder and not for folders inside it, need to refactor
         MainPanel.getInstance(e.getProject()).refreshSelectedFolder(e);
     }
 

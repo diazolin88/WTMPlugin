@@ -22,19 +22,17 @@ import static utils.ComponentUtil.repaintComponent;
 public class MainPanel extends WindowPanelAbstract implements View {
     private JPanel mainPanel;
     private Project project;
-    private WTMSettingsWindowRenderer settingsWindow;
     private RailClient client;
 
-    public MainPanel(Project project) {
+    private MainPanel(Project project) {
         super(project);
         this.project = project;
         client = RailClient.getInstance(project);
-        settingsWindow = WTMSettingsWindowRenderer.getInstance(project);
         setContent(mainPanel);
         mainPanel.setLayout(new CardLayout());
         renderComponentDependsOnLoginState();
         addToolBar();
-        settingsWindow.addSubcsr(this);
+        WTMSettingsWindowRenderer.getInstance(project).addSubcsr(this);
     }
 
     public static MainPanel getInstance(Project project) {
