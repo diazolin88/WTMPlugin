@@ -59,7 +59,7 @@
               </grid>
             </constraints>
             <properties>
-              <icon value="files/icons/loading2.gif"/>
+              <icon value="files/icons/loading3.gif"/>
               <text value="Loading..."/>
             </properties>
           </component>

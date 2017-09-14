@@ -472,6 +472,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     private void initTestCasePopupMenu() {
+        StringBuilder classCreationStatusMessages = new StringBuilder();
         testCasePopupMenu = new JPopupMenu();
         ActionListener menuListener = event -> {
             GuiUtil.runInSeparateThread(() -> {
@@ -485,29 +486,36 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 out.println("Case list " + caseList.size());
 
                 List<RailTestCase> railTestCases = caseList.stream()
-                        .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
+                        .map(aCase -> new RailTestCase(
+                                aCase.getId(),
+                                client.getUserName(aCase.getCreatedBy()),
+                                aCase.getTitle(),
+                                aCase.getCustomField(STEPS_SEPARATED_FIELD),
+                                aCase.getCustomField(PRECONDITION_FIELD),
+                                aCase.getCustomField(KEYWORDS),
+                                client.getStoryNameBySectionId(data.getProjectId(), data.getSuiteId(), aCase.getSectionId())))
                         .collect(Collectors.toList());
                 out.println("Rail Test case list " + caseList.size());
 
                 Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
                 railTestCases.forEach(railTestCase -> {
                     String railTestCaseName = DraftClassesCreator.getInstance(project).getClassNameForTestCase(railTestCase);
-                    List<File> fileList = classList.stream().filter(clazzName -> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
+                    List<File> fileList = classList.stream()
+                            .filter(clazzName -> clazzName.getName().contains(railTestCaseName))
+                            .collect(Collectors.toList());
+
+                    classCreationStatusMessages.append("Draft class " + railTestCase.getName());
                     if (fileList.size() == 0) {
-                        out.println("Rail Test case with name " + railTestCase.getName() + "was created");
+                        out.println("Rail Test case with name " + railTestCase.getName() + " was created");
                         DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+                        classCreationStatusMessages.append(" was created<br>");
+                    } else {
+                        out.println("Rail Test case with name " + railTestCase.getName() + " was not created, due to class with same name is already existed");
+                        classCreationStatusMessages.append(" was <b>NOT</b> created<br>");
                     }
                 });
 
-                StatusBar statusBar = WindowManager.getInstance()
-                        .getStatusBar(project);
-
-                JBPopupFactory.getInstance()
-                        .createHtmlTextBalloonBuilder("<html>Draft classes created! <br>Please sync if not appeared</html>", MessageType.INFO, null)
-                        .setFadeoutTime(7500)
-                        .createBalloon()
-                        .show(RelativePoint.getCenterOf(statusBar.getComponent()),
-                                Balloon.Position.atLeft);
+                showClassCreationStatusInBalloon(classCreationStatusMessages);
 
                 makeInvisible(loadingLabel);
             });
@@ -591,6 +599,22 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             out.println("Unable to open, url is incorrect");
         }
     }
-    
+
+    private void showClassCreationStatusInBalloon(StringBuilder balloonClassCreationStatusMsg) {
+        balloonClassCreationStatusMsg.insert(0, "<HTML>");
+        balloonClassCreationStatusMsg.append("</HTML>");
+
+        StatusBar statusBar = WindowManager.getInstance()
+                .getStatusBar(project);
+
+        JBPopupFactory.getInstance()
+                .createHtmlTextBalloonBuilder(balloonClassCreationStatusMsg.toString(), MessageType.INFO, null)
+                .setFadeoutTime(10000)
+                .createBalloon()
+                .show(RelativePoint.getCenterOf(statusBar.getComponent()),
+                        Balloon.Position.atLeft);
+
+        balloonClassCreationStatusMsg.delete(0, balloonClassCreationStatusMsg.length());
+    }
     // endregion
 }
