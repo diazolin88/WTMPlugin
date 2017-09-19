@@ -22,14 +22,14 @@ public final class RailClient implements Loginable {
     private boolean isLoggedIn = false;
     private static List<User> userList = new ArrayList<>();
 
-    private RailClient(Project project) {
+    private RailClient() {
     }
 
     public boolean isLoggedIn() {
         return isLoggedIn;
     }
 
-    public static RailClient getInstance(com.intellij.openapi.project.Project project) {
+    public static RailClient getInstance(Project project) {
         return ServiceManager.getService(project, RailClient.class);
     }
 
@@ -45,15 +45,6 @@ public final class RailClient implements Loginable {
                 .findFirst().get();
 
         return this.client.suites().list(projectId).execute();
-    }
-
-    private List<User> getUsers() {
-        if (userList.isEmpty()) {
-            userList = client.users().list().execute();
-            return userList;
-        } else {
-            return userList;
-        }
     }
 
     public List<CaseType> getCaseTypes() {
@@ -154,5 +145,15 @@ public final class RailClient implements Loginable {
             return displayedName;
         }
     }
+
+    private List<User> getUsers() {
+        if (userList.isEmpty()) {
+            userList = client.users().list().execute();
+            return userList;
+        } else {
+            return userList;
+        }
+    }
+
 
 }

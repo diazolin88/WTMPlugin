@@ -1,4 +1,4 @@
-package model.treerenderer;
+package model.testrail;
 
 public class TestCase {
     private int id;

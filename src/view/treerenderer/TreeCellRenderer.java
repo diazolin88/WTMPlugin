@@ -1,4 +1,4 @@
-package model.treerenderer;
+package view.treerenderer;
 
 import com.codepine.api.testrail.model.Case;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -10,8 +10,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import static com.intellij.util.PlatformIcons.PACKAGE_ICON;
 
-// TODO: not a model.
-public class TreeRenderer extends ColoredTreeCellRenderer {
+/**
+ * Renderer for tree cell.
+ */
+public class TreeCellRenderer extends ColoredTreeCellRenderer {
+
     private static final Icon CASE_ICON = GuiUtil.loadIcon("test_case_icon.png");
 
     @Override

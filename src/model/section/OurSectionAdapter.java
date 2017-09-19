@@ -2,6 +2,9 @@ package model.section;
 
 import com.codepine.api.testrail.model.Section;
 
+/**
+ * Section adapter is class which transforms Section of TestRail to  OurSection.
+ */
 public class OurSectionAdapter {
 
     private OurSectionAdapter() {

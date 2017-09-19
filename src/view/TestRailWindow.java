@@ -20,7 +20,7 @@ import model.section.OurSectionInflator;
 import model.testrail.RailClient;
 import model.testrail.RailDataStorage;
 import model.testrail.RailTestCase;
-import model.treerenderer.TreeRenderer;
+import view.treerenderer.TreeCellRenderer;
 import utils.ClassScanner;
 import utils.DraftClassesCreator;
 import utils.GuiUtil;
@@ -76,7 +76,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         makeInvisible(this.detailsPanel);
         makeInvisible(sectionTree);
         setContent(mainPanel);
-        sectionTree.setCellRenderer(new TreeRenderer());
+        sectionTree.setCellRenderer(new TreeCellRenderer());
 
         //Listeners
         setProjectSelectedItemListener();
