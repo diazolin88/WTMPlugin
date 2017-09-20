@@ -354,16 +354,14 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     // region Section tree
 
-    public synchronized void createDraftClasses(AnActionEvent e) {
+    public synchronized void createDraftClasses(AnActionEvent event) {
         GuiUtil.runInSeparateThread(() -> {
-            e.getPresentation().setEnabled(false);
+            event.getPresentation().setEnabled(false);
             makeVisible(loadingLabel);
 
-            List<RailTestCase> railTestCases = casesFromSelectedPacks.stream()
-                    .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(selectedProjectName, selectedSuiteName, aCase.getSectionId())))
-                    .collect(Collectors.toList());
+            List<RailTestCase> railTestCases = getRailTestCaseList();
+            Collection<File> classList = getAllClassList();
 
-            Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
             railTestCases.forEach(railTestCase -> {
                 String railTestCaseName = DraftClassesCreator.getInstance(project).getClassNameForTestCase(railTestCase);
                 List<File> fileList = classList.stream().filter(clazzName -> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
@@ -383,7 +381,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                             Balloon.Position.atLeft);
 
             makeInvisible(loadingLabel);
-            e.getPresentation().setVisible(true);
+            event.getPresentation().setVisible(true);
         });
     }
 
@@ -490,12 +488,11 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                         .collect(Collectors.toList());
                 out.println("Case list " + caseList.size());
 
-                List<RailTestCase> railTestCases = caseList.stream()
-                        .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(selectedProjectName, selectedSuiteName, aCase.getSectionId())))
-                        .collect(Collectors.toList());
+                List<RailTestCase> railTestCases = getRailTestCaseList();
+                Collection<File> classList = getAllClassList();
+
                 out.println("Rail Test case list " + caseList.size());
 
-                Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
                 railTestCases.forEach(railTestCase -> {
                     String railTestCaseName = DraftClassesCreator.getInstance(project).getClassNameForTestCase(railTestCase);
                     List<File> fileList = classList.stream().filter(clazzName -> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
@@ -599,4 +596,15 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
     
     // endregion
+
+    // TODO: Data layer
+    private List<RailTestCase> getRailTestCaseList() {
+        return casesFromSelectedPacks.stream()
+                .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(selectedProjectName, selectedSuiteName, aCase.getSectionId())))
+                .collect(Collectors.toList());
+    }
+
+    private Collection<File> getAllClassList() {
+        return ClassScanner.getInstance().getAllClassList(project);
+    }
 }
