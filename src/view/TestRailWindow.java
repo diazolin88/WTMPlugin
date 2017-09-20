@@ -387,7 +387,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         rootSection.setName(selectedSuite);
 
         // Inflates root section.
-        RailDataStorage railData = new RailDataStorage()
+        RailDataStorage railData = RailDataStorage.getInstance()
                 .setCases(client.getCases(data))
                 .setSections(client.getSections(data));
         OurSectionInflator.inflateOurSection(railData, null, rootSection);

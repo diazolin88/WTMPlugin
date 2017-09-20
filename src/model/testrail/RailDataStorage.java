@@ -11,6 +11,19 @@ public final class RailDataStorage {
     private List<Section> sections;
     private List<Case> cases;
 
+    private static RailDataStorage instance = null;
+
+    private RailDataStorage(){
+    }
+
+    public static RailDataStorage getInstance() {
+        if (instance == null) {
+            instance = new RailDataStorage();
+        }
+
+        return instance;
+    }
+
     public RailDataStorage setSections(List<Section> sections) {
         this.sections = sections;
         return this;
