@@ -40,7 +40,7 @@ public class TemplateEngine {
 
     public TemplateEngine(Project project) {
         this.project = project;
-        draftDirectoryPath = project.getBasePath() +"/drafts";
+        draftDirectoryPath = project.getBasePath() + "/drafts";
     }
 
     /**

@@ -33,6 +33,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
 import java.net.URL;
 
+/**
+ * The class uses as helper for work with UI.
+ */
 public final class GuiUtil {
 
     private static final String ICON_FOLDER = "/files/icons/";
