@@ -224,7 +224,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     //DO nothing here as selection is Test case
                     //TODO add logic here if selected test case
                 } else {
-                    customProjectFieldsMap = client.getCustomFieldNamesMap(data.getProjectId());
+                    // TODO: get ProjectName
+                    int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(data.getProjectName());
+                    customProjectFieldsMap = client.getCustomFieldNamesMap(projectId);
 
                     casesFromSelectedPacks = getCasesForSelectedTreeRows();
 
@@ -387,7 +389,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         rootSection.setName(selectedSuite);
 
         // Inflates root section.
-        RailDataStorage railData = RailDataStorage.getInstance()
+        RailDataStorage railData = RailDataStorage.getInstance(client)
                 .setCases(client.getCases(data))
                 .setSections(client.getSections(data));
         OurSectionInflator.inflateOurSection(railData, null, rootSection);

@@ -1,6 +1,5 @@
 package utils;
 
-import com.codepine.api.testrail.model.Suite;
 import model.testrail.RailClient;
 
 /**
@@ -25,21 +24,4 @@ public final class ToolWindowData {
     public final String getProjectName() {
         return projectName;
     }
-
-    public final Integer getProjectId() {
-        return client.getProjectList().stream()
-                .filter(project1 -> project1.getName().equals(projectName))
-                .map(com.codepine.api.testrail.model.Project::getId)
-                .findFirst().orElse(null);
-
-    }
-
-    public final Integer getSuiteId() {
-        return client.getSuitesList(projectName)
-                .stream()
-                .filter(suite -> suite.getName().equals(suiteName))
-                .map(Suite::getId)
-                .findFirst().orElse(null);
-    }
-
 }

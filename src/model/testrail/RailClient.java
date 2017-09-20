@@ -53,7 +53,9 @@ public final class RailClient implements Loginable {
 
     public List<Case> getCases(ToolWindowData data) {
         List<CaseField> caseFieldList = this.client.caseFields().list().execute();
-        return this.client.cases().list(data.getProjectId(), data.getSuiteId(), caseFieldList).execute();
+        int projectId = RailDataStorage.getInstance(this).getProjectIdByProjectName(data.getProjectName());
+        int suiteId = RailDataStorage.getInstance(this).getSuiteIdBySuiteName(data.getProjectName(), data.getSuiteName());
+        return this.client.cases().list(projectId, suiteId, caseFieldList).execute();
     }
 
     //TODO check if this fields created for all projects or for just one
@@ -66,7 +68,9 @@ public final class RailClient implements Loginable {
     }
 
     public List<Section> getSections(ToolWindowData data) {
-        return this.client.sections().list(data.getProjectId(), data.getSuiteId()).execute();
+        int projectId = RailDataStorage.getInstance(this).getProjectIdByProjectName(data.getProjectName());
+        int suiteId = RailDataStorage.getInstance(this).getSuiteIdBySuiteName(data.getProjectName(), data.getSuiteName());
+        return this.client.sections().list(projectId, suiteId).execute();
     }
 
     @SuppressWarnings("ConstantConditions")
