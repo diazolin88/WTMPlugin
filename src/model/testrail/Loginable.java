@@ -1,8 +1,8 @@
 package model.testrail;
 
 import exceptions.AuthorizationException;
-import settings.LoginData;
+import settings.User;
 
 public interface Loginable {
-    void login(LoginData loginData) throws AuthorizationException;
+    void login(User loginData) throws AuthorizationException;
 }

@@ -28,7 +28,7 @@
     <projectService serviceInterface="settings.WTMSettings" serviceImplementation="settings.WTMSettings"/>
     <projectService serviceInterface="view.WTMSettingsWindow" serviceImplementation="view.WTMSettingsWindow"/>
     <projectService serviceInterface="view.TestRailWindow" serviceImplementation="view.TestRailWindow"/>
-    <projectService serviceInterface="plugincomponents.WTMPluginComponent" serviceImplementation="plugincomponents.WTMPluginComponent"/>
+    <projectService serviceInterface="components.plugin.WTMPluginComponent" serviceImplementation="components.plugin.WTMPluginComponent"/>
     <projectService serviceInterface="utils.DraftClassesCreator" serviceImplementation="utils.DraftClassesCreator"/>
     <projectService serviceInterface="view.NotLoggedIn" serviceImplementation="view.NotLoggedIn"/>
     <projectService serviceInterface="view.MainPanel" serviceImplementation="view.MainPanel"/>
@@ -58,7 +58,7 @@
   <project-components>
 
     <component>
-      <implementation-class>plugincomponents.WTMPluginComponent</implementation-class>
+      <implementation-class>components.plugin.WTMPluginComponent</implementation-class>
     </component>
   </project-components>
 </idea-plugin>

@@ -1,4 +1,4 @@
-package plugincomponents;
+package components.plugin;
 
 import com.intellij.notification.*;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -40,7 +40,7 @@ public class WTMPluginComponent implements ProjectComponent {
     private void showMyMessage() {
         Project[] project = new Project[1];
         ApplicationManager.getApplication().invokeLater(() -> {
-            com.intellij.notification.Notification notification = GROUP_DISPLAY_ID_INFO
+            Notification notification = GROUP_DISPLAY_ID_INFO
                     .createNotification("<html>TestRail login failed", " Go to settings to setup login data!</html>",
                             NotificationType.ERROR,
                             new NotificationListener.UrlOpeningListener(true))

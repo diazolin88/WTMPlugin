@@ -6,13 +6,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
 import exceptions.AuthorizationException;
 import model.testrail.RailClient;
-import settings.LoginData;
+import settings.User;
 
 import javax.swing.*;
 
 import static utils.ComponentUtil.repaintComponent;
 
-public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable, LoginData {
+public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable, User {
     private JPanel mainPanel;
     private JTextField railUrlTextField;
     private JPasswordField railPasswordField;
@@ -54,13 +54,13 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
 
     public boolean isModified() {
         return !railUserNameTextField.getText().equals(settings.getUserName())
-                || !String.valueOf(railPasswordField.getPassword()).equals(settings.getPassword())
+                || !String.valueOf(railPasswordField.getPassword()).equals(settings.getUserPassword())
                 || !railUrlTextField.getText().equals(settings.getURL())
                 ||!temlateTextArea.getText().equals(settings.getTemplate());
     }
 
     public void reset() {
-        railPasswordField.setText(settings.getPassword());
+        railPasswordField.setText(settings.getUserPassword());
         railUserNameTextField.setText(settings.getUserName());
         railUrlTextField.setText(settings.getURL());
         temlateTextArea.setText(settings.getTemplate());
@@ -83,7 +83,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         return railUserNameTextField.getText();
     }
 
-    public String getPassword() {
+    public String getUserPassword() {
         return String.valueOf(railPasswordField.getPassword());
     }
 

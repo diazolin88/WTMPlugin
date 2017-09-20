@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
                 @Storage("WTMSettings.xml")
         }
 )
-public class WTMSettings implements PersistentStateComponent<WTMSettings>, LoginData {
+public class WTMSettings implements PersistentStateComponent<WTMSettings>, User {
 
     // region Settings vars
     public static final String DEFAULT_VALUE = "";
@@ -105,7 +105,7 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings>, Login
     }
 
     @Override
-    public String getPassword() {
+    public String getUserPassword() {
         CredentialAttributes attributes = new CredentialAttributes(RAIL_P_KEY, this.railUserName, this.getClass(), false);
         String password = PasswordSafe.getInstance().getPassword(attributes);
         return null == password ? "" : password;

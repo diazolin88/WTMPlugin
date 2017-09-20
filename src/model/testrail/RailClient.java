@@ -5,7 +5,7 @@ import com.codepine.api.testrail.model.*;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import exceptions.AuthorizationException;
-import settings.LoginData;
+import settings.User;
 import utils.ToolWindowData;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public final class RailClient implements Loginable {
     private TestRail client;
     private boolean isLoggedIn = false;
-    private static List<User> userList = new ArrayList<>();
+    private static List<com.codepine.api.testrail.model.User> userList = new ArrayList<>();
 
     private RailClient() {
     }
@@ -83,7 +83,7 @@ public final class RailClient implements Loginable {
         return getUsers()
                 .stream()
                 .filter(user -> user.getId() == userId)
-                .map(User::getName)
+                .map(com.codepine.api.testrail.model.User::getName)
                 .collect(Collectors.toList())
                 .get(0);
     }
@@ -105,9 +105,9 @@ public final class RailClient implements Loginable {
     }
 
     @Override
-    public void login(LoginData data) throws AuthorizationException {
+    public void login(User data) throws AuthorizationException {
         try {
-            client = TestRail.builder(data.getURL(), data.getUserName(), data.getPassword()).build();
+            client = TestRail.builder(data.getURL(), data.getUserName(), data.getUserPassword()).build();
             client.projects().list().execute();
             isLoggedIn = true;
         } catch (Exception e) {
@@ -146,7 +146,7 @@ public final class RailClient implements Loginable {
         }
     }
 
-    private List<User> getUsers() {
+    private List<com.codepine.api.testrail.model.User> getUsers() {
         if (userList.isEmpty()) {
             userList = client.users().list().execute();
             return userList;

@@ -1,11 +1,14 @@
 package settings;
 
-public interface LoginData {
+/**
+ * User data. The class uses for  plugin settings as storage.
+ */
+public interface User {
     default String getUserName() {
         return null;
     }
 
-    default String getPassword() {
+    default String getUserPassword() {
         return null;
     }
 
