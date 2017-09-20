@@ -9,7 +9,11 @@ import view.TestRailWindow;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+/**
+ * AnAction for create draft class.
+ */
 public class CreateDraftClassAction extends AnAction {
+
     private static final Icon ICON = GuiUtil.loadIcon("draft.png");
 
     public CreateDraftClassAction(){
@@ -23,13 +27,18 @@ public class CreateDraftClassAction extends AnAction {
     }
 
     @Override
-    public void update(AnActionEvent e){
-        TestRailWindow window = TestRailWindow.getInstance(e.getProject());
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) window.getSectionTree().getLastSelectedPathComponent();
-        if (null == window.getSectionTree().getSelectionPaths() || 0 == window.getSectionTree().getSelectionPaths().length || node.getUserObject() instanceof Case) {
-            e.getPresentation().setEnabled(false);
+    public void update(AnActionEvent event){
+        if (isTestCaseSelectedByEvent(event)) {
+            event.getPresentation().setEnabled(false);
         }else {
-            e.getPresentation().setEnabled(true);
+            event.getPresentation().setEnabled(true);
         }
+    }
+
+    private boolean isTestCaseSelectedByEvent(AnActionEvent event) {
+        TestRailWindow window = TestRailWindow.getInstance(event.getProject());
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) window.getSectionTree().getLastSelectedPathComponent();
+
+        return null == window.getSectionTree().getSelectionPaths() || 0 == window.getSectionTree().getSelectionPaths().length || node.getUserObject() instanceof Case;
     }
 }
