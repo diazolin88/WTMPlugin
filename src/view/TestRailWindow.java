@@ -260,7 +260,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private void setSuiteSelectedItemListener() {
         suitesComboBox.addActionListener(e -> {
             //Set data to use in every other cases
-            data = new ToolWindowData((String) this.suitesComboBox.getSelectedItem(), (String) projectComboBox.getSelectedItem(), client);
+            data = new ToolWindowData((String) this.suitesComboBox.getSelectedItem(), (String) projectComboBox.getSelectedItem());
             String selectedSuite = (String) this.suitesComboBox.getSelectedItem();
             if (selectedSuite != null && !selectedSuite.equals("Select your suite...")) {
 
