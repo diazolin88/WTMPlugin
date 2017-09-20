@@ -111,7 +111,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             if (node != null && node.getUserObject() instanceof OurSection) {
                 OurSection section = (OurSection) node.getUserObject();
 
-                List<Case> casesFromServer = client.getCases(data)
+                int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(data.getProjectName());
+                int suiteId = RailDataStorage.getInstance(client).getSuiteIdBySuiteName(data.getProjectName(), data.getSuiteName());
+                List<Case> casesFromServer = client.getCasesBySuiteId(projectId, suiteId)
                         .stream()
                         .filter(caze -> caze.getSectionId() == section.getId())
                         .collect(Collectors.toList());
@@ -389,8 +391,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         rootSection.setName(selectedSuite);
 
         // Inflates root section.
+        int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(data.getProjectName());
+        int suiteId = RailDataStorage.getInstance(client).getSuiteIdBySuiteName(data.getProjectName(), data.getSuiteName());
         RailDataStorage railData = RailDataStorage.getInstance(client)
-                .setCases(client.getCases(data))
+                .setCases(client.getCasesBySuiteId(projectId, suiteId))
                 .setSections(client.getSections(data));
         OurSectionInflator.inflateOurSection(railData, null, rootSection);
 

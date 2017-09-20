@@ -51,10 +51,8 @@ public final class RailClient implements Loginable {
         return client.caseTypes().list().execute();
     }
 
-    public List<Case> getCases(ToolWindowData data) {
+    public List<Case> getCasesBySuiteId(Integer projectId, Integer suiteId) {
         List<CaseField> caseFieldList = this.client.caseFields().list().execute();
-        int projectId = RailDataStorage.getInstance(this).getProjectIdByProjectName(data.getProjectName());
-        int suiteId = RailDataStorage.getInstance(this).getSuiteIdBySuiteName(data.getProjectName(), data.getSuiteName());
         return this.client.cases().list(projectId, suiteId, caseFieldList).execute();
     }
 
