@@ -6,7 +6,6 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import exceptions.AuthorizationException;
 import settings.User;
-import utils.ToolWindowData;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -65,15 +64,15 @@ public final class RailClient implements Loginable {
         return customFields;
     }
 
-    public List<Section> getSections(ToolWindowData data) {
-        int projectId = RailDataStorage.getInstance(this).getProjectIdByProjectName(data.getProjectName());
-        int suiteId = RailDataStorage.getInstance(this).getSuiteIdBySuiteName(data.getProjectName(), data.getSuiteName());
+    public List<Section> getSections(String projectName, String suiteName) {
+        int projectId = RailDataStorage.getInstance(this).getProjectIdByProjectName(projectName);
+        int suiteId = RailDataStorage.getInstance(this).getSuiteIdBySuiteName(projectName, suiteName);
         return this.client.sections().list(projectId, suiteId).execute();
     }
 
     @SuppressWarnings("ConstantConditions")
-    public String getStoryNameBySectionId(ToolWindowData data, int sectionId) {
-        return getSections(data)
+    public String getStoryNameBySectionId(String projectName, String suiteName, int sectionId) {
+        return getSections(projectName, suiteName)
                 .stream()
                 .filter(section -> section.getId() == sectionId)
                 .map(Section::getName)

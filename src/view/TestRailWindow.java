@@ -24,7 +24,6 @@ import view.treerenderer.TreeCellRenderer;
 import utils.ClassScanner;
 import utils.DraftClassesCreator;
 import utils.GuiUtil;
-import utils.ToolWindowData;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -60,13 +59,15 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JComboBox customFieldsComboBox;
     private JLabel customFieldsLabel;
     private RailClient client;
-    private ToolWindowData data;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
     private List<RailClient.CaseFieldCustom> customProjectFieldsMap = new ArrayList<>();
     private JPopupMenu testCasePopupMenu;
     private DefaultMutableTreeNode currentSelectedTreeNode = null;
     private boolean isCtrlPressed = false;
     private List<Object> selectedTreeNodeList = new ArrayList<>();
+
+    private String selectedProjectName = null;
+    private String selectedSuiteName = null;
 
     private TestRailWindow(Project project) {
         super(project);
@@ -111,8 +112,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             if (node != null && node.getUserObject() instanceof OurSection) {
                 OurSection section = (OurSection) node.getUserObject();
 
-                int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(data.getProjectName());
-                int suiteId = RailDataStorage.getInstance(client).getSuiteIdBySuiteName(data.getProjectName(), data.getSuiteName());
+                int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(selectedProjectName);
+                int suiteId = RailDataStorage.getInstance(client).getSuiteIdBySuiteName(selectedProjectName, selectedSuiteName);
                 List<Case> casesFromServer = client.getCasesBySuiteId(projectId, suiteId)
                         .stream()
                         .filter(caze -> caze.getSectionId() == section.getId())
@@ -227,7 +228,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     //TODO add logic here if selected test case
                 } else {
                     // TODO: get ProjectName
-                    int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(data.getProjectName());
+                    int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(selectedProjectName);
                     customProjectFieldsMap = client.getCustomFieldNamesMap(projectId);
 
                     casesFromSelectedPacks = getCasesForSelectedTreeRows();
@@ -262,7 +263,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private void setSuiteSelectedItemListener() {
         suitesComboBox.addActionListener(e -> {
             //Set data to use in every other cases
-            data = new ToolWindowData((String) this.suitesComboBox.getSelectedItem(), (String) projectComboBox.getSelectedItem());
+            selectedProjectName = (String) projectComboBox.getSelectedItem();
+            selectedSuiteName = (String) this.suitesComboBox.getSelectedItem();
+
             String selectedSuite = (String) this.suitesComboBox.getSelectedItem();
             if (selectedSuite != null && !selectedSuite.equals("Select your suite...")) {
 
@@ -357,7 +360,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             makeVisible(loadingLabel);
 
             List<RailTestCase> railTestCases = casesFromSelectedPacks.stream()
-                    .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data, aCase.getSectionId())))
+                    .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(selectedProjectName, selectedSuiteName, aCase.getSectionId())))
                     .collect(Collectors.toList());
 
             Collection<File> classList = ClassScanner.getInstance().getAllClassList(project);
@@ -391,11 +394,11 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         rootSection.setName(selectedSuite);
 
         // Inflates root section.
-        int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(data.getProjectName());
-        int suiteId = RailDataStorage.getInstance(client).getSuiteIdBySuiteName(data.getProjectName(), data.getSuiteName());
+        int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(selectedProjectName);
+        int suiteId = RailDataStorage.getInstance(client).getSuiteIdBySuiteName(selectedProjectName, selectedSuiteName);
         RailDataStorage railData = RailDataStorage.getInstance(client)
                 .setCases(client.getCasesBySuiteId(projectId, suiteId))
-                .setSections(client.getSections(data));
+                .setSections(client.getSections(selectedProjectName, selectedSuiteName));
         OurSectionInflator.inflateOurSection(railData, null, rootSection);
 
         // Draw one node.
@@ -488,7 +491,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 out.println("Case list " + caseList.size());
 
                 List<RailTestCase> railTestCases = caseList.stream()
-                        .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(data, aCase.getSectionId())))
+                        .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(selectedProjectName, selectedSuiteName, aCase.getSectionId())))
                         .collect(Collectors.toList());
                 out.println("Rail Test case list " + caseList.size());
 
