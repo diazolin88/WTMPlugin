@@ -32,7 +32,7 @@
     <projectService serviceInterface="utils.DraftClassesCreator" serviceImplementation="utils.DraftClassesCreator"/>
     <projectService serviceInterface="view.NotLoggedIn" serviceImplementation="view.NotLoggedIn"/>
     <projectService serviceInterface="view.MainPanel" serviceImplementation="view.MainPanel"/>
-    <projectService serviceInterface="model.testrail.RailClient" serviceImplementation="model.testrail.RailClient"/>
+    <projectService serviceInterface="model.testrail.RailDataStorage" serviceImplementation="model.testrail.RailDataStorage"/>
     <projectService serviceInterface="settings.WTMSettingsWindowRenderer" serviceImplementation="settings.WTMSettingsWindowRenderer"/>
 
     <toolWindow id="WTMPlugin" icon="/files/icons/plugin_logo.png" anchor="left" factoryClass="toolwindow.WTMToolWindowFactory"/>

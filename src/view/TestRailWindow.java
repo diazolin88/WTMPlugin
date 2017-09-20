@@ -17,7 +17,6 @@ import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.treeStructure.Tree;
 import model.section.OurSection;
 import model.section.OurSectionInflator;
-import model.testrail.RailClient;
 import model.testrail.RailDataStorage;
 import model.testrail.RailTestCase;
 import view.treerenderer.TreeCellRenderer;
@@ -58,9 +57,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JPanel detailsPanel;
     private JComboBox customFieldsComboBox;
     private JLabel customFieldsLabel;
-    private RailClient client;
+    private RailDataStorage client;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
-    private List<RailClient.CaseFieldCustom> customProjectFieldsMap = new ArrayList<>();
+    private List<RailDataStorage.CaseFieldCustom> customProjectFieldsMap = new ArrayList<>();
     private JPopupMenu testCasePopupMenu;
     private DefaultMutableTreeNode currentSelectedTreeNode = null;
     private boolean isCtrlPressed = false;
@@ -92,7 +91,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     public void setDefaultFields(Project project) {
-        client = RailClient.getInstance(project);
+        client = RailDataStorage.getInstance(project);
         this.projectComboBox.addItem("Select project...");
         client.getProjectList().forEach(var -> this.projectComboBox.addItem(var.getName()));
         makeInvisible(loadingLabel);
@@ -112,8 +111,8 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             if (node != null && node.getUserObject() instanceof OurSection) {
                 OurSection section = (OurSection) node.getUserObject();
 
-                int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(selectedProjectName);
-                int suiteId = RailDataStorage.getInstance(client).getSuiteIdBySuiteName(selectedProjectName, selectedSuiteName);
+                int projectId = client.getProjectIdByProjectName(selectedProjectName);
+                int suiteId = client.getSuiteIdBySuiteName(selectedProjectName, selectedSuiteName);
                 List<Case> casesFromServer = client.getCasesBySuiteId(projectId, suiteId)
                         .stream()
                         .filter(caze -> caze.getSectionId() == section.getId())
@@ -228,7 +227,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     //TODO add logic here if selected test case
                 } else {
                     // TODO: get ProjectName
-                    int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(selectedProjectName);
+                    int projectId = client.getProjectIdByProjectName(selectedProjectName);
                     customProjectFieldsMap = client.getCustomFieldNamesMap(projectId);
 
                     casesFromSelectedPacks = getCasesForSelectedTreeRows();
@@ -392,9 +391,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         rootSection.setName(selectedSuite);
 
         // Inflates root section.
-        int projectId = RailDataStorage.getInstance(client).getProjectIdByProjectName(selectedProjectName);
-        int suiteId = RailDataStorage.getInstance(client).getSuiteIdBySuiteName(selectedProjectName, selectedSuiteName);
-        RailDataStorage railData = RailDataStorage.getInstance(client)
+        int projectId = client.getProjectIdByProjectName(selectedProjectName);
+        int suiteId = client.getSuiteIdBySuiteName(selectedProjectName, selectedSuiteName);
+        RailDataStorage railData = client
                 .setCases(client.getCasesBySuiteId(projectId, suiteId))
                 .setSections(client.getSections(selectedProjectName, selectedSuiteName));
         OurSectionInflator.inflateOurSection(railData, null, rootSection);

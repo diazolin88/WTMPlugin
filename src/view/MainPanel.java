@@ -9,7 +9,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import model.testrail.RailClient;
+import model.testrail.RailDataStorage;
 import settings.WTMSettingsWindowRenderer;
 import utils.GuiUtil;
 
@@ -21,12 +21,12 @@ import static utils.ComponentUtil.repaintComponent;
 public class MainPanel extends WindowPanelAbstract implements View {
     private JPanel mainPanel;
     private final Project project;
-    private RailClient client;
+    private RailDataStorage client;
 
     private MainPanel(Project project) {
         super(project);
         this.project = project;
-        client = RailClient.getInstance(project);
+        client = RailDataStorage.getInstance(project);
         setContent(mainPanel);
         mainPanel.setLayout(new CardLayout());
         update();

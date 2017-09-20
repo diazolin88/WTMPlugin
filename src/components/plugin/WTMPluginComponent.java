@@ -9,7 +9,7 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import exceptions.AuthorizationException;
-import model.testrail.RailClient;
+import model.testrail.RailDataStorage;
 import org.jetbrains.annotations.NotNull;
 import settings.WTMSettings;
 import settings.WTMSettingsWindowRenderer;
@@ -27,7 +27,7 @@ public class WTMPluginComponent implements ProjectComponent {
     @Override
     public void projectOpened() {
         try {
-            RailClient.getInstance(project).login(settings);
+            RailDataStorage.getInstance(project).login(settings);
         } catch (AuthorizationException e) {
             showMyMessage();
         }

@@ -5,7 +5,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
 import exceptions.AuthorizationException;
-import model.testrail.RailClient;
+import model.testrail.RailDataStorage;
 import settings.User;
 
 import javax.swing.*;
@@ -37,7 +37,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         settings.setURL(railUrlTextField.getText());
         settings.setTemplate(temlateTextArea.getText());
        try {
-           RailClient.getInstance(project).login(this);
+           RailDataStorage.getInstance(project).login(this);
        } catch (AuthorizationException e) {
            //DO nothing
        }
@@ -70,7 +70,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
             railTestConnectionButton.addActionListener(listener ->
             {
                 try {
-                    RailClient.getInstance(project).login(this);
+                    RailDataStorage.getInstance(project).login(this);
                     railDebugTextPane.setText("Connected!");
                 } catch (AuthorizationException e) {
                     railDebugTextPane.setText(e.getMessage());
