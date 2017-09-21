@@ -12,16 +12,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Storage for rail data (sections and test cases).
+ * Storage for rail data. The storage use TestRail client for getting data from TestRail.
  */
 public final class RailDataStorage implements Login {
     private List<Section> sections;
     private List<Case> cases;
     private TestRail testRailClient;
-
     private boolean isLoggedIn = false;
-    private static List<com.codepine.api.testrail.model.User> userList = new ArrayList<>();
 
+    private static List<User> userList = new ArrayList<>();
     private static RailDataStorage instance = null;
 
     private RailDataStorage() {
@@ -89,7 +88,7 @@ public final class RailDataStorage implements Login {
     @SuppressWarnings("ConstantConditions")
     public List<Suite> getSuitesList(String projectName) {
         int projectId = testRailClient.projects().list().execute().stream()
-                .filter(project1 -> project1.getName().equals(projectName))
+                .filter(projectItem -> projectItem.getName().equals(projectName))
                 .map(com.codepine.api.testrail.model.Project::getId)
                 .findFirst().get();
 
@@ -140,8 +139,8 @@ public final class RailDataStorage implements Login {
     }
 
     //probably it's better to return caseFields as id to handle it later
-    public List<CaseFieldCustom> getCustomFieldNamesMap(int projectID) {
-        List<CaseFieldCustom> caseFieldCustoms = new ArrayList<>();
+    public List<TestCaseField> getCustomFieldNamesMap(int projectID) {
+        List<TestCaseField> testCaseFields = new ArrayList<>();
         testRailClient.caseFields().list().execute().stream()
                 .filter(caseField ->
                         caseField.getConfigs()
@@ -151,8 +150,8 @@ public final class RailDataStorage implements Login {
                                         config.getOptions().getClass().isAssignableFrom(Field.Config.DropdownOptions.class)
                                                 || config.getOptions().getClass().isAssignableFrom(Field.Config.MultiSelectOptions.class))
                                 .anyMatch(config -> config.getContext().getProjectIds().contains(projectID)))
-                .forEach(caseField -> caseFieldCustoms.add(new CaseFieldCustom(caseField.getId(), caseField.getSystemName(), caseField.getLabel(), caseField.getConfigs())));
-        return caseFieldCustoms;
+                .forEach(caseField -> testCaseFields.add(new TestCaseField(caseField.getId(), caseField.getSystemName(), caseField.getLabel(), caseField.getConfigs())));
+        return testCaseFields;
     }
 
     @Override
@@ -167,16 +166,19 @@ public final class RailDataStorage implements Login {
         }
     }
 
-    public class CaseFieldCustom {
+    /**
+     * Test case field model.
+     */
+    public class TestCaseField {
         private int id;
         private String systemName;
         private String displayedName;
         private List<Field.Config> configs;
 
-        public CaseFieldCustom(int id, String sysName, String dispName, List<Field.Config> configs) {
+        public TestCaseField(int id, String systemName, String displayedName, List<Field.Config> configs) {
             this.id = id;
-            this.systemName = sysName;
-            this.displayedName = dispName;
+            this.systemName = systemName;
+            this.displayedName = displayedName;
             this.configs = configs;
         }
 
@@ -197,7 +199,7 @@ public final class RailDataStorage implements Login {
         }
     }
 
-    private List<com.codepine.api.testrail.model.User> getUsers() {
+    private List<User> getUsers() {
         if (userList.isEmpty()) {
             userList = testRailClient.users().list().execute();
             return userList;
@@ -205,5 +207,4 @@ public final class RailDataStorage implements Login {
             return userList;
         }
     }
-
 }

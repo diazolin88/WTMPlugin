@@ -59,7 +59,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JLabel customFieldsLabel;
     private RailDataStorage client;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
-    private List<RailDataStorage.CaseFieldCustom> customProjectFieldsMap = new ArrayList<>();
+    private List<RailDataStorage.TestCaseField> customProjectFieldsMap = new ArrayList<>();
     private JPopupMenu testCasePopupMenu;
     private DefaultMutableTreeNode currentSelectedTreeNode = null;
     private boolean isCtrlPressed = false;
