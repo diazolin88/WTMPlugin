@@ -42,13 +42,11 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings>, User 
             "import ru.yandex.qatools.allure.annotations.Title;\n" +
             "\n" +
             "import static com.wiley.wat.Group.toAutomate;\n" +
+            "import ru.yandex.qatools.allure.annotations.Stories;\n" +
             "\n" +
             "/**\n" +
             " * User: {{USER_NAME}}\n" +
             " * Date: {{TEST_DATE}}\n" +
-            " * <p>\n" +
-            " * Summary:\n" +
-            " * {{SUMMARY}}\n" +
             " * <p>\n" +
             " * Preconditions:\n" +
             " * {{PRECONDITIONS}}\n" +
@@ -60,8 +58,9 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings>, User 
             "public class {{CLASS_NAME}} {\n" +
             "\n" +
             "    @Title(\"{{TEST_RAIL_TITLE}}\")\n" +
+            "    @Stories(value = {{{STORY}}})\n" +
             "    @Test(groups = {toAutomate})\n" +
-            "    public void test{{CASE_PREFIX_KEY}}{{TEST_RAIL_ID}}_{{TEST_METHOD_NAME_KEY}}() {\n" +
+            "    public void test_C{{TEST_RAIL_ID}}_{{AUTHOR_SHORT_NAME}}() {\n" +
             "        // specially do nothing\n" +
             "    }\n" +
             "}";

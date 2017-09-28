@@ -34,6 +34,8 @@ public class TemplateEngine {
     public static final String SUMMARY_KEY = "SUMMARY";
     public static final String TEST_METHOD_NAME_KEY = "TEST_METHOD_NAME_KEY";
     public static final String CASE_PREFIX_KEY = "CASE_PREFIX_KEY";
+    public static final String AUTHOR_SHORT_NAME = "AUTHOR_SHORT_NAME";
+    public static final String STORY_KEY = "STORY";
 
     private String draftDirectoryPath = "";
     private static final String KEY_WORD_TEMPLATE = "\\{\\{%s\\}\\}";

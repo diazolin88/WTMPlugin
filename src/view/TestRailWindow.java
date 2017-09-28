@@ -58,12 +58,13 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JComboBox customFieldsComboBox;
     private JLabel customFieldsLabel;
     private RailDataStorage client;
-    private List<Case> casesFromSelectedPacks = new ArrayList<>();
     private List<RailDataStorage.TestCaseField> customProjectFieldsMap = new ArrayList<>();
     private JPopupMenu testCasePopupMenu;
-    private DefaultMutableTreeNode currentSelectedTreeNode = null;
     private boolean isCtrlPressed = false;
     private List<Object> selectedTreeNodeList = new ArrayList<>();
+
+    private DefaultMutableTreeNode currentSelectedTreeNode = null;
+    private List<Case> casesFromSelectedPacks = new ArrayList<>();
 
     private String selectedProjectName = null;
     private String selectedSuiteName = null;
@@ -222,6 +223,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                         selectedTreeNodeList.add(userObject);
                     }
                 }
+
+                casesFromSelectedPacks = getCasesForSelectedTreeRows();
+
                 if (null != lastSelectedTreeNode && null != lastSelectedTreeNode.getUserObject() && !(lastSelectedTreeNode.getUserObject() instanceof OurSection)) {
                     //DO nothing here as selection is Test case
                     //TODO add logic here if selected test case
@@ -230,7 +234,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     int projectId = client.getProjectIdByProjectName(selectedProjectName);
                     customProjectFieldsMap = client.getCustomFieldNamesMap(projectId);
 
-                    casesFromSelectedPacks = getCasesForSelectedTreeRows();
 
                     displayCaseTypesInfo();
 
@@ -427,8 +430,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     private List<Case> getCasesForSelectedTreeRows() {
         TreePath[] paths = sectionTree.getSelectionPaths();
-        List<Case> casesFromSelectedPacks = new ArrayList<>();
-
         if (null != paths) {
 
             for (TreePath path : paths) {
@@ -480,27 +481,25 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             GuiUtil.runInSeparateThread(() -> {
                 makeVisible(loadingLabel);
 
-                out.println("Create draft classes button pressed " + selectedTreeNodeList.size());
                 List<Case> caseList = selectedTreeNodeList
                         .stream()
                         .map(treeNode -> (Case) treeNode)
                         .collect(Collectors.toList());
-                out.println("Case list " + caseList.size());
+                //out.println("Selected tests equals " + selectedTreeNodeList.size());
 
                 List<RailTestCase> railTestCases = getRailTestCaseList();
                 Collection<File> classList = getAllClassList();
 
-                out.println("Rail Test case list " + caseList.size());
+                out.println("Rail Test case list for current section equals " + railTestCases.size());
+                caseList.forEach(testCase->{
+                   out.println("Test case was created " + testCase.getId());
 
-                railTestCases.forEach(railTestCase -> {
-                    String railTestCaseName = DraftClassesCreator.getInstance(project).getClassNameForTestCase(railTestCase);
-                    List<File> fileList = classList.stream().filter(clazzName -> clazzName.getName().contains(railTestCaseName)).collect(Collectors.toList());
-                    if (fileList.size() == 0) {
-                        out.println("Rail Test case with name " + railTestCase.getName() + "was created");
-                        DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
-                    }
-                });
+                   RailTestCase railTestCase = getRailTestCaseById(railTestCases, testCase.getId());
+                   out.println("Rail Test case with name " + railTestCase.getName() + "was created");
+                   DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+               });
 
+                // TODO: To view method
                 StatusBar statusBar = WindowManager.getInstance()
                         .getStatusBar(project);
 
@@ -521,6 +520,15 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         item.setIcon(GuiUtil.loadIcon("draft.png"));
         item.addActionListener(menuListener);
         testCasePopupMenu.add(item);
+    }
+
+    private RailTestCase getRailTestCaseById(List<RailTestCase> railTestCaseList, Integer id) {
+        for (RailTestCase railTestCase: railTestCaseList) {
+            if (id.equals(railTestCase.getId()))
+                return railTestCase;
+        }
+
+        return null;
     }
 
     private void addRightClickListenerToTree() {
@@ -598,8 +606,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
     // TODO: Data layer
     private List<RailTestCase> getRailTestCaseList() {
-        return casesFromSelectedPacks.stream()
-                .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(selectedProjectName, selectedSuiteName, aCase.getSectionId())))
+        return casesFromSelectedPacks
+                .stream()
+                .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(selectedProjectName, selectedSuiteName, aCase.getSectionId()), aCase.getSectionId()))
                 .collect(Collectors.toList());
     }
 

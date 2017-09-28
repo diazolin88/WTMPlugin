@@ -17,8 +17,9 @@ public class RailTestCase {
     private String preconditions;
     private List<String> keywords;
     private String folderName;
+    private int sectionId; // storyId
 
-    public RailTestCase(int id, String userName , String name, List<Field.Step> description, String preconditions, List<String> keywords, String folderName) {
+    public RailTestCase(int id, String userName , String name, List<Field.Step> description, String preconditions, List<String> keywords, String folderName, int sectionId) {
         this.id = id;
         this.userName = userName;
 
@@ -27,6 +28,7 @@ public class RailTestCase {
         this.preconditions = preconditions;
         this.keywords = keywords;
         this.folderName = folderName;
+        this.sectionId = sectionId;
     }
 
     public List<Field.Step> getDescription() {
@@ -51,5 +53,9 @@ public class RailTestCase {
 
     public String getUserName() {
         return userName;
+    }
+
+    public int getSectionId() {
+        return sectionId;
     }
 }

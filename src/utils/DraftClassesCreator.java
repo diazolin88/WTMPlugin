@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static utils.TemplateEngine.*;
@@ -58,6 +60,10 @@ public class DraftClassesCreator {
         draftDataMap.put(CLASS_NAME_KEY, className);
         draftDataMap.put(TEST_METHOD_NAME_KEY, getUserCreds(testCase));
         draftDataMap.put(CASE_PREFIX_KEY, "_C");
+        draftDataMap.put(STORY_KEY, "\"" +String.valueOf(testCase.getSectionId())+"\"");
+
+        String[] userNamePart = testCase.getUserName().trim().split(" ");
+        draftDataMap.put(AUTHOR_SHORT_NAME, getOnlyString(userNamePart[0]).substring(0, 1) + getOnlyString(userNamePart[1]).substring(0, 1));
 
         LOGGER.info("------------------------------------------------");
         TemplateEngine engine = new TemplateEngine(project);
@@ -69,10 +75,21 @@ public class DraftClassesCreator {
 
     // region Formatting strings for test case
 
+    /**
+     * Remove all not literals symbols. For ex. - need for getting string from html.
+     *
+     * @param string Any string.
+     * @return String with literals.
+     */
+    private String getOnlyString(String string) {
+        Pattern pattern = Pattern.compile("[^a-z A-Z]");
+        Matcher matcher = pattern.matcher(string);
+        return matcher.replaceAll("");
+    }
+
     public String getClassNameForTestCase(RailTestCase testCase) {
         return new StringBuilder()
-                .append(PROJECT_PREFIX)
-                .append("_C")
+                .append("C")
                 .append(testCase.getId())
                 .append("_")
                 .append(testCase.getName())
