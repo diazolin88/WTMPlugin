@@ -234,7 +234,6 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     int projectId = client.getProjectIdByProjectName(selectedProjectName);
                     customProjectFieldsMap = client.getCustomFieldNamesMap(projectId);
 
-
                     displayCaseTypesInfo();
 
                     GuiUtil.runInSeparateThread(() -> {
@@ -432,6 +431,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         TreePath[] paths = sectionTree.getSelectionPaths();
         if (null != paths) {
 
+            casesFromSelectedPacks.clear();
             for (TreePath path : paths) {
                 Object userObject = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
 
@@ -439,6 +439,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     OurSection section = (OurSection) userObject;
                     //TODO here need to add all cases from current folder or(and) children folders
                     casesFromSelectedPacks.addAll(getCases(section));
+                }
+
+                if (userObject instanceof Case) {
+                    casesFromSelectedPacks.add((Case)userObject);
                 }
             }
             makeVisible(this.detailsPanel);

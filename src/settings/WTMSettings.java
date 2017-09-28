@@ -11,7 +11,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
 
-
 /**
  * Class needs for save user settings in file WTMSettings.xml such as:
  *
@@ -57,7 +56,6 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings>, User 
             " */\n" +
             "public class {{CLASS_NAME}} {\n" +
             "\n" +
-            "    @Title(\"{{TEST_RAIL_TITLE}}\")\n" +
             "    @Stories(value = {{{STORY}}})\n" +
             "    @Test(groups = {toAutomate})\n" +
             "    public void test_C{{TEST_RAIL_ID}}_{{AUTHOR_SHORT_NAME}}() {\n" +

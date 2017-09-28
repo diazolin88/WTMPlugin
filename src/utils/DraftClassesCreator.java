@@ -50,7 +50,7 @@ public class DraftClassesCreator {
         String description = getDescriptionForTestCase(testCase);
 
         draftDataMap.put(SUMMARY_KEY, testCase.getName());
-        draftDataMap.put(USER_NAME_KEY, testCase.getUserName());
+        draftDataMap.put(USER_NAME_KEY, getOnlyString(testCase.getUserName()));
         draftDataMap.put(TEST_DATE_KEY, dateFormat.format(new Date()));
         draftDataMap.put(TEST_DESCRIPTION_KEY, description);
         draftDataMap.put(PROJECT_PREFIX_KEY, PROJECT_PREFIX);
