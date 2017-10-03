@@ -91,6 +91,10 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         return ServiceManager.getService(project, TestRailWindow.class);
     }
 
+    public JPanel getDetailsPanel() {
+        return detailsPanel;
+    }
+
     public void setDefaultFields(Project project) {
         client = RailDataStorage.getInstance(project);
         this.projectComboBox.addItem("Select project...");
@@ -326,8 +330,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                         .filter(caseField1 -> caseField1.getCustomFields().entrySet().stream()
                                 .anyMatch(o -> o.getValue() != null && o.getValue().equals(key)))
                         .collect(Collectors.toList());
-
-                builder.append(value + " : " + cases.size()).append("<br>");
+                if (!cases.isEmpty()) {
+                    builder.append(value + " : " + cases.size()).append("<br>");
+                }
             });
             builder.append(HTML_CLOSE_TAG);
             customFieldsLabel.setText(builder.toString());
@@ -341,7 +346,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                                     .filter(caseF -> caseF.getKey().equals(KEYWORDS))
                                     .anyMatch(o -> o.getValue() != null && o.getValue().toString().contains(key)))
                             .forEach(caseList::add);
-                    builder.append(value).append(" : ").append(caseList.size()).append("<br>");
+                    if (!caseList.isEmpty()) {
+                        builder.append(value).append(" : ").append(caseList.size()).append("<br>");
+                    }
                 });
             } catch (ClassCastException ex2) {
                 customFieldsLabel.setText("No Options!");
@@ -473,7 +480,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             List<Case> casesWithOneType = casesFromSelectedPacks.stream()
                     .filter(aCase -> aCase.getTypeId() == type.getId())
                     .collect(Collectors.toList());
-            builder.append(type.getName()).append(" : ").append(casesWithOneType.size()).append("<br>");
+            if (!casesWithOneType.isEmpty()) {
+                builder.append(type.getName()).append(" : ").append(casesWithOneType.size()).append("<br>");
+            }
 
         }
 
