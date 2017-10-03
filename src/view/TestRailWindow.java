@@ -19,10 +19,10 @@ import model.section.OurSection;
 import model.section.OurSectionInflator;
 import model.testrail.RailDataStorage;
 import model.testrail.RailTestCase;
-import view.treerenderer.TreeCellRenderer;
 import utils.ClassScanner;
 import utils.DraftClassesCreator;
 import utils.GuiUtil;
+import view.treerenderer.TreeCellRenderer;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -58,7 +58,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JComboBox customFieldsComboBox;
     private JLabel customFieldsLabel;
     private RailDataStorage client;
-    private List<RailDataStorage.TestCaseField> customProjectFieldsMap = new ArrayList<>();
+    private List<RailDataStorage.TestCaseField> customProjectFieldsList = new ArrayList<>();
     private JPopupMenu testCasePopupMenu;
     private boolean isCtrlPressed = false;
     private List<Object> selectedTreeNodeList = new ArrayList<>();
@@ -232,7 +232,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 } else {
                     // TODO: get ProjectName
                     int projectId = client.getProjectIdByProjectName(selectedProjectName);
-                    customProjectFieldsMap = client.getCustomFieldNamesMap(projectId);
+                    customProjectFieldsList = client.getCustomFieldNamesList(projectId);
 
                     displayCaseTypesInfo();
 
@@ -242,9 +242,9 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
 
                         customFieldsComboBox.removeAllItems();
 
-                        if (!customProjectFieldsMap.isEmpty()) {
+                        if (!customProjectFieldsList.isEmpty()) {
                             makeVisible(customFieldsComboBox);
-                            customProjectFieldsMap.forEach(value -> customFieldsComboBox.addItem(value.getDisplayedName()));
+                            customProjectFieldsList.forEach(value -> customFieldsComboBox.addItem(value.getDisplayedName()));
                             repaintComponent(customFieldsLabel);
                         } else {
                             makeInvisible(customFieldsComboBox);
@@ -299,7 +299,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                     String selectedValue = (String) this.customFieldsComboBox.getSelectedItem();
                     StringBuilder builder = new StringBuilder();
                     builder.append(HTML_OPEN_TAG);
-                    customProjectFieldsMap
+                    customProjectFieldsList
                             .stream()
                             .filter(caseField -> caseField.getDisplayedName().equals(selectedValue))
                             .collect(Collectors.toList())
@@ -316,7 +316,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     /**
-     * Render stats in @customFieldsLabel depends on TYPE which is defined in getCustomFieldNamesMap method
+     * Render stats in @customFieldsLabel depends on TYPE which is defined in getCustomFieldNamesList method
      */
     private void renderStats(StringBuilder builder, Field.Config config) {
         try {
@@ -335,11 +335,13 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         } catch (ClassCastException ex1) {
             try {
                 ((Field.Config.MultiSelectOptions) config.getOptions()).getItems().forEach((key, value) -> {
-                    List<Case> cases = casesFromSelectedPacks.stream()
+                    final List<Case> caseList = new ArrayList<>();
+                    casesFromSelectedPacks.stream()
                             .filter(caseField1 -> caseField1.getCustomFields().entrySet().stream()
-                                    .anyMatch(o -> o.getValue() != null && o.getValue().equals(key)))
-                            .collect(Collectors.toList());
-                    builder.append(value).append(" : ").append(cases.size()).append("<br>");
+                                    .filter(caseF -> caseF.getKey().equals(KEYWORDS))
+                                    .anyMatch(o -> o.getValue() != null && o.getValue().toString().contains(key)))
+                            .forEach(caseList::add);
+                    builder.append(value).append(" : ").append(caseList.size()).append("<br>");
                 });
             } catch (ClassCastException ex2) {
                 customFieldsLabel.setText("No Options!");
@@ -442,7 +444,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 }
 
                 if (userObject instanceof Case) {
-                    casesFromSelectedPacks.add((Case)userObject);
+                    casesFromSelectedPacks.add((Case) userObject);
                 }
             }
             makeVisible(this.detailsPanel);
@@ -495,13 +497,13 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
                 Collection<File> classList = getAllClassList();
 
                 out.println("Rail Test case list for current section equals " + railTestCases.size());
-                caseList.forEach(testCase->{
-                   out.println("Test case was created " + testCase.getId());
+                caseList.forEach(testCase -> {
+                    out.println("Test case was created " + testCase.getId());
 
-                   RailTestCase railTestCase = getRailTestCaseById(railTestCases, testCase.getId());
-                   out.println("Rail Test case with name " + railTestCase.getName() + "was created");
-                   DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
-               });
+                    RailTestCase railTestCase = getRailTestCaseById(railTestCases, testCase.getId());
+                    out.println("Rail Test case with name " + railTestCase.getName() + "was created");
+                    DraftClassesCreator.getInstance(project).create(railTestCase, settings.getTemplate());
+                });
 
                 // TODO: To view method
                 StatusBar statusBar = WindowManager.getInstance()
@@ -527,7 +529,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     }
 
     private RailTestCase getRailTestCaseById(List<RailTestCase> railTestCaseList, Integer id) {
-        for (RailTestCase railTestCase: railTestCaseList) {
+        for (RailTestCase railTestCase : railTestCaseList) {
             if (id.equals(railTestCase.getId()))
                 return railTestCase;
         }
@@ -605,7 +607,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
             out.println("Unable to open, url is incorrect");
         }
     }
-    
+
     // endregion
 
     // TODO: Data layer

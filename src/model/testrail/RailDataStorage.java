@@ -139,7 +139,7 @@ public final class RailDataStorage implements Login {
     }
 
     //probably it's better to return caseFields as id to handle it later
-    public List<TestCaseField> getCustomFieldNamesMap(int projectID) {
+    public List<TestCaseField> getCustomFieldNamesList(int projectID) {
         List<TestCaseField> testCaseFields = new ArrayList<>();
         testRailClient.caseFields().list().execute().stream()
                 .filter(caseField ->
@@ -150,7 +150,10 @@ public final class RailDataStorage implements Login {
                                         config.getOptions().getClass().isAssignableFrom(Field.Config.DropdownOptions.class)
                                                 || config.getOptions().getClass().isAssignableFrom(Field.Config.MultiSelectOptions.class))
                                 .anyMatch(config -> config.getContext().getProjectIds().contains(projectID)))
-                .forEach(caseField -> testCaseFields.add(new TestCaseField(caseField.getId(), caseField.getSystemName(), caseField.getLabel(), caseField.getConfigs())));
+                .forEach(caseField -> {
+                    List<Field.Config> clearConfigs = caseField.getConfigs().stream().filter(config -> config.getContext().getProjectIds().contains(projectID)).collect(Collectors.toList());
+                    testCaseFields.add(new TestCaseField(caseField.getId(), caseField.getSystemName(), caseField.getLabel(), clearConfigs));
+                });
         return testCaseFields;
     }
 
