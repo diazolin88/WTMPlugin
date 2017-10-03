@@ -58,4 +58,8 @@ public class RailTestCase {
     public int getSectionId() {
         return sectionId;
     }
+
+    public String getFolderName() {
+        return folderName;
+    }
 }
