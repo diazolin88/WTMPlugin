@@ -9,9 +9,6 @@ import static com.wiley.wat.Group.toAutomate;
  * User: {{USER_NAME}}
  * Date: {{TEST_DATE}}
  * <p>
- * Summary:
- * {{SUMMARY}}
- * <p>
  * Preconditions:
  * {{PRECONDITIONS}}
  * <p>
@@ -21,7 +18,7 @@ import static com.wiley.wat.Group.toAutomate;
  */
 public class {{CLASS_NAME}} {
 
-    @Title("{{TEST_RAIL_TITLE}}")
+    @Stories(value = {{{STORY}}})
     @Test(groups = {toAutomate})
     public void test_{{CLASS_NAME}}() {
         // specially do nothing
