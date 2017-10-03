@@ -60,7 +60,7 @@ public class DraftClassesCreator {
         draftDataMap.put(CLASS_NAME_KEY, className);
         draftDataMap.put(TEST_METHOD_NAME_KEY, getUserCreds(testCase));
         draftDataMap.put(CASE_PREFIX_KEY, "_C");
-        draftDataMap.put(STORY_KEY, "\"" +String.valueOf(testCase.getSectionId())+"\"");
+        draftDataMap.put(STORY_KEY, "\"" + getFormattedFolderName(testCase.getFolderName()) + "\"");
 
         String[] userNamePart = testCase.getUserName().trim().split(" ");
         draftDataMap.put(AUTHOR_SHORT_NAME, getOnlyString(userNamePart[0]).substring(0, 1) + getOnlyString(userNamePart[1]).substring(0, 1));
@@ -85,6 +85,13 @@ public class DraftClassesCreator {
         Pattern pattern = Pattern.compile("[^a-z A-Z]");
         Matcher matcher = pattern.matcher(string);
         return matcher.replaceAll("");
+    }
+
+    private String getFormattedFolderName(String folderName) {
+        Pattern pattern = Pattern.compile("NG-[0-9]+");
+        Matcher matcher = pattern.matcher(folderName);
+        matcher.find();
+        return matcher.group();
     }
 
     public String getClassNameForTestCase(RailTestCase testCase) {
