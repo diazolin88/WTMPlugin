@@ -88,10 +88,15 @@ public class DraftClassesCreator {
     }
 
     private String getFormattedFolderName(String folderName) {
-        Pattern pattern = Pattern.compile("NG-[0-9]+");
-        Matcher matcher = pattern.matcher(folderName);
-        matcher.find();
-        return matcher.group();
+        try {
+            Pattern pattern = Pattern.compile("NG-[0-9]+");
+            Matcher matcher = pattern.matcher(folderName);
+            matcher.find();
+            return matcher.group();
+        } catch (java.lang.IllegalStateException e) {
+            //any other project than NG
+            return folderName;
+        }
     }
 
     public String getClassNameForTestCase(RailTestCase testCase) {
