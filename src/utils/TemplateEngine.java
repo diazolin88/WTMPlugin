@@ -66,6 +66,7 @@ public class TemplateEngine {
                 .stream()
                 .map(rowItem -> {
                     for (String key : keySet) {
+                        //TODO IllegalArgumentException when replace test with { }
                         rowItem = rowItem.replaceAll(String.format(KEY_WORD_TEMPLATE, key), draftDataMap.get(key));
                     }
                     rowItem += "\n";
