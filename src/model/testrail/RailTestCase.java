@@ -18,8 +18,9 @@ public class RailTestCase {
     private List<String> keywords;
     private String folderName;
     private int sectionId; // storyId
+    private String gerkin;
 
-    public RailTestCase(int id, String userName , String name, List<Field.Step> description, String preconditions, List<String> keywords, String folderName, int sectionId) {
+    public RailTestCase(int id, String userName, String name, List<Field.Step> description, String preconditions, List<String> keywords, String folderName, int sectionId, String gerkin) {
         this.id = id;
         this.userName = userName;
 
@@ -29,6 +30,7 @@ public class RailTestCase {
         this.keywords = keywords;
         this.folderName = folderName;
         this.sectionId = sectionId;
+        this.gerkin = gerkin;
     }
 
     public List<Field.Step> getDescription() {
@@ -61,5 +63,9 @@ public class RailTestCase {
 
     public String getFolderName() {
         return folderName;
+    }
+
+    public String getGerkin() {
+        return gerkin;
     }
 }

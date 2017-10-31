@@ -1,13 +1,9 @@
 package utils;
 
 import com.intellij.openapi.project.Project;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,6 +32,7 @@ public class TemplateEngine {
     public static final String CASE_PREFIX_KEY = "CASE_PREFIX_KEY";
     public static final String AUTHOR_SHORT_NAME = "AUTHOR_SHORT_NAME";
     public static final String STORY_KEY = "STORY";
+    public static final String GHERKIN = "GHERKIN";
 
     private String draftDirectoryPath = "";
     private static final String KEY_WORD_TEMPLATE = "\\{\\{%s\\}\\}";

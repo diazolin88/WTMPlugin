@@ -4,18 +4,12 @@ import com.codepine.api.testrail.model.Field;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import model.testrail.RailTestCase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.text.*;
+import java.util.*;
+import java.util.regex.*;
+import java.util.stream.*;
 
 import static utils.TemplateEngine.*;
 
@@ -61,6 +55,7 @@ public class DraftClassesCreator {
         draftDataMap.put(TEST_METHOD_NAME_KEY, getUserCreds(testCase));
         draftDataMap.put(CASE_PREFIX_KEY, "_C");
         draftDataMap.put(STORY_KEY, "\"" + getFormattedFolderName(testCase.getFolderName()) + "\"");
+        draftDataMap.put(GHERKIN, testCase.getGerkin().replaceAll("\\r\\n", "\r\n * "));
 
         String[] userNamePart = testCase.getUserName().trim().split(" ");
         draftDataMap.put(AUTHOR_SHORT_NAME, getOnlyString(userNamePart[0]).substring(0, 1) + getOnlyString(userNamePart[1]).substring(0, 1));
@@ -100,12 +95,17 @@ public class DraftClassesCreator {
     }
 
     public String getClassNameForTestCase(RailTestCase testCase) {
-        return new StringBuilder()
+        String str = new StringBuilder()
                 .append("C")
                 .append(testCase.getId())
                 .append("_")
                 .append(testCase.getName())
                 .toString();
+
+        String s[] = str.split("\\s+");
+        final String[] temp = {""};
+        IntStream.range(0, s.length).forEach(i -> temp[0] += s[i].substring(0, 1).toUpperCase() + s[i].substring(1, s[i].length()));
+        return temp[0];
     }
 
     private String getDescriptionForTestCase(RailTestCase testCase) {

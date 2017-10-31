@@ -1,43 +1,29 @@
 package view;
 
-import com.codepine.api.testrail.model.Case;
-import com.codepine.api.testrail.model.CaseType;
-import com.codepine.api.testrail.model.Field;
+import com.codepine.api.testrail.model.*;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
-import com.intellij.openapi.ui.popup.Balloon;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.wm.StatusBar;
-import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.wm.WindowManager;
+import com.intellij.openapi.ui.popup.*;
+import com.intellij.openapi.wm.*;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.treeStructure.Tree;
-import model.section.OurSection;
-import model.section.OurSectionInflator;
-import model.testrail.RailDataStorage;
-import model.testrail.RailTestCase;
-import utils.ClassScanner;
-import utils.DraftClassesCreator;
-import utils.GuiUtil;
+import model.section.*;
+import model.testrail.*;
+import utils.*;
 import view.treerenderer.TreeCellRenderer;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.stream.*;
 
 import static java.lang.System.out;
 import static model.testrail.RailConstants.*;
@@ -623,7 +609,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private List<RailTestCase> getRailTestCaseList() {
         return casesFromSelectedPacks
                 .stream()
-                .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(selectedProjectName, selectedSuiteName, aCase.getSectionId()), aCase.getSectionId()))
+                .map(aCase -> new RailTestCase(aCase.getId(), client.getUserName(aCase.getCreatedBy()), aCase.getTitle(), aCase.getCustomField(STEPS_SEPARATED_FIELD), aCase.getCustomField(PRECONDITION_FIELD), aCase.getCustomField(KEYWORDS), client.getStoryNameBySectionId(selectedProjectName, selectedSuiteName, aCase.getSectionId()), aCase.getSectionId(), aCase.getCustomField(GHERKIN_FIELD)))
                 .collect(Collectors.toList());
     }
 
