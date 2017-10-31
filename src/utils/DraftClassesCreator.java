@@ -56,6 +56,7 @@ public class DraftClassesCreator {
         draftDataMap.put(CASE_PREFIX_KEY, "_C");
         draftDataMap.put(STORY_KEY, "\"" + getFormattedFolderName(testCase.getFolderName()) + "\"");
         draftDataMap.put(GHERKIN, testCase.getGerkin().replaceAll("\\r\\n", "\r\n * "));
+        draftDataMap.put(TITLE, testCase.getName());
 
         String[] userNamePart = testCase.getUserName().trim().split(" ");
         draftDataMap.put(AUTHOR_SHORT_NAME, getOnlyString(userNamePart[0]).substring(0, 1) + getOnlyString(userNamePart[1]).substring(0, 1));

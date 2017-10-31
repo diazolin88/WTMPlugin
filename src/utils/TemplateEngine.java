@@ -33,6 +33,7 @@ public class TemplateEngine {
     public static final String AUTHOR_SHORT_NAME = "AUTHOR_SHORT_NAME";
     public static final String STORY_KEY = "STORY";
     public static final String GHERKIN = "GHERKIN";
+    public static final String TITLE = "TITLE";
 
     private String draftDirectoryPath = "";
     private static final String KEY_WORD_TEMPLATE = "\\{\\{%s\\}\\}";
