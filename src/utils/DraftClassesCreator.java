@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.regex.*;
 import java.util.stream.*;
 
+import static io.netty.util.internal.StringUtil.EMPTY_STRING;
 import static utils.TemplateEngine.*;
 
 public class DraftClassesCreator {
@@ -48,14 +49,14 @@ public class DraftClassesCreator {
         draftDataMap.put(TEST_DATE_KEY, dateFormat.format(new Date()));
         draftDataMap.put(TEST_DESCRIPTION_KEY, description);
         draftDataMap.put(PROJECT_PREFIX_KEY, PROJECT_PREFIX);
-        draftDataMap.put(TEST_RAIL_ID_KEY, String.valueOf(testCase.getId()));
+        draftDataMap.put(TEST_RAIL_ID, String.valueOf(testCase.getId()));
         draftDataMap.put(TEST_RAIL_TITLE_KEY, testCase.getName());
         draftDataMap.put(PRECONDITIONS_KEY, preconditions);
-        draftDataMap.put(CLASS_NAME_KEY, className);
+        draftDataMap.put(CLASS_NAME, className);
         draftDataMap.put(TEST_METHOD_NAME_KEY, getUserCreds(testCase));
         draftDataMap.put(CASE_PREFIX_KEY, "_C");
         draftDataMap.put(STORY_KEY, "\"" + getFormattedFolderName(testCase.getFolderName()) + "\"");
-        draftDataMap.put(GHERKIN, testCase.getGerkin().replaceAll("\\r\\n", "\r\n * "));
+        draftDataMap.put(GHERKIN, null != testCase.getGerkin() ? testCase.getGerkin().replaceAll("\\r\\n", "\r\n * ") : EMPTY_STRING);
         draftDataMap.put(TITLE, testCase.getName());
 
         String[] userNamePart = testCase.getUserName().trim().split(" ");
@@ -97,9 +98,6 @@ public class DraftClassesCreator {
 
     public String getClassNameForTestCase(RailTestCase testCase) {
         String str = new StringBuilder()
-                .append("C")
-                .append(testCase.getId())
-                .append("_")
                 .append(testCase.getName())
                 .toString();
 

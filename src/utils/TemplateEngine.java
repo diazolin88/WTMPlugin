@@ -2,9 +2,11 @@ package utils;
 
 import com.intellij.openapi.project.Project;
 import org.slf4j.*;
+import settings.WTMSettings;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 import java.util.stream.Collectors;
 
 /**
@@ -23,9 +25,9 @@ public class TemplateEngine {
     public static final String TEST_DATE_KEY = "TEST_DATE";
     public static final String TEST_DESCRIPTION_KEY = "TEST_DESCRIPTION";
     public static final String PROJECT_PREFIX_KEY = "PROJECT_PREFIX";
-    public static final String TEST_RAIL_ID_KEY = "TEST_RAIL_ID";
+    public static final String TEST_RAIL_ID = "TEST_RAIL_ID";
     public static final String TEST_RAIL_TITLE_KEY = "TEST_RAIL_TITLE";
-    public static final String CLASS_NAME_KEY = "CLASS_NAME";
+    public static final String CLASS_NAME = "CLASS_NAME";
     public static final String PRECONDITIONS_KEY = "PRECONDITIONS";
     public static final String SUMMARY_KEY = "SUMMARY";
     public static final String TEST_METHOD_NAME_KEY = "TEST_METHOD_NAME_KEY";
@@ -37,10 +39,12 @@ public class TemplateEngine {
 
     private String draftDirectoryPath = "";
     private static final String KEY_WORD_TEMPLATE = "\\{\\{%s\\}\\}";
+    private WTMSettings settings;
 
     public TemplateEngine(Project project) {
         this.project = project;
         draftDirectoryPath = project.getBasePath() + "/drafts";
+        settings = WTMSettings.getInstance(project);
     }
 
     /**
@@ -73,8 +77,30 @@ public class TemplateEngine {
                 .collect(Collectors.toList());
         LOGGER.info("Ending of replacement of markers");
 
-        LOGGER.info(String.format("Creating %s class", draftDataMap.get(CLASS_NAME_KEY)));
-        writeRowListToFile(rowList, draftDirectoryPath + "/" + draftDataMap.get(CLASS_NAME_KEY) + ".java");
+        LOGGER.info(String.format("Creating %s class", draftDataMap.get(CLASS_NAME)));
+        Pattern pattern = Pattern.compile("public class.*");
+        Matcher matcher = pattern.matcher(settings.getTemplate());
+        //get public class row
+        String str = null;
+        if (matcher.find()) {
+            str = matcher.group();
+        }
+
+        Pattern pattern2 = Pattern.compile("\\{\\{[A-Z_]*\\}\\}");
+        Matcher matcher2 = pattern2.matcher(str);
+        //get field list
+        List<String> list = new ArrayList<>();
+        while (matcher2.find()) {
+            list.add(matcher2.group().replaceAll("[\\{\\}]", ""));
+        }
+        String className = str.split(" ")[2];
+
+        for (String var : list) {
+            className = className.replaceAll("\\{\\{[" + var + "]*\\}\\}", draftDataMap.get(var));
+        }
+
+        String filepath = draftDirectoryPath + "/" + className;
+        writeRowListToFile(rowList, filepath + ".java");
     }
 
     /**
