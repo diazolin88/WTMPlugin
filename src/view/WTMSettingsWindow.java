@@ -10,6 +10,7 @@ import settings.User;
 
 import javax.swing.*;
 
+import static settings.WTMSettings.DEFAULT_TEMPLATE;
 import static utils.ComponentUtil.repaintComponent;
 
 public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable, User {
@@ -20,6 +21,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
     private JButton railTestConnectionButton;
     private JTextPane railDebugTextPane;
     private JTextArea temlateTextArea;
+    private JButton setDefaultTemplateButton;
 
     private final Project project;
 
@@ -27,6 +29,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         super(project);
         this.project = project;
         railTestConnectionButtonClickedAction(project);
+        setSetDefaultTemplateButtonListener();
         setContent(mainPanel);
 
     }
@@ -36,12 +39,12 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         settings.setUserName(railUserNameTextField.getText());
         settings.setURL(railUrlTextField.getText());
         settings.setTemplate(temlateTextArea.getText());
-       try {
-           RailDataStorage.getInstance(project).login(this);
-       } catch (AuthorizationException e) {
-           //DO nothing
-       }
-   }
+        try {
+            RailDataStorage.getInstance(project).login(this);
+        } catch (AuthorizationException e) {
+            //DO nothing
+        }
+    }
 
     public static WTMSettingsWindow getInstance(Project project) {
         return ServiceManager.getService(project, WTMSettingsWindow.class);
@@ -56,7 +59,7 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
         return !railUserNameTextField.getText().equals(settings.getUserName())
                 || !String.valueOf(railPasswordField.getPassword()).equals(settings.getUserPassword())
                 || !railUrlTextField.getText().equals(settings.getURL())
-                ||!temlateTextArea.getText().equals(settings.getTemplate());
+                || !temlateTextArea.getText().equals(settings.getTemplate());
     }
 
     public void reset() {
@@ -67,16 +70,23 @@ public class WTMSettingsWindow extends WindowPanelAbstract implements Disposable
     }
 
     private void railTestConnectionButtonClickedAction(Project project) {
-            railTestConnectionButton.addActionListener(listener ->
-            {
-                try {
-                    RailDataStorage.getInstance(project).login(this);
-                    railDebugTextPane.setText("Connected!");
-                } catch (AuthorizationException e) {
-                    railDebugTextPane.setText(e.getMessage());
-                }
-            });
+        railTestConnectionButton.addActionListener(listener ->
+        {
+            try {
+                RailDataStorage.getInstance(project).login(this);
+                railDebugTextPane.setText("Connected!");
+            } catch (AuthorizationException e) {
+                railDebugTextPane.setText(e.getMessage());
+            }
+        });
         repaintComponent(railDebugTextPane);
+    }
+
+    private void setSetDefaultTemplateButtonListener() {
+        setDefaultTemplateButton.addActionListener(listener -> {
+            temlateTextArea.setText(DEFAULT_TEMPLATE);
+            repaintComponent(temlateTextArea);
+        });
     }
 
     public String getUserName() {

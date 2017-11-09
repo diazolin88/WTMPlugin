@@ -1,12 +1,8 @@
 package settings;
 
-import com.intellij.credentialStore.CredentialAttributes;
-import com.intellij.credentialStore.Credentials;
+import com.intellij.credentialStore.*;
 import com.intellij.ide.passwordSafe.PasswordSafe;
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
@@ -62,8 +58,38 @@ public class WTMSettings implements PersistentStateComponent<WTMSettings>, User 
             "        // specially do nothing\n" +
             "    }\n" +
             "}";
+    //endregion
+
+    //region default template
+    public static final String DEFAULT_TEMPLATE = "package com.wiley.project.tests.drafts;\n" +
+            "\n" +
+            "import org.testng.annotations.Test;\n" +
+            "import static com.wiley.wat.Group.toAutomate;\n" +
+            "import ru.yandex.qatools.allure.annotations.Stories;\n" +
+            "\n" +
+            "/**\n" +
+            " * User: {{USER_NAME}}\n" +
+            " * Date: {{TEST_DATE}}\n" +
+            " * <p>\n" +
+            " * Preconditions:\n" +
+            " * {{PRECONDITIONS}}\n" +
+            " * <p>\n" +
+            " * Description:\n" +
+            " * {{TEST_DESCRIPTION}}\n" +
+            " * <p>\n" +
+            " */\n" +
+            "public class {{CLASS_NAME}} {\n" +
+            "\n" +
+            "    @Stories(value = {{{STORY}}})\n" +
+            "    @Test(groups = {toAutomate})\n" +
+            "    public void test_C{{TEST_RAIL_ID}}_{{TEST_METHOD_NAME_KEY}}() {\n" +
+            "        // specially do nothing\n" +
+            "    }\n" +
+            "}";
+    ;
 
     //endregion
+
     public static WTMSettings getInstance(Project project) {
         return ServiceManager.getService(project, WTMSettings.class);
     }
