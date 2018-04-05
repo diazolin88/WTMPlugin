@@ -48,6 +48,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
     private JPopupMenu testCasePopupMenu;
     private boolean isCtrlPressed = false;
     private List<Object> selectedTreeNodeList = new ArrayList<>();
+    public static int projectId;
 
     private DefaultMutableTreeNode currentSelectedTreeNode = null;
     private List<Case> casesFromSelectedPacks = new ArrayList<>();
@@ -388,7 +389,7 @@ public class TestRailWindow extends WindowPanelAbstract implements Disposable {
         rootSection.setName(selectedSuite);
 
         // Inflates root section.
-        int projectId = client.getProjectIdByProjectName(selectedProjectName);
+        projectId = client.getProjectIdByProjectName(selectedProjectName);
         int suiteId = client.getSuiteIdBySuiteName(selectedProjectName, selectedSuiteName);
         RailDataStorage railData = client
                 .setCases(client.getCasesBySuiteId(projectId, suiteId))

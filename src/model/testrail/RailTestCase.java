@@ -68,4 +68,8 @@ public class RailTestCase {
     public String getGerkin() {
         return gerkin;
     }
+
+    public List<String> getKeywords() {
+        return keywords;
+    }
 }

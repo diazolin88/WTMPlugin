@@ -5,10 +5,7 @@ import com.codepine.api.testrail.model.*;
 import com.intellij.openapi.components.ServiceManager;
 import exceptions.AuthorizationException;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -84,7 +81,6 @@ public final class RailDataStorage implements Login {
         return testRailClient.projects().list().execute();
     }
 
-
     @SuppressWarnings("ConstantConditions")
     public List<Suite> getSuitesList(String projectName) {
         int projectId = testRailClient.projects().list().execute().stream()
@@ -93,6 +89,14 @@ public final class RailDataStorage implements Login {
                 .findFirst().get();
 
         return testRailClient.suites().list(projectId).execute();
+    }
+
+    public List<CaseField> getCaseFields() {
+        return testRailClient.caseFields().list().execute();
+    }
+
+    public List<ResultField> resultFields() {
+        return testRailClient.resultFields().list().execute();
     }
 
     public List<CaseType> getCaseTypes() {

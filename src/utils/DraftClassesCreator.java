@@ -3,8 +3,9 @@ package utils;
 import com.codepine.api.testrail.model.Field;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import model.testrail.RailTestCase;
+import model.testrail.*;
 import org.slf4j.*;
+import view.TestRailWindow;
 
 import java.text.*;
 import java.util.*;
@@ -38,6 +39,33 @@ public class DraftClassesCreator {
 
     public void create(RailTestCase testCase, String template) {
         DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+
+        Map<String, String> kwords =
+                RailDataStorage.getInstance(project)
+                        .getCaseFields().stream()
+                        .filter(caseField -> caseField.getName().equals("kwords"))
+                        .flatMap(caseField -> caseField.getConfigs().stream())
+                        .filter(config -> config.getContext().getProjectIds().stream().anyMatch(integer -> integer == TestRailWindow.projectId))
+                        .map(Field.Config::getOptions)
+                        .map(options -> ((Field.Config.MultiSelectOptions) options).getItems().entrySet())
+                        .flatMap(Set::stream)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+
+        List<String> keywordKeys = testCase.getKeywords();
+
+        Map<String, String> map2 = kwords.entrySet().stream()
+                .filter(entry -> keywordKeys.stream().anyMatch(keyword -> keyword.equals(entry.getKey())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        StringBuilder keyWordsString = new StringBuilder();
+
+        for (Map.Entry f : map2.entrySet()) {
+            keyWordsString.append(", ");
+            keyWordsString.append((String) f.getValue());
+            keyWordsString.append(", ");
+        }
+
         HashMap<String, String> draftDataMap = new HashMap<>();
 
         String preconditions = format(testCase.getPreconditions() == null ? "" : testCase.getPreconditions());
@@ -58,6 +86,7 @@ public class DraftClassesCreator {
         draftDataMap.put(STORY_KEY, "\"" + getFormattedFolderName(testCase.getFolderName()) + "\"");
         draftDataMap.put(GHERKIN, null != testCase.getGerkin() ? testCase.getGerkin().replaceAll("\\r\\n", "\r\n * ") : EMPTY_STRING);
         draftDataMap.put(TITLE, testCase.getName());
+        draftDataMap.put(KEYWORDS, !keyWordsString.toString().equals(EMPTY_STRING) ? keyWordsString.toString().trim().replaceAll("[,]$", EMPTY_STRING) : EMPTY_STRING);
 
         String[] userNamePart = testCase.getUserName().trim().split(" ");
         draftDataMap.put(AUTHOR_SHORT_NAME, getOnlyString(userNamePart[0]).substring(0, 1) + getOnlyString(userNamePart[1]).substring(0, 1));
