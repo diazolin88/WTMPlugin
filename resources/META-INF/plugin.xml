@@ -52,7 +52,7 @@
     <action id="actions.OpenTestCaseInBrowserAction" class="actions.OpenTestCaseInBrowserAction" text="openInBrowser"
             description="Open test case in browser"/>
     <group>
-      <action class="actions.TestRailLinkAction" id="test_rail_link_action" text="openInBrowser"
+      <action class="actions.TestRailLinkAction" id="test_rail_link_action" text="Open in default browser"
               icon="/files/icons/browser.png"/>
       <add-to-group group-id="EditorContextBarMenu" anchor="first"/>
     </group>

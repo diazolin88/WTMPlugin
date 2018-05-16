@@ -1,15 +1,10 @@
 package settings;
 
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.components.*;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import view.View;
-import view.WTMSettingsWindow;
+import org.jetbrains.annotations.*;
+import view.*;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -69,9 +64,9 @@ public class WTMSettingsWindowRenderer implements SearchableConfigurable, Projec
      * Implement a logic to update configuration.
      */
     @Override
-    public void apply() throws ConfigurationException {
+    public void apply() {
         settingsComponent.setSettings();
-        subscribers.forEach(view -> view.update());
+        subscribers.forEach(View::update);
     }
 
     /**
