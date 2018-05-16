@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
+import org.testng.annotations.Test;
 import settings.WTMSettings;
 import utils.GuiUtil;
 
@@ -43,7 +44,7 @@ public class TestRailLinkAction extends AnAction {
         PsiFile psiFile = PsiManager.getInstance(e.getProject()).findFile(vf);
         PsiClass[] ann = ((PsiJavaFileImpl) psiFile).getClasses();
         PsiMethod cMethod = Arrays.stream(ann[0].getMethods()).filter(psiMethod -> psiMethod.getName().startsWith("test_")).collect(Collectors.toList()).get(0);
-        if (!Arrays.stream(cMethod.getAnnotations()).anyMatch(an -> an.getQualifiedName().equals("org.testng.annotations.Test"))) {
+        if (!Arrays.stream(cMethod.getAnnotations()).anyMatch(an -> an.getQualifiedName().equals(Test.class.getName()))) {
             e.getPresentation().setVisible(false);
             return;
         }
