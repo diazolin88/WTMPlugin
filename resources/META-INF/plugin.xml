@@ -14,7 +14,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="173" until-build="173.*"/>
+  <idea-version since-build="181" until-build="181.*"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
@@ -51,6 +51,11 @@
             description="Refresh folder, add new cases"/>
     <action id="actions.OpenTestCaseInBrowserAction" class="actions.OpenTestCaseInBrowserAction" text="openInBrowser"
             description="Open test case in browser"/>
+    <group>
+      <action class="actions.TestRailLinkAction" id="test_rail_link_action" text="openInBrowser"
+              icon="/files/icons/browser.png"/>
+      <add-to-group group-id="EditorContextBarMenu" anchor="first"/>
+    </group>
   </actions>
 
   <application-components>

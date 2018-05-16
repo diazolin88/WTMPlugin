@@ -59,9 +59,9 @@ public class DraftClassesCreator {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         StringBuilder keyWordsString = new StringBuilder();
+        keyWordsString.append(", ");
 
         for (Map.Entry f : map2.entrySet()) {
-            keyWordsString.append(", ");
             keyWordsString.append((String) f.getValue());
             keyWordsString.append(", ");
         }
