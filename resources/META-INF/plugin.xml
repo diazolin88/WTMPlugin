@@ -36,6 +36,8 @@
     <projectService serviceInterface="settings.WTMSettingsWindowRenderer" serviceImplementation="settings.WTMSettingsWindowRenderer"/>
     <projectService serviceInterface="view.ToolWindow" serviceImplementation="view.ToolWindow"/>
 
+    <!--<codeInsight.lineMarkerProvider language="JAVA" implementationClass="marker.StoryMarker"/>-->
+
     <toolWindow id="WTMPlugin" icon="/files/icons/plugin_logo.png" anchor="left" factoryClass="toolwindow.WTMToolWindowFactory"/>
     <!--<toolWindow id="Failed test case" icon="/files/icons/Untitled.png" anchor="right" factoryClass="toolwindow.TestRunnerToolWindowFactory"/>-->
 
@@ -51,11 +53,20 @@
             description="Refresh folder, add new cases"/>
     <action id="actions.OpenTestCaseInBrowserAction" class="actions.OpenTestCaseInBrowserAction" text="openInBrowser"
             description="Open test case in browser"/>
+
     <group>
-      <action class="actions.TestRailLinkAction" id="test_rail_link_action" text="Open in default browser"
+      <separator text="separator"/>
+      <action class="actions.TestRailLinkAction" id="test_rail_link_action" text="Open test in browser"
               icon="/files/icons/browser.png"/>
       <add-to-group group-id="EditorContextBarMenu" anchor="first"/>
     </group>
+
+    <group>
+      <action class="actions.StoryLinkAction" id="story_link_action" text="Open story(ies) in browser"
+              icon="/files/icons/img.png"/>
+      <add-to-group group-id="EditorContextBarMenu" anchor="first"/>
+    </group>
+
   </actions>
 
   <application-components>
