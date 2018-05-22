@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
-import org.testng.annotations.Test;
 import ru.yandex.qatools.allure.annotations.Stories;
 
 import java.awt.*;
@@ -33,7 +32,6 @@ public class StoryLinkAction extends AnAction {
                         .collect(Collectors.toList())
                         .forEach(attr -> {
                             try {
-                                System.out.println(attr);
                                 Desktop.getDesktop().browse(new URI("https://jira.wiley.com/browse/" + attr));
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -48,25 +46,26 @@ public class StoryLinkAction extends AnAction {
     @Override
     public void update(AnActionEvent e) {
         VirtualFile vf = e.getData(PlatformDataKeys.VIRTUAL_FILE);
-        PsiFile psiFile = PsiManager.getInstance(e.getProject()).findFile(vf);
-        try {
-            PsiClass[] ann = ((PsiJavaFileImpl) psiFile).getClasses();
+        if (vf.exists()) {
+            PsiFile psiFile = PsiManager.getInstance(e.getProject()).findFile(vf);
+            try {
+                PsiClass[] ann = ((PsiJavaFileImpl) psiFile).getClasses();
 
-            List<PsiMethod> methods = Arrays.stream(ann[0].getMethods()).filter(psiMethod -> psiMethod.getName().startsWith("test_")).collect(Collectors.toList());
+                List<PsiMethod> methods = Arrays.stream(ann[0].getMethods()).filter(psiMethod -> psiMethod.getName().startsWith("test_")).collect(Collectors.toList());
 
-            if (!methods.isEmpty()) {
-                PsiMethod cMethod = methods.get(0);
-                if (Arrays.stream(cMethod.getAnnotations()).noneMatch(an -> an.getQualifiedName().equals(Test.class.getName()))) {
+                if (!methods.isEmpty()) {
+                    PsiMethod cMethod = methods.get(0);
+                    if (Arrays.stream(cMethod.getAnnotations()).noneMatch(an -> an.getQualifiedName().equals(Stories.class.getName()))) {
+                        e.getPresentation().setVisible(false);
+                    }
+                } else {
                     e.getPresentation().setVisible(false);
-                    return;
                 }
-            } else {
+            } catch (ClassCastException ignored) {
                 e.getPresentation().setVisible(false);
-                return;
             }
-        } catch (ClassCastException ignored) {
+        } else {
             e.getPresentation().setVisible(false);
-            return;
         }
     }
 }
