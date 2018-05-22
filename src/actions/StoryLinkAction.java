@@ -46,7 +46,7 @@ public class StoryLinkAction extends AnAction {
     @Override
     public void update(AnActionEvent e) {
         VirtualFile vf = e.getData(PlatformDataKeys.VIRTUAL_FILE);
-        if (vf.exists()) {
+        if (vf != null && vf.exists()) {
             PsiFile psiFile = PsiManager.getInstance(e.getProject()).findFile(vf);
             try {
                 PsiClass[] ann = ((PsiJavaFileImpl) psiFile).getClasses();
